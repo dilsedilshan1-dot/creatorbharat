@@ -348,67 +348,6 @@ function ShareModal(){
   return <Modal open title={`Share ${target?.name||'Profile'}`} onClose={()=>dsp({t:'UI',v:{shareModal:false,shareTarget:null}})}><p style={{fontSize:12,fontWeight:700,color:T.t2,marginBottom:8,textTransform:'uppercase',letterSpacing:'.05em'}}>Profile Link</p><div style={{display:'flex',gap:8,alignItems:'center',background:T.bg2,borderRadius:10,padding:'10px 14px',border:`1px solid ${T.bd}`,marginBottom:20}}><span style={{flex:1,fontSize:13,color:T.n8,fontFamily:'monospace',wordBreak:'break-all'}}>{url}</span><Btn sm onClick={copy} variant={copied?'ghost':'primary'}>{copied?'Copied!':'Copy'}</Btn></div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>{[['WhatsApp',`https://wa.me/?text=${enc('Check out this creator on CreatorBharat! '+fullUrl)}`],['Twitter',`https://twitter.com/intent/tweet?text=${enc('Check out '+target?.name+' on CreatorBharat! '+fullUrl)}`],['LinkedIn',`https://www.linkedin.com/sharing/share-offsite/?url=${enc(fullUrl)}`],['Email',`mailto:?subject=Check out this creator&body=${enc(fullUrl)}`]].map(([l,h])=><a key={l} href={h} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,padding:'11px',borderRadius:10,border:`1.5px solid ${T.bd}`,textDecoration:'none',color:T.n8,fontSize:13,fontWeight:600,background:'#fff'}}>{l}</a>)}</div></Modal>;
 }
 
-// AUTH MODAL
-function AuthModal(){
-  const{st,dsp}=useApp();
-  const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
-  const[tab,setTab]=useState(st.ui.authTab||'login');
-  const[email,setEmail]=useState('');const[pass,setPass]=useState('');const[loading,setLoading]=useState(false);
-  const doLogin=async ()=>{
-    if(!email||!pass){toast('Fill all fields','error');return}
-    setLoading(true);
-    const r=await Auth.login(email,pass);
-    setLoading(false);
-    if(r.ok){dsp({t:'LOGIN',u:r.user,role:r.role});toast(`Welcome back, ${r.user.name||r.user.companyName}!`,'success');dsp({t:'GO',p:r.role==='creator'?'dashboard':'brand-dashboard'})}
-    else{toast(r.error,'error')}
-  };
-  return <div onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.6)',zIndex:8000,display:'flex',alignItems:'center',justifyContent:'center',padding:16,backdropFilter:'blur(8px)'}}>
-    <div className="si" onClick={e=>e.stopPropagation()} style={{background:'rgba(255,255,255,.9)',backdropFilter:'blur(20px)',borderRadius:24,width:'100%',maxWidth:440,overflow:'hidden',boxShadow:T.sh4,border:'1px solid rgba(255,255,255,.4)',position:'relative'}}>
-      {/* Flag Top Border */}
-      <div style={{position:'absolute',top:0,left:0,right:0,height:6,background:'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)'}}/>
-      
-      <div style={{padding:'40px 32px 32px'}}>
-        <div style={{textAlign:'center',marginBottom:32}}>
-          <div style={{display:'flex',justifyContent:'center',marginBottom:16}}><Logo sm /></div>
-          <h2 style={{fontFamily:"'Fraunces',serif",fontSize:24,color:T.n8,marginBottom:8}}>Welcome Back</h2>
-          <p style={{fontSize:14,color:T.t2}}>Bharat ke Creators, Duniya ki Nazar Mein.</p>
-        </div>
-
-        <div style={{display:'flex',background:T.bg2,borderRadius:12,padding:4,marginBottom:24,border:`1px solid ${T.bd}`}}>
-          {[['login','Login'],['register','Register']].map(([id,lbl])=><button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:'10px',borderRadius:8,border:'none',background:tab===id?'#fff':'transparent',color:tab===id?T.n8:T.t3,fontWeight:tab===id?700:500,cursor:'pointer',fontSize:14,fontFamily:'inherit',boxShadow:tab===id?T.sh1:'none',transition:'all .2s'}}>{lbl}</button>)}
-        </div>
-
-        {tab==='login'?<div className="ai">
-          <Fld label="Email Address" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@email.com" required/>
-          <Fld label="Password" type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Enter password" required/>
-          <Btn full lg loading={loading} onClick={doLogin}>Sign In</Btn>
-          <p style={{textAlign:'center',fontSize:11,color:T.t3,marginTop:16,background:T.ga,padding:'8px',borderRadius:8,color:T.gd,fontWeight:700}}>Demo: rahul@demo.in / demo123</p>
-        </div>:<div>
-          <p style={{textAlign:'center',fontSize:14,color:T.t2,marginBottom:20,lineHeight:1.6}}>Chahiye kya? Choose your account type to continue.</p>
-          <div style={{display:'flex',flexDirection:'column',gap:12}}>
-            <button onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'apply'});scrollToTop()}} style={{display:'flex',alignItems:'center',gap:16,padding:'16px',borderRadius:16,border:`1.5px solid ${T.bd}`,background:'#fff',cursor:'pointer',textAlign:'left',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gd} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
-              <div style={{width:40,height:40,borderRadius:10,background:T.ga,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>🎨</div>
-              <div>
-                <p style={{fontWeight:700,color:T.n8,fontSize:15}}>I am a Creator</p>
-                <p style={{fontSize:12,color:T.t3}}>Build portfolio & get brand deals</p>
-              </div>
-            </button>
-            <button onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'brand-register'});scrollToTop()}} style={{display:'flex',alignItems:'center',gap:16,padding:'16px',borderRadius:16,border:`1.5px solid ${T.bd}`,background:'#fff',cursor:'pointer',textAlign:'left',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.ok} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
-              <div style={{width:40,height:40,borderRadius:10,background:T.okl,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>🏢</div>
-              <div>
-                <p style={{fontWeight:700,color:T.n8,fontSize:15}}>I am a Brand</p>
-                <p style={{fontSize:12,color:T.t3}}>Find & hire local creators</p>
-              </div>
-            </button>
-          </div>
-          <button onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{display:'block',width:'100%',marginTop:20,background:'none',border:'none',color:T.t3,cursor:'pointer',fontSize:13,fontFamily:'inherit',fontWeight:500,textDecoration:'underline'}}>Continue as Guest</button>
-        </div>}
-      </div>
-      <button onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{position:'absolute',top:16,right:16,background:'rgba(0,0,0,.05)',border:'none',width:32,height:32,borderRadius:'50%',cursor:'pointer',fontSize:18,color:T.t2,display:'flex',alignItems:'center',justifyContent:'center'}}>×</button>
-    </div>
-  </div>;
-}
-
 
 // NOTIF PANEL
 function NotifPanel(){
