@@ -2236,6 +2236,7 @@ function LeaderboardPage(){
               {c.verified&&<div style={{width:24,height:24,borderRadius:'50%',background:'#3B82F6',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:12}}>✓</div>}
             </Card>;
           })}
+        </div>
         {filtered.length===0&&<Empty icon="🏆" title="No creators yet" sub="Be the first on the leaderboard!" ctaLabel="Get Listed" onCta={()=>go('apply')}/>}
       </div>
     </div>
