@@ -70,7 +70,7 @@ const fmt={
     return{pct:Math.min(100,Math.round((done/total)*100)),missing:missing.slice(0,4)}
   }
 };
-const top=()=>window.scrollTo({top:0,behavior:'smooth'});
+const scrollToTop=()=>window.scrollTo({top:0,behavior:'smooth'});
 const useVP=()=>{const[w,setW]=useState(window.innerWidth);useEffect(()=>{const h=()=>setW(window.innerWidth);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[]);return{mob:w<768,tab:w<1024,w}};
 const W=(max=1200)=>({maxWidth:max,margin:'0 auto',padding:'0 20px'});
 
