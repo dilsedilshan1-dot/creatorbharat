@@ -89,6 +89,19 @@ router.delete('/blog/:id', async (req, res) => {
   }
 });
 
+// PATCH /api/admin/blog/:id — publish / unpublish
+router.patch('/blog/:id', async (req, res) => {
+  try {
+    const blog = await prisma.blog.update({
+      where: { id: req.params.id },
+      data: { published: req.body.published }
+    });
+    res.json(blog);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/admin/payments — revenue report
 router.get('/payments', async (req, res) => {
   try {

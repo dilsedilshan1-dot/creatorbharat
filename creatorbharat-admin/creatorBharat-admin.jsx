@@ -436,6 +436,11 @@ function BlogAdminPage({toast}){
           {label:'Views',render:p=><span style={{fontSize:13,fontWeight:600,color:T.t1}}>{(p.views||0).toLocaleString()}</span>},
           {label:'Status',render:p=><Badge color={p.published?'green':'gray'}>{p.published?'Published':'Draft'}</Badge>},
           {label:'Actions',render:p=><div style={{display:'flex',gap:6}}>
+            <Btn sm variant={p.published?'ghost':'success'} onClick={()=>{
+              api('/admin/blog/'+p.id,{method:'PATCH',body:{published:!p.published}})
+                .then(()=>{toast(p.published?'Unpublished!':'Published! Now visible on site ✅','success');load();})
+                .catch(e=>toast(e.message,'error'));
+            }}>{p.published?'Unpublish':'Publish'}</Btn>
             <Btn sm variant="ghost" onClick={()=>toast('Edit coming soon!','info')}>Edit</Btn>
             <Btn sm variant="danger" onClick={()=>del(p.id)}>Delete</Btn>
           </div>},
