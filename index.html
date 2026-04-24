@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CreatorBharat — India Ka Creator Platform</title>
+  <meta name="description" content="India ka creator discovery platform. Professional portfolio banao, 340+ brands se connect karo. Bilkul free."/>
+  <meta property="og:title" content="CreatorBharat — Bharat ke Creators, Duniya ki Nazar Mein"/>
+  <meta property="og:image" content="https://creatorbharat.in/og-image.png"/>
+  <meta property="og:url" content="https://creatorbharat.in"/>
+  <link rel="icon" href="/favicon.ico"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    ::-webkit-scrollbar { width: 4px; } 
+    ::-webkit-scrollbar-thumb { background: #FF9933; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" src="/creatorBharat-v2.jsx" data-presets="react"></script>
+</body>
+</html>
