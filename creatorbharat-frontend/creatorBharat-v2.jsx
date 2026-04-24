@@ -2897,8 +2897,8 @@ function App(){
   );
 }
 
-window.addEventListener('load', function() {
+setTimeout(() => {
   ReactDOM.createRoot(document.getElementById('root')).render(
     React.createElement(App)
   );
-});
+}, 0);
