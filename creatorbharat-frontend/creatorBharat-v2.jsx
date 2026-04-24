@@ -631,7 +631,7 @@ function CampCard({campaign:c,onApply}){
       <div style={{flex:1}}>
         <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:6}}>{c.urgent&&<Bdg sm color="red">Urgent</Bdg>}{c.bidding&&<Bdg sm color="purple">Bidding</Bdg>}{niches.slice(0,2).map(n=><Bdg key={n} sm>{n}</Bdg>)}</div>
         <h3 style={{fontSize:15,fontWeight:700,color:T.n8,lineHeight:1.3}}>{c.title}</h3>
-        <p style={{fontSize:13,color:T.gd,fontWeight:600,marginTop:4}}>{c.brand}</p>
+        <p style={{fontSize:13,color:T.gd,fontWeight:600,marginTop:4}}>{typeof c.brand === 'object' && c.brand !== null ? c.brand.companyName : c.brand}</p>
       </div>
       <div style={{textAlign:'right',flexShrink:0}}><div style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:900,color:T.ok}}>{fmt.inr(c.budgetMin)}</div><div style={{fontSize:11,color:T.t3}}>to {fmt.inr(c.budgetMax)}</div></div>
     </div>
