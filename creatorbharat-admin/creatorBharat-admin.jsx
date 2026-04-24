@@ -212,15 +212,12 @@ function Sidebar({active,setActive,collapsed,setCollapsed}){
 
 // ── DASHBOARD PAGE ───────────────────────────────────────────────
 function DashboardPage({toast}){
-  const[stats,setStats]=useState(null);
+  const[stats,setStats]=useState({creators:0,brands:0,campaigns:0,applications:0,pending:0,revenue:0,blogs:0});
   const[loading,setLoading]=useState(true);
 
   useEffect(()=>{
     api('/admin/stats').then(setStats).catch(e=>toast(e.message,'error')).finally(()=>setLoading(false));
   },[]);
-
-  // Simulate stats if no backend connected
-  const s=stats||{creators:2437,brands:148,campaigns:23,applications:312,pending:14,revenue:84700,blogs:18};
 
   return <div className="fade">
     <div style={{marginBottom:24}}>
@@ -231,12 +228,12 @@ function DashboardPage({toast}){
     <div style={{height:3,background:'linear-gradient(90deg,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%)',borderRadius:3,marginBottom:24}}/>
 
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:14,marginBottom:28}}>
-      <Stat icon="👤" label="Total Creators" value={s.creators.toLocaleString()} sub={s.pending+' pending review'} color={T.saffron}/>
-      <Stat icon="🏢" label="Brands" value={s.brands} color="#3b82f6"/>
-      <Stat icon="📣" label="Live Campaigns" value={s.campaigns} color={T.green}/>
-      <Stat icon="📋" label="Applications" value={s.applications.toLocaleString()} color="#a855f7"/>
-      <Stat icon="💰" label="Total Revenue" value={'₹'+Math.round(s.revenue/100).toLocaleString()} sub="From Pro listings" color={T.saffron}/>
-      <Stat icon="📝" label="Blog Posts" value={s.blogs} color="#f59e0b"/>
+      <Stat icon="👤" label="Total Creators" value={stats.creators.toLocaleString()} sub={stats.pending+' pending review'} color={T.saffron}/>
+      <Stat icon="🏢" label="Brands" value={stats.brands} color="#3b82f6"/>
+      <Stat icon="📣" label="Live Campaigns" value={stats.campaigns} color={T.green}/>
+      <Stat icon="📋" label="Applications" value={stats.applications.toLocaleString()} color="#a855f7"/>
+      <Stat icon="💰" label="Total Revenue" value={'₹'+Math.round(stats.revenue/100).toLocaleString()} sub="From Pro listings" color={T.saffron}/>
+      <Stat icon="📝" label="Blog Posts" value={stats.blogs} color="#f59e0b"/>
     </div>
 
     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
@@ -244,7 +241,7 @@ function DashboardPage({toast}){
         <h3 style={{fontSize:15,fontWeight:700,color:T.t1,marginBottom:16}}>Quick Actions</h3>
         <div style={{display:'flex',flexDirection:'column',gap:9}}>
           {[
-            {label:'Review Pending Creators ('+s.pending+')',icon:'⏳',color:T.warn},
+            {label:'Review Pending Creators ('+stats.pending+')',icon:'⏳',color:T.warn},
             {label:'Post New Blog Article',icon:'✍️',color:T.saffron},
             {label:'Feature a Creator',icon:'⭐',color:'#a855f7'},
             {label:'Send Newsletter',icon:'📬',color:T.green},
@@ -291,15 +288,7 @@ function CreatorsAdminPage({toast}){
 
   const load=useCallback(()=>{
     setLoading(true);
-    api('/admin/creators?status='+(filter==='all'?'':filter)).then(d=>setCreators(d.creators||[])).catch(()=>{
-      // Demo data fallback
-      setCreators([
-        {id:'1',handle:'rahul-sharma',name:'Rahul Sharma',city:'Jaipur',state:'Rajasthan',followers:248000,engagementRate:4.8,score:88,verified:true,featured:true,trending:true,pro:true,status:'ACTIVE',niche:['Travel','Lifestyle']},
-        {id:'2',handle:'priya-mehta',name:'Priya Mehta',city:'Mumbai',state:'Maharashtra',followers:512000,engagementRate:6.2,score:94,verified:true,featured:false,trending:false,pro:true,status:'ACTIVE',niche:['Fashion','Beauty']},
-        {id:'3',handle:'arjun-kapoor',name:'Arjun Kapoor',city:'Bengaluru',state:'Karnataka',followers:890000,engagementRate:8.1,score:97,verified:true,featured:true,trending:true,pro:true,status:'ACTIVE',niche:['Tech','Gaming']},
-        {id:'4',handle:'new-creator',name:'Kavya Reddy',city:'Hyderabad',state:'Telangana',followers:15000,engagementRate:5.2,score:42,verified:false,featured:false,trending:false,pro:false,status:'PENDING',niche:['Food']},
-      ]);
-    }).finally(()=>setLoading(false));
+    api('/admin/creators?status='+(filter==='all'?'':filter)).then(d=>setCreators(d.creators||[])).catch(e=>toast(e.message,'error')).finally(()=>setLoading(false));
   },[filter]);
 
   useEffect(()=>load(),[load]);
@@ -393,30 +382,36 @@ function BlogAdminPage({toast}){
   const[posts,setPosts]=useState([]);
   const[showForm,setShowForm]=useState(false);
   const[form,setForm]=useState({title:'',category:'Creator Stories',body:'',excerpt:'',author:'CreatorBharat Team',image:'',tags:'',creatorHandle:''});
-  const[saving,setSaving]=useState(false);
-
   const CATS=['Creator Stories','Creator Tips','Brand Guides','Top Lists','Interviews','News'];
+  const[loading,setLoading]=useState(true);
 
-  useEffect(()=>{
-    // Demo data
-    setPosts([
-      {id:'1',title:'How Small-Town Creators Are Taking Over Indian Instagram',category:'Creator Stories',author:'CreatorBharat Team',views:12400,published:true,createdAt:'2026-03-15'},
-      {id:'2',title:'Your First Brand Deal: The Complete 2026 Guide',category:'Creator Tips',author:'Rahul Sharma',views:8700,published:true,createdAt:'2026-03-08'},
-      {id:'3',title:'Why Engagement Rate Beats Follower Count Every Time',category:'Brand Guides',author:'CreatorBharat Team',views:9100,published:true,createdAt:'2026-02-28'},
-    ]);
+  const load=useCallback(()=>{
+    setLoading(true);
+    api('/admin/blog').then(setPosts).catch(e=>toast(e.message,'error')).finally(()=>setLoading(false));
   },[]);
+
+  useEffect(()=>load(),[load]);
 
   const save=()=>{
     if(!form.title||!form.body){toast('Title and body required','error');return;}
     setSaving(true);
     api('/admin/blog',{method:'POST',body:{...form,tags:form.tags.split(',').map(t=>t.trim()).filter(Boolean),slug:form.title.toLowerCase().replace(/[^a-z0-9]+/g,'-')}})
-      .then(post=>{setPosts(p=>[post,...p]);setShowForm(false);toast('Blog post published!','success');})
-      .catch(()=>{
-        // Demo fallback
-        setPosts(p=>[{id:Date.now(),...form,views:0,published:true,createdAt:new Date().toISOString()},...p]);
-        setShowForm(false);toast('Post published! (demo mode)','success');
+      .then(post=>{
+        setPosts(p=>[post,...p]);
+        setShowForm(false);
+        toast('Blog post published!','success');
+        setForm({title:'',category:'Creator Stories',body:'',excerpt:'',author:'CreatorBharat Team',image:'',tags:'',creatorHandle:''});
       })
+      .catch(e=>toast(e.message,'error'))
       .finally(()=>setSaving(false));
+  };
+
+  const del=(id)=>{
+    if(confirm('Delete this post?')){
+      api('/admin/blog/'+id,{method:'DELETE'})
+        .then(()=>{toast('Deleted','success');load();})
+        .catch(e=>toast(e.message,'error'));
+    }
   };
 
   return <div className="fade">
@@ -430,6 +425,7 @@ function BlogAdminPage({toast}){
 
     <Card style={{padding:0,overflow:'hidden'}}>
       <Table
+        loading={loading}
         cols={[
           {label:'Title',render:p=><div>
             <p style={{fontSize:13,fontWeight:600,color:T.t1,marginBottom:2}}>{p.title}</p>
@@ -440,7 +436,7 @@ function BlogAdminPage({toast}){
           {label:'Status',render:p=><Badge color={p.published?'green':'gray'}>{p.published?'Published':'Draft'}</Badge>},
           {label:'Actions',render:p=><div style={{display:'flex',gap:6}}>
             <Btn sm variant="ghost" onClick={()=>toast('Edit coming soon!','info')}>Edit</Btn>
-            <Btn sm variant="danger" onClick={()=>setPosts(prev=>prev.filter(x=>x.id!==p.id))}>Delete</Btn>
+            <Btn sm variant="danger" onClick={()=>del(p.id)}>Delete</Btn>
           </div>},
         ]}
         rows={posts}
@@ -468,40 +464,86 @@ function BlogAdminPage({toast}){
   </div>;
 }
 
+// ── BRANDS PAGE ──────────────────────────────────────────────────
+function BrandsAdminPage({toast}){
+  const[brands,setBrands]=useState([]);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{
+    api('/admin/brands').then(setBrands).catch(e=>toast(e.message,'error')).finally(()=>setLoading(false));
+  },[]);
+  return <div className="fade">
+    <div style={{marginBottom:22}}>
+      <h1 style={{fontFamily:'Fraunces,serif',fontSize:24,fontWeight:900,color:T.t1,marginBottom:3}}>Brands</h1>
+      <p style={{color:T.t3,fontSize:13}}>{brands.length} registered brands</p>
+    </div>
+    <Card style={{padding:0,overflow:'hidden'}}>
+      <Table loading={loading} rows={brands}
+        cols={[
+          {label:'Company',render:b=><div>
+            <p style={{fontWeight:600,color:T.t1,fontSize:13}}>{b.companyName}</p>
+            <p style={{fontSize:11,color:T.t3}}>{b.industry} • {b.user?.email}</p>
+          </div>},
+          {label:'Contact',key:'contactName'},
+          {label:'Campaigns',render:b=><span>{b._count?.campaigns||0}</span>},
+          {label:'Verified',render:b=><Badge color={b.verified?'green':'gray'}>{b.verified?'YES':'NO'}</Badge>},
+          {label:'Joined',render:b=><span>{new Date(b.createdAt).toLocaleDateString()}</span>},
+        ]}
+      />
+    </Card>
+  </div>;
+}
+
+// ── CAMPAIGNS PAGE ───────────────────────────────────────────────
+function CampaignsAdminPage({toast}){
+  const[camps,setCamps]=useState([]);
+  const[loading,setLoading]=useState(true);
+  const load=()=>api('/admin/campaigns').then(setCamps).catch(e=>toast(e.message,'error')).finally(()=>setLoading(false));
+  useEffect(()=>load(),[]);
+  const del=id=>{if(confirm('Delete campaign?'))api('/admin/campaigns/'+id,{method:'DELETE'}).then(()=>{toast('Deleted','success');load();})};
+  return <div className="fade">
+    <div style={{marginBottom:22}}>
+      <h1 style={{fontFamily:'Fraunces,serif',fontSize:24,fontWeight:900,color:T.t1,marginBottom:3}}>Campaigns</h1>
+      <p style={{color:T.t3,fontSize:13}}>{camps.length} total campaigns</p>
+    </div>
+    <Card style={{padding:0,overflow:'hidden'}}>
+      <Table loading={loading} rows={camps}
+        cols={[
+          {label:'Campaign',render:c=><div>
+            <p style={{fontWeight:600,color:T.t1,fontSize:13}}>{c.title}</p>
+            <p style={{fontSize:11,color:T.t3}}>Brand: {c.brand?.companyName}</p>
+          </div>},
+          {label:'Budget',render:c=><span>₹{c.budgetMin/1000}K - {c.budgetMax/1000}K</span>},
+          {label:'Status',render:c=><Badge color={c.status==='LIVE'?'green':'gray'}>{c.status}</Badge>},
+          {label:'Slots',render:c=><span>{c.filled}/{c.slots}</span>},
+          {label:'Actions',render:c=><Btn sm variant="danger" onClick={()=>del(c.id)}>Delete</Btn>},
+        ]}
+      />
+    </Card>
+  </div>;
+}
+
 // ── PAYMENTS PAGE ────────────────────────────────────────────────
 function PaymentsAdminPage({toast}){
-  const[payments]=useState([
-    {id:'1',type:'PRO_LISTING',amount:4900,status:'PAID',creator:{name:'Rahul Sharma',handle:'rahul-sharma'},createdAt:'2026-03-15'},
-    {id:'2',type:'PRO_LISTING',amount:4900,status:'PAID',creator:{name:'Priya Mehta',handle:'priya-mehta'},createdAt:'2026-03-12'},
-    {id:'3',type:'CAMPAIGN_BOOST',amount:9900,status:'PAID',brand:{companyName:'MakeMyTrip'},createdAt:'2026-03-10'},
-    {id:'4',type:'FEATURED_SLOT',amount:19900,status:'PAID',brand:{companyName:'Nykaa'},createdAt:'2026-03-08'},
-    {id:'5',type:'PRO_LISTING',amount:4900,status:'PENDING',creator:{name:'New Creator',handle:'new-creator'},createdAt:'2026-03-18'},
-  ]);
-
-  const total=payments.filter(p=>p.status==='PAID').reduce((s,p)=>s+p.amount,0);
-
+  const[payments,setPayments]=useState([]);
+  const[total,setTotal]=useState(0);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{
+    api('/admin/payments').then(d=>{setPayments(d.payments||[]);setTotal(d.totalRevenue||0);}).catch(e=>toast(e.message,'error')).finally(()=>setLoading(false));
+  },[]);
   return <div className="fade">
     <div style={{marginBottom:22}}>
       <h1 style={{fontFamily:'Fraunces,serif',fontSize:24,fontWeight:900,color:T.t1,marginBottom:3}}>Payments</h1>
-      <p style={{color:T.t3,fontSize:13}}>Total Revenue: <span style={{color:T.saffron,fontWeight:700}}>{'₹'+(total/100).toFixed(0)}</span></p>
+      <p style={{color:T.t3,fontSize:13}}>Total Revenue: <span style={{color:T.saffron,fontWeight:700}}>{'₹'+total.toLocaleString()}</span></p>
     </div>
-
-    <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14,marginBottom:22}}>
-      <Stat icon="💰" label="Total Revenue" value={'₹'+(total/100).toFixed(0)} color={T.saffron}/>
-      <Stat icon="📋" label="Pro Listings" value={payments.filter(p=>p.type==='PRO_LISTING'&&p.status==='PAID').length} color={T.green}/>
-      <Stat icon="⚡" label="Pending" value={payments.filter(p=>p.status==='PENDING').length} color={T.warn}/>
-    </div>
-
     <Card style={{padding:0,overflow:'hidden'}}>
-      <Table
+      <Table loading={loading} rows={payments}
         cols={[
-          {label:'Type',render:p=><Badge color={p.type==='PRO_LISTING'?'orange':p.type==='CAMPAIGN_BOOST'?'blue':'purple'}>{p.type.replace('_',' ')}</Badge>},
-          {label:'Who',render:p=><span style={{fontSize:13,color:T.t1}}>{p.creator?.name||p.brand?.companyName||'-'}</span>},
-          {label:'Amount',render:p=><span style={{fontSize:13,fontWeight:700,color:T.saffron}}>{'₹'+(p.amount/100)}</span>},
-          {label:'Status',render:p=><Badge color={p.status==='PAID'?'green':'yellow'}>{p.status}</Badge>},
-          {label:'Date',render:p=><span style={{fontSize:12,color:T.t3}}>{new Date(p.createdAt).toLocaleDateString('en-IN')}</span>},
+          {label:'Type',render:p=><Badge color={p.type==='PRO_LISTING'?'orange':'blue'}>{p.type.replace('_',' ')}</Badge>},
+          {label:'Who',render:p=><span>{p.creator?.name||p.brand?.companyName||'-'}</span>},
+          {label:'Amount',render:p=><span style={{fontWeight:700,color:T.saffron}}>{'₹'+(p.amount/100)}</span>},
+          {label:'Status',render:p=><Badge color="green">{p.status}</Badge>},
+          {label:'Date',render:p=><span>{new Date(p.createdAt).toLocaleDateString()}</span>},
         ]}
-        rows={payments}
       />
     </Card>
   </div>;
@@ -509,39 +551,26 @@ function PaymentsAdminPage({toast}){
 
 // ── CONTACTS PAGE ────────────────────────────────────────────────
 function ContactsAdminPage({toast}){
-  const[contacts]=useState([
-    {id:'1',name:'Rohan Verma',email:'rohan@gmail.com',subject:'Creator listing query',message:'Main list karna chahta hoon, process kya hai?',read:false,createdAt:'2026-04-18'},
-    {id:'2',name:'TechCorp India',email:'marketing@techcorp.in',subject:'Brand collaboration',message:'We want to run a campaign with 5 tech creators.',read:true,createdAt:'2026-04-17'},
-    {id:'3',name:'Anjali Singh',email:'anjali@creator.com',subject:'Pro upgrade issue',message:'Payment ho gayi lekin Pro nahi mila.',read:false,createdAt:'2026-04-16'},
-  ]);
-
+  const[contacts,setContacts]=useState([]);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{
+    api('/admin/contacts').then(setContacts).catch(e=>toast(e.message,'error')).finally(()=>setLoading(false));
+  },[]);
   return <div className="fade">
     <div style={{marginBottom:22}}>
       <h1 style={{fontFamily:'Fraunces,serif',fontSize:24,fontWeight:900,color:T.t1,marginBottom:3}}>Contact Messages</h1>
-      <p style={{color:T.t3,fontSize:13}}>{contacts.filter(c=>!c.read).length} unread messages</p>
+      <p style={{color:T.t3,fontSize:13}}>{contacts.length} total messages</p>
     </div>
-    <div style={{display:'flex',flexDirection:'column',gap:12}}>
-      {contacts.map(c=>(
-        <Card key={c.id} style={{borderLeft:'3px solid '+(c.read?T.bd:T.saffron)}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10,flexWrap:'wrap',gap:8}}>
-            <div>
-              <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:3}}>
-                <span style={{fontWeight:700,color:T.t1,fontSize:14}}>{c.name}</span>
-                {!c.read&&<Badge color="orange">New</Badge>}
-              </div>
-              <span style={{fontSize:12,color:T.t3}}>{c.email}</span>
-            </div>
-            <span style={{fontSize:11,color:T.t3}}>{new Date(c.createdAt).toLocaleDateString('en-IN')}</span>
-          </div>
-          {c.subject&&<p style={{fontSize:12,fontWeight:600,color:T.saffron,marginBottom:6}}>{c.subject}</p>}
-          <p style={{fontSize:13,color:T.t2,lineHeight:1.6,marginBottom:12}}>{c.message}</p>
-          <div style={{display:'flex',gap:8}}>
-            <a href={'mailto:'+c.email+'?subject=Re: '+c.subject} style={{padding:'6px 14px',background:'linear-gradient(135deg,#FF9933,#FF6B00)',color:'#fff',borderRadius:7,fontSize:12,fontWeight:700,textDecoration:'none'}}>Reply via Email</a>
-            <button onClick={()=>toast('Marked as read','success')} style={{padding:'6px 14px',background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',color:T.t2,borderRadius:7,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:'inherit'}}>Mark Read</button>
-          </div>
-        </Card>
-      ))}
-    </div>
+    {loading?<p style={{color:T.t3}}>Loading...</p>:contacts.map(c=>(
+      <Card key={c.id} style={{marginBottom:12}}>
+        <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
+          <div><p style={{fontWeight:700,color:T.t1}}>{c.name}</p><p style={{fontSize:11,color:T.t3}}>{c.email}</p></div>
+          <span style={{fontSize:11,color:T.t3}}>{new Date(c.createdAt).toLocaleDateString()}</span>
+        </div>
+        <p style={{fontSize:12,fontWeight:700,color:T.saffron,marginBottom:4}}>{c.subject}</p>
+        <p style={{fontSize:13,color:T.t2,lineHeight:1.6}}>{c.message}</p>
+      </Card>
+    ))}
   </div>;
 }
 
@@ -561,15 +590,9 @@ function LoginPage({onLogin}){
         localStorage.setItem('cb_admin_token',data.token);
         onLogin(data.user);
       })
-      .catch(()=>{
-        // Demo login
-        if(email==='admin@creatorbharat.in'&&pass==='admin123'){
-          localStorage.setItem('cb_admin_token','demo-token');
-          onLogin({id:'admin',email,role:'ADMIN',name:'Admin'});
-        }else{
-          setErr('Invalid credentials. Try admin@creatorbharat.in / admin123');
-          setLoading(false);
-        }
+      .catch(err=>{
+        setErr(err.message || 'Login failed');
+        setLoading(false);
       });
   };
 
@@ -586,7 +609,6 @@ function LoginPage({onLogin}){
         <Input label="Password" value={pass} onChange={e=>setPass(e.target.value)} type="password" placeholder="Enter password"/>
         {err&&<p style={{color:'#ef4444',fontSize:12,marginBottom:12,marginTop:-8}}>{err}</p>}
         <Btn full loading={loading} onClick={login} style={{marginTop:6}}>Sign In</Btn>
-        <p style={{textAlign:'center',fontSize:11,color:'rgba(255,255,255,.3)',marginTop:14}}>Demo: admin@creatorbharat.in / admin123</p>
       </div>
     </div>
   </div>;
@@ -615,8 +637,8 @@ function App(){
   const pages={
     dashboard:<DashboardPage toast={toast}/>,
     creators:<CreatorsAdminPage toast={toast}/>,
-    brands:<div className="fade"><h1 style={{fontFamily:'Fraunces,serif',fontSize:24,fontWeight:900,color:T.t1}}>Brands</h1><p style={{color:T.t3,marginTop:8}}>Brand management — connect to backend</p></div>,
-    campaigns:<div className="fade"><h1 style={{fontFamily:'Fraunces,serif',fontSize:24,fontWeight:900,color:T.t1}}>Campaigns</h1><p style={{color:T.t3,marginTop:8}}>Campaign management — connect to backend</p></div>,
+    brands:<BrandsAdminPage toast={toast}/>,
+    campaigns:<CampaignsAdminPage toast={toast}/>,
     blog:<BlogAdminPage toast={toast}/>,
     payments:<PaymentsAdminPage toast={toast}/>,
     messages:<div className="fade"><h1 style={{fontFamily:'Fraunces,serif',fontSize:24,fontWeight:900,color:T.t1}}>Messages</h1><p style={{color:T.t3,marginTop:8}}>Direct messages — connect to backend</p></div>,
@@ -642,7 +664,7 @@ function App(){
       <div style={{padding:'14px 24px',borderBottom:'1px solid '+T.bd,display:'flex',justifyContent:'space-between',alignItems:'center',background:T.bg2,flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <div style={{width:6,height:6,borderRadius:'50%',background:T.green}}/>
-          <span style={{fontSize:12,color:T.t3}}>Backend: <span style={{color:T.warn}}>Demo Mode</span> — Connect API for live data</span>
+          <span style={{fontSize:12,color:T.t3}}>Backend: <span style={{color:T.ok}}>Live Connection</span> — Production Database Linked</span>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <span style={{fontSize:13,color:T.t2}}>{user.email}</span>

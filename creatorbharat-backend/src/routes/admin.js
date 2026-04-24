@@ -67,6 +67,28 @@ router.post('/blog', async (req, res) => {
   }
 });
 
+// GET /api/admin/blog — list all blog posts
+router.get('/blog', async (req, res) => {
+  try {
+    const blogs = await prisma.blog.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(blogs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/admin/blog/:id
+router.delete('/blog/:id', async (req, res) => {
+  try {
+    await prisma.blog.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/admin/payments — revenue report
 router.get('/payments', async (req, res) => {
   try {
@@ -92,6 +114,42 @@ router.get('/contacts', async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     res.json(contacts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/brands — list all brands
+router.get('/brands', async (req, res) => {
+  try {
+    const brands = await prisma.brand.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { email: true } }, _count: { select: { campaigns: true } } }
+    });
+    res.json(brands);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/campaigns — list all campaigns
+router.get('/campaigns', async (req, res) => {
+  try {
+    const campaigns = await prisma.campaign.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { brand: { select: { companyName: true } } }
+    });
+    res.json(campaigns);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/admin/campaigns/:id
+router.delete('/campaigns/:id', async (req, res) => {
+  try {
+    await prisma.campaign.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
