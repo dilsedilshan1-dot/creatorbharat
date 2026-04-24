@@ -7,30 +7,53 @@ try{const s=document.createElement('style');s.textContent=`@import url('https://
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:#1a1a1a;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#DC2626;border-radius:4px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#FF9431;border-radius:4px}
 img{max-width:100%;display:block}input,select,textarea,button{font-family:inherit}
+.glass{background:rgba(255,255,255,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3)}
+.glass-dark{background:rgba(13,13,13,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-@keyframes toastIn{from{opacity:0;transform:translateX(100px)}to{opacity:1;transform:none}}
 .au{animation:fadeUp .3s ease both}.ai{animation:fadeIn .2s ease both}.si{animation:scaleIn .25s ease both}
-.d1{animation-delay:.05s}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.1)}}
-.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
 .spin{animation:spin .8s linear infinite}
 `;document.head.appendChild(s);}catch(e){}
 
-// TOKENS
-const T={gd:'#DC2626',gl:'#EF4444',gd2:'#B91C1C',ga:'rgba(220,38,38,.08)',gab:'rgba(220,38,38,.15)',
-n9:'#0f0f0f',n8:'#1a1a1a',n7:'#2d2d2d',t1:'#1a1a1a',t2:'#555',t3:'#888',t4:'#aaa',
-bg:'#fff',bg2:'#FAFAF9',bg3:'#F5F4F2',bd:'#E8E6E3',bd2:'#D4D2CE',
-ok:'#16a34a',okl:'rgba(22,163,74,.1)',wn:'#D97706',wnl:'rgba(217,119,6,.1)',
-info:'#2563EB',infol:'rgba(37,99,235,.1)',
-sh1:'0 1px 4px rgba(0,0,0,.06)',sh2:'0 4px 16px rgba(0,0,0,.08)',sh3:'0 8px 32px rgba(0,0,0,.1)',sh4:'0 20px 60px rgba(0,0,0,.12)',
-gold:'#D97706',platinum:'#7C3AED',silver:'#9CA3AF',rising:'#6B7280'};
+// TOKENS (Modern Indian Glassmorphism)
+const T={
+  gd:'#FF9431', // Saffron (Modern)
+  gl:'#FFAB5E',
+  gd2:'#E67E22',
+  green:'#128807', // Indian Green
+  white:'#FFFFFF',
+  ga:'rgba(255,148,49,.08)',
+  gab:'rgba(255,148,49,.15)',
+  n9:'#050505',
+  n8:'#0d0d0d',
+  n7:'#1a1a1a',
+  t1:'#1a1a1a',
+  t2:'#444',
+  t3:'#777',
+  t4:'#aaa',
+  bg:'#fff',
+  bg2:'#FAFAF9',
+  bg3:'#F0EFEF',
+  bd:'rgba(0,0,0,.06)',
+  bd2:'rgba(0,0,0,.1)',
+  glass:'rgba(255,255,255,.7)',
+  glass2:'rgba(255,255,255,.4)',
+  sh1:'0 2px 8px rgba(0,0,0,.04)',
+  sh2:'0 8px 24px rgba(0,0,0,.08)',
+  sh3:'0 16px 48px rgba(0,0,0,.12)',
+  sh4:'0 24px 80px rgba(0,0,0,.15)',
+  ok:'#10b981',
+  okl:'rgba(16,185,129,.1)',
+  gold:'#D97706',
+  platinum:'#7C3AED',
+  silver:'#9CA3AF',
+  rising:'#6B7280'
+};
 
 // HELPERS
 const fmt={
@@ -214,6 +237,22 @@ function Modal({open,onClose,title,children,width=520}){
   return <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.55)',zIndex:8000,display:'flex',alignItems:'center',justifyContent:'center',padding:16,backdropFilter:'blur(4px)'}}><div className="si" onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:18,width:'100%',maxWidth:width,maxHeight:'90vh',overflowY:'auto',boxShadow:T.sh4}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'18px 24px',borderBottom:`1px solid ${T.bd}`,position:'sticky',top:0,background:'#fff',zIndex:1}}><h3 style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:700,color:T.n8}}>{title}</h3><button onClick={onClose} style={{background:T.bg3,border:'none',width:30,height:30,borderRadius:'50%',cursor:'pointer',fontSize:18,color:T.t2,display:'flex',alignItems:'center',justifyContent:'center'}}>x</button></div><div style={{padding:'22px 24px'}}>{children}</div></div></div>;
 }
 
+function Logo({sm,light,onClick}){
+  const sz=sm?32:42;
+  return <div onClick={onClick} style={{display:'flex',alignItems:'center',gap:sm?8:12,cursor:onClick?'pointer':'default',userSelect:'none'}}>
+    <div style={{position:'relative',width:sz,height:sz,background:light?'rgba(255,255,255,.1)':'#000',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:sm?14:18,color:'#fff',boxShadow:T.sh2,border:'1px solid rgba(255,255,255,.2)',overflow:'hidden'}}>
+      {/* Indian Flag Inspired Icon */}
+      <div style={{position:'absolute',top:0,left:0,right:0,height:'33%',background:'#FF9933'}}/>
+      <div style={{position:'absolute',top:'33%',left:0,right:0,height:'34%',background:'#FFFFFF'}}/>
+      <div style={{position:'absolute',top:'67%',left:0,right:0,height:'33%',background:'#138808'}}/>
+      <div style={{position:'relative',zIndex:1,color:'#000080',textShadow:'0 0 1px #fff'}}>CB</div>
+    </div>
+    <span style={{fontFamily:"'Fraunces',serif",fontSize:sm?20:28,fontWeight:900,color:light?'#fff':T.n8,letterSpacing:'-0.03em'}}>
+      Creator<span style={{color:T.gd}}>Bharat</span>
+    </span>
+  </div>;
+}
+
 function SH({eyebrow,title,sub,center,light,mb=36}){
   return <div style={{textAlign:center?'center':'left',marginBottom:mb}}>{eyebrow&&<p style={{fontSize:11,fontWeight:800,letterSpacing:'.1em',textTransform:'uppercase',color:T.gd,marginBottom:10}}>{eyebrow}</p>}<h2 style={{fontFamily:"'Fraunces',serif",fontSize:'clamp(24px,4vw,38px)',fontWeight:900,color:light?'#fff':T.n8,marginBottom:sub?10:0,lineHeight:1.15}}>{title}</h2>{sub&&<p style={{fontSize:15,color:light?'rgba(255,255,255,.75)':T.t2,maxWidth:center?540:'100%',margin:center?'0 auto':'0',lineHeight:1.7}}>{sub}</p>}</div>;
 }
@@ -261,10 +300,63 @@ function AuthModal(){
     setLoading(true);
     const r=await Auth.login(email,pass);
     setLoading(false);
-    if(r.ok){dsp({t:'LOGIN',u:r.user,role:r.role});toast(`Welcome back, ${r.user.name||r.user.companyName}!`,'success');dsp({t:'GO',p:r.role==='creator'?'dashboard':'brand-dashboard'})}
+    if(r.ok){
+      dsp({t:'LOGIN',u:r.user,role:r.role});
+      toast(`Welcome back, ${r.user.name||r.user.companyName}!`,'success');
+      const target=r.role==='creator'?'dashboard':r.role==='admin'?'admin-dashboard':'brand-dashboard';
+      dsp({t:'GO',p:target});
+    }
     else{toast(r.error,'error')}
   };
-  return <Modal open title="" onClose={()=>dsp({t:'UI',v:{authModal:false}})}><div style={{textAlign:'center',marginBottom:22}}><div style={{display:'inline-flex',background:T.bg2,borderRadius:10,padding:3}}>{[['login','Login'],['register','Register']].map(([id,lbl])=><button key={id} onClick={()=>setTab(id)} style={{padding:'8px 24px',borderRadius:8,border:'none',background:tab===id?'#fff':'transparent',color:tab===id?T.n8:T.t2,fontWeight:tab===id?700:500,cursor:'pointer',fontSize:14,fontFamily:'inherit',boxShadow:tab===id?T.sh1:'none',transition:'all .2s'}}>{lbl}</button>)}</div></div>{tab==='login'?<div><Fld label="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@email.com" required/><Fld label="Password" type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Enter password" required/><Btn full loading={loading} onClick={doLogin} lg>Login to CreatorBharat</Btn><p style={{textAlign:'center',fontSize:12,color:T.t3,marginTop:10}}>Demo: rahul@demo.in / demo123</p></div>:<div><p style={{textAlign:'center',fontSize:14,color:T.t2,marginBottom:18}}>Create your free account</p><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'apply'});top()}}>I am a Creator</Btn><div style={{margin:'12px 0',textAlign:'center',fontSize:13,color:T.t3}}>or</div><Btn full variant="outline" onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'brand-register'});top()}}>I am a Brand</Btn><p style={{textAlign:'center',marginTop:14}}><button onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{background:'none',border:'none',color:T.t3,cursor:'pointer',textDecoration:'underline',fontSize:12,fontFamily:'inherit'}}>Continue as Guest</button></p></div>}</Modal>;
+
+  return <div onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.6)',zIndex:8000,display:'flex',alignItems:'center',justifyContent:'center',padding:16,backdropFilter:'blur(8px)'}}>
+    <div className="si" onClick={e=>e.stopPropagation()} style={{background:'rgba(255,255,255,.9)',backdropFilter:'blur(20px)',borderRadius:24,width:'100%',maxWidth:440,overflow:'hidden',boxShadow:T.sh4,border:'1px solid rgba(255,255,255,.4)',position:'relative'}}>
+      {/* Flag Top Border */}
+      <div style={{position:'absolute',top:0,left:0,right:0,height:6,background:'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)'}}/>
+      
+      <div style={{padding:'40px 32px 32px'}}>
+        <div style={{textAlign:'center',marginBottom:32}}>
+          <div style={{display:'flex',justifyContent:'center',marginBottom:16}}><Logo/></div>
+          <h2 style={{fontFamily:"'Fraunces',serif",fontSize:24,color:T.n8,marginBottom:8}}>Welcome Back</h2>
+          <p style={{fontSize:14,color:T.t2}}>Bharat ke Creators, Duniya ki Nazar Mein.</p>
+        </div>
+
+        <div style={{display:'flex',background:T.bg2,borderRadius:12,padding:4,marginBottom:24,border:`1px solid ${T.bd}`}}>
+          {[['login','Login'],['register','Register']].map(([id,lbl])=><button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:'10px',borderRadius:8,border:'none',background:tab===id?'#fff':'transparent',color:tab===id?T.n8:T.t3,fontWeight:tab===id?700:500,cursor:'pointer',fontSize:14,fontFamily:'inherit',boxShadow:tab===id?T.sh1:'none',transition:'all .2s'}}>{lbl}</button>)}
+        </div>
+
+        {tab==='login'?<div className="ai">
+          <Fld label="Email Address" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@email.com" required/>
+          <Fld label="Password" type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Enter password" required/>
+          <div style={{textAlign:'right',marginBottom:20}}>
+            <button style={{background:'none',border:'none',color:T.gd,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:'inherit'}}>Forgot Password?</button>
+          </div>
+          <Btn full lg loading={loading} onClick={doLogin}>Sign In</Btn>
+          <p style={{textAlign:'center',fontSize:11,color:T.t3,marginTop:16,background:T.ga,padding:'8px',borderRadius:8}}>Demo: rahul@demo.in / demo123</p>
+        </div>:<div className="ai">
+          <p style={{textAlign:'center',fontSize:14,color:T.t2,marginBottom:20,lineHeight:1.6}}>Chahiye kya? Choose your account type to continue.</p>
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            <button onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'apply'});top()}} style={{display:'flex',alignItems:'center',gap:16,padding:'16px',borderRadius:16,border:`1.5px solid ${T.bd}`,background:'#fff',cursor:'pointer',textAlign:'left',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gd} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
+              <div style={{width:40,height:40,borderRadius:10,background:T.ga,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>🎨</div>
+              <div>
+                <p style={{fontWeight:700,color:T.n8,fontSize:15}}>I am a Creator</p>
+                <p style={{fontSize:12,color:T.t3}}>Build portfolio & get brand deals</p>
+              </div>
+            </button>
+            <button onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'brand-register'});top()}} style={{display:'flex',alignItems:'center',gap:16,padding:'16px',borderRadius:16,border:`1.5px solid ${T.bd}`,background:'#fff',cursor:'pointer',textAlign:'left',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.ok} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
+              <div style={{width:40,height:40,borderRadius:10,background:T.okl,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>🏢</div>
+              <div>
+                <p style={{fontWeight:700,color:T.n8,fontSize:15}}>I am a Brand</p>
+                <p style={{fontSize:12,color:T.t3}}>Find & hire local creators</p>
+              </div>
+            </button>
+          </div>
+          <button onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{display:'block',width:'100%',marginTop:20,background:'none',border:'none',color:T.t3,cursor:'pointer',fontSize:13,fontFamily:'inherit',fontWeight:500,textDecoration:'underline'}}>Continue as Guest</button>
+        </div>}
+      </div>
+      <button onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{position:'absolute',top:16,right:16,background:'rgba(0,0,0,.05)',border:'none',width:32,height:32,borderRadius:'50%',cursor:'pointer',fontSize:18,color:T.t2,display:'flex',alignItems:'center',justifyContent:'center'}}>×</button>
+    </div>
+  </div>;
 }
 
 // NOTIF PANEL
@@ -289,42 +381,39 @@ function Navbar(){
   useEffect(()=>{const h=()=>setScroll(window.scrollY>20);window.addEventListener('scroll',h);return()=>window.removeEventListener('scroll',h)},[]);
   const go=(p)=>{dsp({t:'GO',p});top();dsp({t:'UI',v:{mobileMenu:false,notifPanel:false}})};
   const unread=st.notifications.filter(n=>!n.read).length;
-  const isCreator=st.role==='creator',isBrand=st.role==='brand';
-  const links=isCreator?[['dashboard','Dashboard'],['monetize','Monetize 💰'],['campaigns','Campaigns'],['leaderboard','Leaderboard'],['blog','Blog']]:isBrand?[['creators','Find Creators'],['campaigns','Campaigns'],['brand-dashboard','Dashboard'],['blog','Blog']]:[['creators','Creators'],['campaigns','Campaigns'],['monetize','Monetize 💰'],['pricing','Pricing'],['about','About']];
+  const isCreator=st.role==='creator',isBrand=st.role==='brand',isAdmin=st.role==='admin';
+  const links=isAdmin?[['admin-dashboard','Admin'],['creators','Creators'],['campaigns','Campaigns'],['blog','Blog']]:isCreator?[['dashboard','Dashboard'],['monetize','Monetize 💰'],['campaigns','Campaigns'],['leaderboard','Leaderboard'],['blog','Blog']]:isBrand?[['creators','Find Creators'],['campaigns','Campaigns'],['brand-dashboard','Dashboard'],['blog','Blog']]:[['creators','Creators'],['campaigns','Campaigns'],['monetize','Monetize 💰'],['pricing','Pricing'],['about','About']];
 
   return <>
-    <nav style={{position:'sticky',top:0,zIndex:5000,background:scroll?'rgba(255,255,255,.96)':'#fff',backdropFilter:scroll?'blur(10px)':'none',borderBottom:`1px solid ${scroll?T.bd:'transparent'}`,transition:'all .2s',padding:'0 20px',height:56,display:'flex',alignItems:'center',gap:16}}>
-      <div onClick={()=>go('home')} style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',flexShrink:0}}>
-        <div style={{width:32,height:32,borderRadius:8,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:900,color:'#fff'}}>CB</div>
-        <span style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:900,color:T.n8}}>Creator<span style={{color:T.gd}}>Bharat</span></span>
-      </div>
-      {!mob&&<div style={{display:'flex',alignItems:'center',gap:2,flex:1,marginLeft:16}}>{links.map(([p,l])=><button key={p} onClick={()=>go(p)} style={{padding:'6px 12px',background:'none',border:'none',color:st.page===p?T.gd:T.t2,fontWeight:st.page===p?700:500,fontSize:14,cursor:'pointer',borderRadius:8,fontFamily:'inherit',transition:'color .15s'}}>{l}</button>)}</div>}
-      <div style={{display:'flex',alignItems:'center',gap:8,marginLeft:'auto'}}>
-        {st.compared.length>0&&!mob&&<button onClick={()=>go('compare')} style={{padding:'6px 12px',background:T.ga,border:`1px solid ${T.gab}`,borderRadius:8,color:T.gd,fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>Compare ({st.compared.length})</button>}
+    <nav style={{position:'sticky',top:0,zIndex:5000,background:scroll?'rgba(255,255,255,.98)':'#fff',backdropFilter:scroll?'blur(12px)':'none',borderBottom:`2px solid ${scroll?T.gd:'transparent'}`,transition:'all .3s cubic-bezier(0.4,0,0.2,1)',padding:mob?'0 16px':'0 32px',height:mob?64:72,display:'flex',alignItems:'center',gap:24,boxShadow:scroll?T.sh2:'none'}}>
+      <Logo onClick={()=>go('home')}/>
+      {!mob&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1,marginLeft:24}}>{links.map(([p,l])=><button key={p} onClick={()=>go(p)} style={{padding:'8px 16px',background:st.page===p?T.ga:'transparent',border:'none',color:st.page===p?T.gd:T.t2,fontWeight:st.page===p?800:600,fontSize:14,cursor:'pointer',borderRadius:10,fontFamily:'inherit',transition:'all .2s'}}>{l}</button>)}</div>}
+      <div style={{display:'flex',alignItems:'center',gap:12,marginLeft:'auto'}}>
         {st.user?<>
-          <button onClick={()=>dsp({t:'UI',v:{notifPanel:!st.ui.notifPanel,mobileMenu:false}})} style={{position:'relative',background:'none',border:'none',cursor:'pointer',padding:6,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <button onClick={()=>dsp({t:'UI',v:{notifPanel:!st.ui.notifPanel,mobileMenu:false}})} style={{position:'relative',background:T.bg2,border:`1px solid ${T.bd}`,cursor:'pointer',width:40,height:40,borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',transition:'all .2s'}}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.t2} strokeWidth="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
-            {unread>0&&<span style={{position:'absolute',top:2,right:2,width:15,height:15,background:T.gd,borderRadius:'50%',fontSize:9,fontWeight:900,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{unread>9?'9+':unread}</span>}
+            {unread>0&&<span style={{position:'absolute',top:-4,right:-4,minWidth:18,height:18,padding:'0 4px',background:T.gd,borderRadius:9,fontSize:10,fontWeight:900,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid #fff'}}>{unread>9?'9+':unread}</span>}
           </button>
           <div style={{position:'relative'}}>
-            <button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu,notifPanel:false}})} style={{display:'flex',alignItems:'center',gap:7,background:T.bg2,border:`1px solid ${T.bd}`,borderRadius:10,padding:'6px 12px 6px 8px',cursor:'pointer',fontFamily:'inherit'}}>
-              <img src={(st.creatorProfile?.photo||st.creatorProfile?.avatarUrl)||`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=DC2626&color=fff`} style={{width:24,height:24,borderRadius:'50%',objectFit:'cover'}} alt="" onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=DC2626&color=fff`}}/>
-              {!mob&&<span style={{fontSize:13,fontWeight:600,color:T.n8,maxWidth:90,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{st.user.name||st.user.companyName}</span>}
-              <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke={T.t3} strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu,notifPanel:false}})} style={{display:'flex',alignItems:'center',gap:10,background:T.bg2,border:`1px solid ${T.bd}`,borderRadius:14,padding:'6px 14px 6px 8px',cursor:'pointer',fontFamily:'inherit',transition:'all .2s'}}>
+              <img src={(st.creatorProfile?.photo||st.creatorProfile?.avatarUrl)||`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=FF9431&color=fff`} style={{width:32,height:32,borderRadius:10,objectFit:'cover',border:`1.5px solid ${T.gd}`}} alt="" />
+              {!mob&&<span style={{fontSize:14,fontWeight:700,color:T.n8,maxWidth:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{st.user.name||st.user.companyName}</span>}
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke={T.t3} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
-            {st.ui.mobileMenu&&<div className="sd" style={{position:'absolute',right:0,top:'calc(100% + 8px)',background:'#fff',border:`1px solid ${T.bd}`,borderRadius:12,minWidth:180,boxShadow:T.sh3,zIndex:100,overflow:'hidden'}}>
-              {[isCreator&&['Dashboard','dashboard'],isCreator&&['Applications','applications'],isBrand&&['Brand Dashboard','brand-dashboard'],isBrand&&['Post Campaign','campaign-builder'],['Settings','settings'],['Saved','saved']].filter(Boolean).map(([l,p])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'11px 16px',background:'none',border:'none',textAlign:'left',fontSize:13,color:T.n8,cursor:'pointer',fontFamily:'inherit',borderBottom:`1px solid ${T.bg3}`,fontWeight:500}}>{l}</button>)}
-              <button onClick={()=>{dsp({t:'LOGOUT'});dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'11px 16px',background:'none',border:'none',textAlign:'left',fontSize:13,color:T.gd,cursor:'pointer',fontFamily:'inherit',fontWeight:700}}>Logout</button>
+            {st.ui.mobileMenu&&<div className="si" style={{position:'absolute',right:0,top:'calc(100% + 12px)',background:'#fff',border:`1px solid ${T.bd}`,borderRadius:18,minWidth:220,boxShadow:T.sh4,zIndex:100,overflow:'hidden',padding:8}}>
+              {[isAdmin&&['Admin Dashboard','admin-dashboard'],isCreator&&['Dashboard','dashboard'],isCreator&&['Applications','applications'],isBrand&&['Brand Dashboard','brand-dashboard'],isBrand&&['Post Campaign','campaign-builder'],['Settings','settings'],['Saved Items','saved']].filter(Boolean).map(([l,p])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'12px 16px',background:st.page===p?T.ga:'none',border:'none',textAlign:'left',fontSize:14,color:st.page===p?T.gd:T.n8,cursor:'pointer',fontFamily:'inherit',borderRadius:10,fontWeight:st.page===p?700:500,marginBottom:2}}>{l}</button>)}
+              <div style={{height:1,background:T.bd,margin:'8px 0'}}/>
+              <button onClick={()=>{dsp({t:'LOGOUT'});dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'12px 16px',background:'none',border:'none',textAlign:'left',fontSize:14,color:'#EF4444',cursor:'pointer',fontFamily:'inherit',fontWeight:700,borderRadius:10}}>Logout</button>
             </div>}
           </div>
         </>:<>
-          <Btn sm variant="ghost" onClick={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})}>Login</Btn>
-          <Btn sm onClick={()=>{go('apply')}}>Get Listed</Btn>
+          <Btn lg variant="ghost" onClick={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})} style={{border:'none'}}>Login</Btn>
+          <Btn lg onClick={()=>{go('apply')}} style={{background:'linear-gradient(135deg,#FF9431,#FF6B00)',color:'#fff',boxShadow:T.sh2,fontWeight:800}}>Join Now</Btn>
         </>}
-        {mob&&<button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu}})} style={{background:'none',border:'none',cursor:'pointer',padding:6,display:'flex',flexDirection:'column',gap:4}}>{[0,1,2].map(i=><span key={i} style={{display:'block',width:20,height:2,background:T.n8,borderRadius:1}}/>)}</button>}
+        {mob&&<button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu}})} style={{background:T.bg2,border:'none',cursor:'pointer',width:44,height:44,borderRadius:12,display:'flex',flexDirection:'column',gap:4,alignItems:'center',justifyContent:'center'}}>{[0,1,2].map(i=><span key={i} style={{display:'block',width:22,height:2.5,background:T.n8,borderRadius:1}}/>)}</button>}
       </div>
     </nav>
-    {mob&&st.ui.mobileMenu&&!st.user&&<div style={{position:'fixed',inset:0,zIndex:4999,background:'rgba(0,0,0,.4)'}} onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})}><div onClick={e=>e.stopPropagation()} style={{position:'absolute',top:0,right:0,width:260,height:'100%',background:'#fff',boxShadow:T.sh4,padding:'20px 0'}}><div style={{padding:'0 20px 16px',borderBottom:`1px solid ${T.bd}`,marginBottom:12,display:'flex',alignItems:'center',gap:8}}><div style={{width:32,height:32,borderRadius:8,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:900,color:'#fff'}}>CB</div><span style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:900,color:T.n8}}>Creator<span style={{color:T.gd}}>Bharat</span></span></div>{links.map(([p,l])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'13px 20px',background:'none',border:'none',textAlign:'left',fontSize:15,color:T.n8,cursor:'pointer',fontFamily:'inherit',fontWeight:500}}>{l}</button>)}<div style={{padding:'16px 20px',borderTop:`1px solid ${T.bd}`,marginTop:12,display:'flex',flexDirection:'column',gap:10}}><Btn full onClick={()=>{dsp({t:'UI',v:{authModal:true,authTab:'login',mobileMenu:false}})}}>Login</Btn><Btn full variant="outline" onClick={()=>{go('apply');dsp({t:'UI',v:{mobileMenu:false}})}}>Get Listed Free</Btn></div></div></div>}
+    {mob&&st.ui.mobileMenu&&!st.user&&<div style={{position:'fixed',inset:0,zIndex:4999,background:'rgba(0,0,0,.6)',backdropFilter:'blur(4px)'}} onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})}><div className="si" onClick={e=>e.stopPropagation()} style={{position:'absolute',top:10,right:10,left:10,background:'#fff',borderRadius:24,boxShadow:T.sh4,padding:'24px',display:'flex',flexDirection:'column',gap:8}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}><Logo onClick={()=>go('home')}/><button onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})} style={{width:36,height:36,borderRadius:'50%',background:T.bg2,border:'none',fontSize:20}}>×</button></div>{links.map(([p,l])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:st.page===p?T.ga:'transparent',border:'none',textAlign:'left',fontSize:16,color:st.page===p?T.gd:T.n8,cursor:'pointer',fontFamily:'inherit',fontWeight:st.page===p?800:500,borderRadius:12}}>{l}</button>)}<div style={{height:1,background:T.bd,margin:'12px 0'}}/><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:true,authTab:'login',mobileMenu:false}})}}>Sign In</Btn><Btn full lg variant="outline" onClick={()=>{go('apply');dsp({t:'UI',v:{mobileMenu:false}})}} style={{border:`2px solid ${T.gd}`}}>Get Listed Free</Btn></div></div>}
     {st.ui.notifPanel&&<NotifPanel/>}
   </>;
 }
@@ -335,19 +424,38 @@ function Footer(){
   const go=(p)=>{dsp({t:'GO',p});top()};
   const[email,setEmail]=useState('');const[ok,setOk]=useState(false);
   const sub=()=>{if(!email.includes('@'))return;const ex=LS.get('cb_newsletter',[]);if(!ex.find(e=>e.email===email))LS.push('cb_newsletter',{email,date:new Date().toISOString()});setOk(true);setEmail('')};
-  return <footer style={{background:T.n9,color:'rgba(255,255,255,.7)',paddingTop:52}}>
-    <div style={{...W(),paddingBottom:0}}>
-      <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'2fr 1fr 1fr 1fr',gap:40,marginBottom:44}}>
-        <div><div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}><div style={{width:36,height:36,borderRadius:9,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:900,color:'#fff'}}>CB</div><span style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:900,color:'#fff'}}>Creator<span style={{color:T.gd}}>Bharat</span></span></div><p style={{fontSize:14,lineHeight:1.7,marginBottom:16,maxWidth:280}}>Bharat ke Creators, Duniya ki Nazar Mein. India's creator discovery platform connecting local talent with leading brands.</p><p style={{fontSize:13,color:'rgba(255,255,255,.4)'}}>📍 Jaipur, Rajasthan 302001</p><p style={{fontSize:13,color:'rgba(255,255,255,.4)',marginTop:4}}>✉ hello@creatorbharat.in</p></div>
-        {[{t:'Platform',l:[['creators','Find Creators'],['campaigns','Campaigns'],['leaderboard','Leaderboard'],['rate-calc','Rate Calculator'],['pricing','Pricing']]},{t:'Resources',l:[['blog','Blog'],['about','About'],['contact','Contact']]},{t:'Join',l:[['apply','Creator Sign Up'],['brand-register','Brand Sign Up']]}].map(col=><div key={col.t}><h4 style={{fontSize:12,fontWeight:700,color:'rgba(255,255,255,.4)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:14}}>{col.t}</h4>{col.l.map(([p,l])=><button key={p} onClick={()=>go(p)} style={{display:'block',background:'none',border:'none',color:'rgba(255,255,255,.6)',fontSize:14,cursor:'pointer',marginBottom:10,padding:0,textAlign:'left',fontFamily:'inherit'}}>{l}</button>)}</div>)}
+  return <footer style={{background:'#050505',color:'rgba(255,255,255,.6)',paddingTop:mob?48:80,position:'relative',overflow:'hidden'}}>
+    <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%)',opacity:.3}}/>
+    <div style={W()}>
+      <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'2fr 1fr 1fr 1fr',gap:mob?40:60,paddingBottom:48}}>
+        <div style={{maxWidth:320}}>
+          <Logo light onClick={()=>go('home')}/>
+          <p style={{fontSize:15,lineHeight:1.7,marginTop:24,color:'rgba(255,255,255,.5)'}}>India's premier creator discovery ecosystem. Empowering local talent from Jaipur to the world.</p>
+          <div style={{display:'flex',gap:16,marginTop:24}}>
+            {['📱','🐦','📸','🎥'].map((icon,i)=><div key={i} style={{width:40,height:40,borderRadius:12,background:'rgba(255,255,255,.05)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,cursor:'pointer',border:'1px solid rgba(255,255,255,.1)'}}>{icon}</div>)}
+          </div>
+        </div>
+        {[{t:'Platform',l:[['creators','Find Creators'],['campaigns','Campaigns'],['leaderboard','Leaderboard'],['rate-calc','Calculator']]},{t:'Company',l:[['about','Our Story'],['blog','Latest News'],['contact','Contact Us']]},{t:'Resources',l:[['pricing','Pricing Plans'],['apply','Join as Creator'],['brand-register','For Brands']]}].map(col=><div key={col.t}><h4 style={{fontSize:13,fontWeight:800,color:'#fff',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:24}}>{col.t}</h4>{col.l.map(([p,l])=><button key={p} onClick={()=>go(p)} style={{display:'block',background:'none',border:'none',color:'rgba(255,255,255,.5)',fontSize:15,cursor:'pointer',marginBottom:14,padding:0,textAlign:'left',fontFamily:'inherit',transition:'color .2s'}} onMouseEnter={e=>e.target.style.color=T.gd} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,.5)'}>{l}</button>)}</div>)}
       </div>
-      <div style={{borderTop:'1px solid rgba(255,255,255,.1)',padding:'28px 0',display:'flex',flexDirection:mob?'column':'row',alignItems:mob?'flex-start':'center',gap:16}}>
-        <div style={{flex:1}}><h4 style={{color:'#fff',fontFamily:"'Fraunces',serif",fontSize:17,fontWeight:700,marginBottom:4}}>Creator newsletter</h4><p style={{fontSize:13,color:'rgba(255,255,255,.4)'}}>Tips, brand deals & updates for creators.</p></div>
-        {ok?<p style={{color:T.ok,fontWeight:600,fontSize:14}}>Subscribed!</p>:<div style={{display:'flex',gap:8}}><input value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" style={{padding:'10px 14px',borderRadius:8,border:'1px solid rgba(255,255,255,.15)',background:'rgba(255,255,255,.08)',color:'#fff',fontSize:13,fontFamily:'inherit',outline:'none',width:200}} onKeyDown={e=>e.key==='Enter'&&sub()}/><Btn onClick={sub}>Subscribe</Btn></div>}
+      
+      <div style={{borderTop:'1px solid rgba(255,255,255,.08)',padding:'40px 0',display:'flex',flexDirection:mob?'column':'row',justifyContent:'space-between',alignItems:mob?'flex-start':'center',gap:24}}>
+        <div style={{maxWidth:400}}>
+          <h4 style={{color:'#fff',fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:800,marginBottom:8}}>Join the Creator Newsletter</h4>
+          <p style={{fontSize:14,color:'rgba(255,255,255,.4)'}}>Weekly insights on brand deals and creator economy trends in India.</p>
+        </div>
+        <div style={{display:'flex',gap:10,width:mob?'100%':'auto'}}>
+          {ok?<div style={{padding:'12px 24px',background:'rgba(16,185,129,.1)',color:T.ok,borderRadius:12,fontWeight:700,fontSize:14,border:'1px solid rgba(16,185,129,.2)'}}>✓ Subscribed Successfully!</div>:<>
+            <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" style={{padding:'14px 18px',borderRadius:12,border:'1px solid rgba(255,255,255,.1)',background:'rgba(255,255,255,.05)',color:'#fff',fontSize:14,fontFamily:'inherit',outline:'none',width:mob?'100%':240}} />
+            <Btn onClick={sub} lg style={{background:'linear-gradient(135deg,#FF9431,#FF6B00)',border:'none',color:'#fff',fontWeight:800}}>Join</Btn>
+          </>}
+        </div>
       </div>
-      <div style={{borderTop:'1px solid rgba(255,255,255,.08)',padding:'18px 0',display:'flex',flexDirection:mob?'column':'row',justifyContent:'space-between',alignItems:mob?'flex-start':'center',gap:8}}>
-        <p style={{fontSize:12,color:'rgba(255,255,255,.3)'}}>© 2026 CreatorBharat Technologies Pvt. Ltd. Made with ♥ in Jaipur</p>
-        <div style={{display:'flex',gap:16}}>{['Privacy Policy','Terms of Service'].map(l=><span key={l} style={{fontSize:12,color:'rgba(255,255,255,.3)',cursor:'pointer'}}>{l}</span>)}</div>
+      
+      <div style={{borderTop:'1px solid rgba(255,255,255,.08)',padding:'24px 0',display:'flex',flexDirection:mob?'column':'row',justifyContent:'space-between',alignItems:'center',gap:16}}>
+        <p style={{fontSize:13,color:'rgba(255,255,255,.3)',fontWeight:500}}>© 2026 CreatorBharat Technologies. Proudly Made in 🇮🇳 Jaipur</p>
+        <div style={{display:'flex',gap:24}}>
+          {['Privacy Policy','Terms','Security'].map(l=><span key={l} style={{fontSize:13,color:'rgba(255,255,255,.3)',cursor:'pointer',fontWeight:500}}>{l}</span>)}
+        </div>
       </div>
     </div>
   </footer>;
@@ -685,35 +793,74 @@ function HomePage(){
   const featured=creators.filter(c=>c.featured).slice(0,6);
 
   return <PL>
-    <section style={{background:'#0d0d0d',minHeight:mob?'auto':'88vh',display:'flex',alignItems:'center',padding:mob?'70px 20px 56px':'0 20px',position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',top:0,left:0,right:0,height:4,background:'linear-gradient(90deg,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%)',opacity:.7}}/>
-      <div style={{position:'absolute',top:-100,right:-100,width:500,height:500,borderRadius:'50%',background:'rgba(255,153,51,.05)',pointerEvents:'none'}}/>
+    <section style={{background:'linear-gradient(135deg,#0d0d0d,#1a0800)',minHeight:mob?'auto':'92vh',display:'flex',alignItems:'center',padding:mob?'80px 20px 64px':'0 20px',position:'relative',overflow:'hidden'}}>
+      {/* Decorative Elements */}
+      <div style={{position:'absolute',top:0,left:0,right:0,height:6,background:'linear-gradient(90deg,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%)',opacity:.9,zIndex:10}}/>
+      <div style={{position:'absolute',top:'15%',right:'-5%',width:mob?300:600,height:mob?300:600,borderRadius:'50%',background:'radial-gradient(circle,rgba(255,153,51,.12) 0%,rgba(255,153,51,0) 70%)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:'10%',left:'-5%',width:mob?250:500,height:mob?250:500,borderRadius:'50%',background:'radial-gradient(circle,rgba(19,136,8,.08) 0%,rgba(19,136,8,0) 70%)',pointerEvents:'none'}}/>
+      
       <div style={{...W(),position:'relative',zIndex:1}}>
-        <div style={{maxWidth:680}}>
-          <div className="au" style={{display:'inline-flex',alignItems:'center',gap:8,marginBottom:18,padding:'6px 14px',borderRadius:20,background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)'}}>
-            <span style={{fontSize:10}}>🇮🇳</span>
-            <span style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,.8)',letterSpacing:'.08em',textTransform:'uppercase'}}>India Ka Creator Platform</span>
+        <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'1.2fr 1fr',gap:60,alignItems:'center'}}>
+          <div style={{maxWidth:680}}>
+            <div className="au" style={{display:'inline-flex',alignItems:'center',gap:10,marginBottom:24,padding:'8px 16px',borderRadius:24,background:'rgba(255,255,255,.08)',border:'1px solid rgba(255,255,255,.12)',backdropFilter:'blur(10px)'}}>
+              <span style={{fontSize:14}}>🇮🇳</span>
+              <span style={{fontSize:12,fontWeight:800,color:'rgba(255,255,255,.9)',letterSpacing:'.1em',textTransform:'uppercase'}}>India's #1 Creator Economy Platform</span>
+            </div>
+            
+            <h1 className="au d1" style={{fontFamily:"'Fraunces',serif",fontSize:mob?'clamp(38px,10vw,52px)':'clamp(52px,6vw,82px)',fontWeight:900,color:'#fff',lineHeight:1,marginBottom:24,letterSpacing:'-0.02em'}}>
+              Bharat Ke Creators,<br/>
+              <span style={{background:'linear-gradient(90deg,#FF9933,#FFD1A4)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Duniya Ki Nazar Mein.</span>
+            </h1>
+            
+            <p className="au d2" style={{fontSize:mob?16:20,color:'rgba(255,255,255,.65)',lineHeight:1.6,maxWidth:540,marginBottom:40,fontWeight:500}}>
+              Empowering 2,400+ local creators with professional portfolios and direct brand collaborations. Join the revolution today.
+            </p>
+            
+            <div className="au d3" style={{display:'flex',gap:16,flexWrap:'wrap',marginBottom:48}}>
+              <Btn lg onClick={()=>go('apply')} style={{padding:'18px 36px',fontSize:16,background:'linear-gradient(135deg,#FF9431,#FF6B00)',border:'none',color:'#fff',fontWeight:800,boxShadow:'0 10px 30px rgba(255,148,49,.3)'}}>Get Listed Free 🚀</Btn>
+              <Btn lg variant="ghost" style={{padding:'18px 36px',fontSize:16,color:'#fff',borderColor:'rgba(255,255,255,.3)',fontWeight:700}} onClick={()=>go('creators')}>Explore Talent</Btn>
+            </div>
+            
+            <div className="au d4" style={{display:'flex',gap:mob?24:48,flexWrap:'wrap',paddingTop:20,borderTop:'1px solid rgba(255,255,255,.1)'}}>
+              {[
+                [totalC.toLocaleString(),'Active Creators','🎨'],
+                [totalCp+'+','Brand Campaigns','🏢'],
+                ['₹8Cr+','Paid to Creators','💰']
+              ].map(([v,l,i])=><div key={l}>
+                <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+                   <span style={{fontSize:18}}>{i}</span>
+                   <span style={{fontFamily:"'Fraunces',serif",fontSize:mob?22:30,fontWeight:900,color:'#fff',lineHeight:1}}>{v}</span>
+                </div>
+                <div style={{fontSize:12,color:'rgba(255,255,255,.4)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.05em'}}>{l}</div>
+              </div>)}
+            </div>
           </div>
-          <h1 className="au d1" style={{fontFamily:"'Fraunces',serif",fontSize:mob?'clamp(34px,9vw,48px)':'clamp(44px,5vw,66px)',fontWeight:900,color:'#fff',lineHeight:1.08,marginBottom:20}}>
-            Bharat ke Creators,
-            <br/>
-            <span style={{color:'#FF9933'}}>Duniya ki Nazar Mein</span>
-          </h1>
-          <p className="au d2" style={{fontSize:mob?15:17,color:'rgba(255,255,255,.6)',lineHeight:1.75,maxWidth:500,marginBottom:32}}>
-            India ka creator discovery platform. Professional portfolio banao, 340+ brands se connect karo. Bilkul free.
-          </p>
-          <div className="au d3" style={{display:'flex',gap:12,flexWrap:'wrap',marginBottom:40}}>
-            <Btn lg onClick={()=>go('apply')} style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff',fontWeight:800}}>Get Listed Free</Btn>
-            <Btn lg variant="ghost" style={{color:'rgba(255,255,255,.8)',borderColor:'rgba(255,255,255,.2)'}} onClick={()=>go('creators')}>Browse Creators</Btn>
-          </div>
-          <div className="au d4" style={{display:'flex',gap:mob?20:32,flexWrap:'wrap'}}>
-            {[[totalC.toLocaleString(),'Creators'],[totalCp+'+','Campaigns'],['50+','Cities'],['8Cr+','Paid Out']].map(function(item){
-              return React.createElement('div',{key:item[1]},
-                React.createElement('div',{style:{fontFamily:"'Fraunces',serif",fontSize:mob?20:28,fontWeight:900,color:'#FF9933',lineHeight:1}},item[0]),
-                React.createElement('div',{style:{fontSize:11,color:'rgba(255,255,255,.4)',marginTop:3}},item[1])
-              );
-            })}
-          </div>
+
+          {!mob&&<div className="au d3" style={{position:'relative'}}>
+             <div className="glass" style={{padding:'32px',borderRadius:32,background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.1)',boxShadow:T.sh4}}>
+                <div style={{display:'flex',gap:16,alignItems:'center',marginBottom:24}}>
+                   <div style={{width:64,height:64,borderRadius:16,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,color:'#fff',fontWeight:900}}>CB</div>
+                   <div>
+                      <h4 style={{fontSize:20,fontWeight:800,color:'#fff'}}>Live Campaign</h4>
+                      <p style={{fontSize:14,color:'rgba(255,255,255,.5)'}}>Active Brand Deals</p>
+                   </div>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',gap:16}}>
+                   {[
+                     {b:'Nykaa',t:'Festive Glow Up',p:'₹25K - 75K'},
+                     {b:'boAt',t:'Airdopes Launch',p:'₹15K - 50K'},
+                     {b:'Swiggy',t:'Instamart Reels',p:'₹10K - 30K'}
+                   ].map((c,i)=><div key={i} style={{padding:'16px',background:'rgba(255,255,255,.03)',borderRadius:16,border:'1px solid rgba(255,255,255,.05)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                      <div><p style={{fontSize:12,color:T.gd,fontWeight:800,textTransform:'uppercase'}}>{c.b}</p><p style={{fontSize:15,color:'#fff',fontWeight:600}}>{c.t}</p></div>
+                      <div style={{fontSize:14,fontWeight:800,color:T.ok}}>{c.p}</div>
+                   </div>)}
+                </div>
+                <Btn full lg style={{marginTop:24,background:'#fff',color:'#000',border:'none'}}>View All Opportunities</Btn>
+             </div>
+             {/* Decorative Badges */}
+             <div style={{position:'absolute',top:-20,right:-20,padding:'12px 20px',background:'#FF9431',color:'#fff',borderRadius:16,fontWeight:900,fontSize:14,boxShadow:T.sh3,transform:'rotate(5deg)'}}>Trending 🔥</div>
+             <div style={{position:'absolute',bottom:-20,left:-20,padding:'12px 20px',background:'#138808',color:'#fff',borderRadius:16,fontWeight:900,fontSize:14,boxShadow:T.sh3,transform:'rotate(-5deg)'}}>Verified 🛡️</div>
+          </div>}
         </div>
       </div>
     </section>
@@ -1017,317 +1164,154 @@ function CreatorProfilePage(){
     toast('Message sent to '+c.name,'success');
   };
 
-  var packages=[
+  const packages=[
     {name:'Starter',emoji:'📦',price:fmt.inr(c.rateMin||10000),items:['1 Post','2 Stories','Basic caption'],color:'#138808',pop:false},
-    {name:'Pro',emoji:'⭐',price:fmt.inr(Math.round((Number(c.rateMin||10000)+Number(c.rateMax||30000))/2)),items:['2 Reels','5 Stories','Custom caption','2 revisions'],color:'#FF9933',pop:true},
+    {name:'Pro',emoji:'⭐',price:fmt.inr(Math.round((Number(c.rateMin||10000)+Number(c.rateMax||30000))/2)),items:['2 Reels','5 Stories','Custom caption','2 revisions'],color:'#FF9431',pop:true},
     {name:'Premium',emoji:'👑',price:fmt.inr(c.rateMax||50000),items:['3 Reels','10 Stories','YouTube mention','Usage rights','Campaign report'],color:'#7C3AED',pop:false},
   ];
 
-  return <PL>
-    <div style={{height:mob?190:300,background:'linear-gradient(135deg,#0a0a0a,#1a0800)',position:'relative',overflow:'hidden'}}>
-      {c.coverUrl&&<img src={c.coverUrl} style={{width:'100%',height:'100%',objectFit:'cover',opacity:.7}} alt="" onError={function(e){e.target.style.display='none';}}/>}
-      <div style={{position:'absolute',inset:0,background:'linear-gradient(to bottom,rgba(0,0,0,.15),rgba(0,0,0,.7))'}}/>
-      <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:'linear-gradient(90deg,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%)'}}/>
-      <div style={{position:'absolute',top:14,left:16,right:16,display:'flex',justifyContent:'space-between'}}>
-        <button onClick={function(){go('creators');}} style={{padding:'7px 14px',background:'rgba(0,0,0,.5)',backdropFilter:'blur(8px)',border:'1px solid rgba(255,255,255,.15)',borderRadius:8,color:'rgba(255,255,255,.85)',fontSize:12,cursor:'pointer',fontFamily:'inherit'}}>Back</button>
-        <div style={{display:'flex',gap:8}}>
-          <button onClick={function(){dsp({t:'SAVE',id:c.id});}} style={{padding:'7px 14px',background:'rgba(0,0,0,.5)',backdropFilter:'blur(8px)',border:'1px solid '+(saved?'#FF9933':'rgba(255,255,255,.15)'),borderRadius:8,color:saved?'#FF9933':'rgba(255,255,255,.8)',fontSize:12,cursor:'pointer',fontFamily:'inherit',fontWeight:600}}>{saved?'Saved':'Save'}</button>
-          <button onClick={function(){dsp({t:'UI',v:{shareModal:true,shareTarget:{name:c.name,handle:c.handle}}});}} style={{padding:'7px 14px',background:'rgba(0,0,0,.5)',backdropFilter:'blur(8px)',border:'1px solid rgba(255,255,255,.15)',borderRadius:8,color:'rgba(255,255,255,.8)',fontSize:12,cursor:'pointer',fontFamily:'inherit'}}>Share</button>
-        </div>
-      </div>
-    </div>
-
-    <div style={W()}>
-      <div style={{background:'#fff',borderRadius:20,border:'1px solid '+T.bd,padding:mob?'20px':'28px',marginTop:mob?-40:-50,position:'relative',zIndex:2,boxShadow:'0 8px 40px rgba(0,0,0,.1)',marginBottom:20}}>
-        <div style={{display:'flex',flexDirection:mob?'column':'row',gap:18,alignItems:mob?'flex-start':'flex-end'}}>
-          <div style={{position:'relative',flexShrink:0,marginTop:mob?-44:-54}}>
-            <img src={img} style={{width:mob?80:100,height:mob?80:100,borderRadius:'50%',objectFit:'cover',border:'4px solid #fff',boxShadow:'0 4px 20px rgba(0,0,0,.15)'}} alt={c.name} onError={function(e){e.target.src='https://ui-avatars.com/api/?name='+encodeURIComponent(c.name)+'&background=FF9933&color=fff&size=200';}}/>
-            {c.verified&&<div style={{position:'absolute',bottom:2,right:2,width:22,height:22,borderRadius:'50%',background:'#2563EB',border:'2px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,color:'#fff'}}>✓</div>}
+  return <PL noFooter>
+    {/* Cover & Hero */}
+    <div style={{height:mob?240:360,background:'linear-gradient(135deg,#0d0d0d,#1a0800)',position:'relative',overflow:'hidden'}}>
+      {c.coverUrl&&<img src={c.coverUrl} style={{width:'100%',height:'100%',objectFit:'cover',opacity:.65}} alt="" onError={e=>e.target.style.display='none'}/>}
+      <div style={{position:'absolute',inset:0,background:'linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.85))'}}/>
+      <div style={{position:'absolute',top:0,left:0,right:0,height:4,background:'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)'}}/>
+      
+      <div style={{...W(),position:'relative',height:'100%',display:'flex',flexDirection:'column',justifyContent:'flex-end',paddingBottom:mob?60:40}}>
+        <div style={{display:'flex',gap:mob?16:24,alignItems:'flex-end',flexDirection:mob?'column':'row'}}>
+          <div style={{position:'relative'}}>
+            <img src={img} style={{width:mob?100:140,height:mob?100:140,borderRadius:24,objectFit:'cover',border:'4px solid rgba(255,255,255,.2)',boxShadow:T.sh4}} alt={c.name} onError={e=>e.target.src='https://ui-avatars.com/api/?name='+encodeURIComponent(c.name)+'&background=FF9933&color=fff&size=200'}/>
+            {c.verified&&<div style={{position:'absolute',bottom:-8,right:-8,width:28,height:28,borderRadius:'50%',background:'#2563EB',border:'3px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,color:'#fff',boxShadow:T.sh2}}>✓</div>}
           </div>
-          <div style={{flex:1}}>
-            <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:6}}>
+          <div style={{flex:1,textAlign:mob?'center':'left'}}>
+            <div style={{display:'flex',gap:8,justifyContent:mob?'center':'flex-start',marginBottom:8}}>
               {c.verified&&<Bdg sm color="blue">Verified</Bdg>}
               <Bdg sm color={tier.bc}>{tier.label}</Bdg>
-              {c.trending&&<Bdg sm color="red">Trending</Bdg>}
               {c.pro&&<Bdg sm color="purple">Pro</Bdg>}
             </div>
-            <h1 style={{fontFamily:"'Fraunces',serif",fontSize:mob?22:30,fontWeight:900,color:T.n8,lineHeight:1.1,marginBottom:4}}>{c.name}</h1>
-            <p style={{fontSize:13,color:T.t3,marginBottom:4}}>{'@'+(c.handle||fmt.handle(c.name))}</p>
-            <p style={{fontSize:13,color:T.t2}}>{'📍 '+c.city+(c.state?', '+c.state:'')+' • '+niches.join(', ')}</p>
+            <h1 style={{fontFamily:"'Fraunces',serif",fontSize:mob?32:48,fontWeight:900,color:'#fff',lineHeight:1,marginBottom:8}}>{c.name}</h1>
+            <p style={{fontSize:16,color:'rgba(255,255,255,.7)',fontWeight:500}}>{'📍 '+c.city+(c.state?', '+c.state:'')+' • '+niches.slice(0,2).join(', ')}</p>
           </div>
-          <div style={{display:'flex',gap:8,flexWrap:'wrap',flexShrink:0}}>
-            {isOwn?(
-              <Btn style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff'}} onClick={function(){go('settings');}}>Edit Profile</Btn>
-            ):(
-              <Btn style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff'}} onClick={function(){setShowCollab(true);}}>Collaborate</Btn>
-            )}
-          </div>
-        </div>
-
-        <div style={{display:'grid',gridTemplateColumns:mob?'repeat(3,1fr)':'repeat(6,1fr)',gap:10,marginTop:20,paddingTop:18,borderTop:'1px solid '+T.bd}}>
-          {[
-            [fmt.num(c.followers),'Followers','👥'],
-            [Number(c.er||0).toFixed(1)+'%','ER','📈'],
-            [fmt.num(Number(c.monthlyViews||0)||Number(c.followers||0)*3),'Views','👁'],
-            [fmt.inr(c.rateMin)+'+','Rate','💰'],
-            [c.completedDeals||0,'Deals','🤝'],
-            [avgRating>0?avgRating.toFixed(1):'New','Rating','⭐'],
-          ].map(function(item){
-            return React.createElement('div',{key:item[1],style:{textAlign:'center',padding:'10px 6px',background:T.bg2,borderRadius:10}},
-              React.createElement('div',{style:{fontSize:16,marginBottom:3}},item[2]),
-              React.createElement('div',{style:{fontFamily:"'Fraunces',serif",fontSize:mob?13:18,fontWeight:900,color:T.n8,lineHeight:1}},item[0]),
-              React.createElement('div',{style:{fontSize:10,color:T.t3,marginTop:3}},item[1])
-            );
-          })}
-        </div>
-
-        {isOwn&&<div style={{marginTop:14,padding:'12px 16px',background:'linear-gradient(135deg,rgba(255,153,51,.08),rgba(19,136,8,.06))',borderRadius:10,border:'1px solid rgba(255,153,51,.2)',display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
-          <div style={{flex:1}}>
-            <p style={{fontSize:10,fontWeight:800,color:'#FF9933',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:2}}>Profile Link</p>
-            <p style={{fontSize:12,fontFamily:'monospace',color:T.n8}}>{'creatorbharat.in/c/'+c.handle}</p>
-          </div>
-          <Btn sm style={{background:'#FF9933',border:'none',color:'#fff'}} onClick={function(){
-            try{navigator.clipboard.writeText('https://creatorbharat.in/c/'+c.handle);}catch(e){var ta=document.createElement('textarea');ta.value='https://creatorbharat.in/c/'+c.handle;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
-            toast('Link copied!','success');
-          }}>Copy</Btn>
-        </div>}
-
-        {isOwn&&completeness.pct<100&&<div style={{marginTop:12,padding:'12px',background:T.bg2,borderRadius:10,border:'1px solid '+T.bd}}>
-          <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
-            <span style={{fontSize:12,fontWeight:700,color:T.n8}}>Profile Completeness</span>
-            <span style={{fontSize:12,fontWeight:700,color:completeness.pct>=80?'#138808':'#FF9933'}}>{completeness.pct+'%'}</span>
-          </div>
-          <Bar value={completeness.pct} color={completeness.pct>=80?'#138808':'#FF9933'} height={5}/>
-        </div>}
-      </div>
-
-      {/* Tabs */}
-      <div style={{background:'#fff',borderRadius:16,border:'1px solid '+T.bd,overflow:'hidden',marginBottom:24}}>
-        <div style={{display:'flex',overflowX:'auto',borderBottom:'1px solid '+T.bd,background:T.bg2}}>
-          {[['about','About'],['podcast','Podcast ('+podcast.length+')'],['packages','Packages'],['portfolio','Portfolio ('+portfolio.length+')'],['article','Article'],['reviews','Reviews ('+reviews.length+')']].map(function(item){
-            var id=item[0],lbl=item[1];
-            return React.createElement('button',{key:id,onClick:function(){setTab(id);},style:{padding:'13px 18px',background:tab===id?'#fff':'transparent',border:'none',borderBottom:'3px solid '+(tab===id?'#FF9933':'transparent'),color:tab===id?'#FF9933':T.t2,fontWeight:tab===id?700:500,fontSize:mob?11:13,cursor:'pointer',fontFamily:'inherit',whiteSpace:'nowrap',flexShrink:0,transition:'all .15s',marginBottom:-1}},lbl);
-          })}
-        </div>
-
-        <div style={{padding:mob?'18px':'26px'}}>
-          {tab==='about'&&<div style={{display:'grid',gridTemplateColumns:mob?'1fr':'2fr 1fr',gap:24}}>
-            <div>
-              {c.bio&&<div style={{marginBottom:20}}>
-                <h3 style={{fontSize:14,fontWeight:700,color:T.n8,marginBottom:8}}>About</h3>
-                <p style={{fontSize:14,color:T.t2,lineHeight:1.8,background:T.bg2,padding:'14px 16px',borderRadius:10,borderLeft:'3px solid #FF9933'}}>{c.bio}</p>
-              </div>}
-              <h3 style={{fontSize:14,fontWeight:700,color:T.n8,marginBottom:8}}>Platforms</h3>
-              <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:18}}>
-                {platforms.map(function(p){return React.createElement(Bdg,{key:p,color:'blue'},p);})}
-                {c.instagram&&<a href={'https://instagram.com/'+c.instagram.replace('@','')} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 12px',borderRadius:8,background:'linear-gradient(135deg,#f09433,#dc2743)',color:'#fff',fontSize:12,fontWeight:700,textDecoration:'none'}}>{'📸 '+c.instagram}</a>}
-              </div>
-              {c.services&&c.services.length>0&&<div style={{marginBottom:18}}>
-                <h3 style={{fontSize:14,fontWeight:700,color:T.n8,marginBottom:8}}>Services</h3>
-                <div style={{display:'flex',flexWrap:'wrap',gap:7}}>{c.services.map(function(s){return React.createElement('div',{key:s,style:{padding:'5px 12px',borderRadius:18,background:'rgba(255,153,51,.1)',border:'1px solid rgba(255,153,51,.25)',fontSize:12,color:'#FF9933',fontWeight:600}},s);})}</div>
-              </div>}
-              {c.languages&&c.languages.length>0&&<div>
-                <h3 style={{fontSize:14,fontWeight:700,color:T.n8,marginBottom:8}}>Languages</h3>
-                <div style={{display:'flex',gap:7,flexWrap:'wrap'}}>{c.languages.map(function(l){return React.createElement('div',{key:l,style:{padding:'5px 11px',background:T.bg2,borderRadius:8,fontSize:12,color:T.n8,fontWeight:600}},'🗣 '+l);})}</div>
-              </div>}
-            </div>
-            <div style={{display:'flex',flexDirection:'column',gap:14}}>
-              <div style={{textAlign:'center',padding:'20px',background:T.bg2,borderRadius:14,border:'1px solid '+T.bd}}>
-                <p style={{fontSize:10,fontWeight:700,color:T.t3,textTransform:'uppercase',letterSpacing:'.06em',marginBottom:12}}>Creator Score</p>
-                <Ring score={score} size={90}/>
-              </div>
-              {c.rateMin&&<div style={{padding:'16px',background:'linear-gradient(135deg,rgba(255,153,51,.1),rgba(255,107,0,.06))',borderRadius:12,border:'1px solid rgba(255,153,51,.25)'}}>
-                <p style={{fontSize:10,fontWeight:800,color:'#FF9933',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:6}}>Rates</p>
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:900,color:T.n8}}>{fmt.inr(c.rateMin)}</div>
-                <div style={{fontSize:12,color:T.t3}}>{'to '+fmt.inr(c.rateMax)}</div>
-              </div>}
-              {!isOwn&&<Btn full style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff'}} onClick={function(){setShowCollab(true);}}>Collaborate</Btn>}
-              {!isOwn&&<Btn full variant="outline" onClick={function(){setTab('reviews');}}>Write Review</Btn>}
-            </div>
-          </div>}
-
-          {tab==='podcast'&&<div>
-            <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:800,color:T.n8,marginBottom:8}}>Creator Podcast</h3>
-            <p style={{fontSize:14,color:T.t2,marginBottom:20,lineHeight:1.6}}>{'Short podcast conversations with '+c.name+' -- creator journey, brand tips, aur more.'}</p>
-            {podcast.length===0?(
-              <div style={{textAlign:'center',padding:'40px',background:T.bg2,borderRadius:14,border:'1px dashed '+T.bd}}>
-                <div style={{fontSize:40,marginBottom:10}}>🎙</div>
-                <h4 style={{fontFamily:"'Fraunces',serif",fontSize:16,color:T.n8,marginBottom:6}}>Podcast Coming Soon</h4>
-                <p style={{fontSize:13,color:T.t2,lineHeight:1.6}}>{c.name+' ke saath podcast episode jaldi aayega!'}</p>
-              </div>
-            ):(
-              <div style={{display:'flex',flexDirection:'column',gap:14}}>
-                {podcast.map(function(ep,ei){
-                  var playing=playingPod===ep.id;
-                  return React.createElement('div',{key:ep.id,style:{background:'#fff',borderRadius:14,border:'1px solid '+T.bd,overflow:'hidden',display:'flex',flexDirection:mob?'column':'row',boxShadow:playing?T.sh3:T.sh1}},
-                    React.createElement('div',{style:{position:'relative',width:mob?'100%':180,height:mob?150:110,flexShrink:0,background:T.bg3,cursor:'pointer'},onClick:function(){setPlayingPod(playing?null:ep.id);}},
-                      React.createElement('img',{src:ep.thumbnail,style:{width:'100%',height:'100%',objectFit:'cover'},alt:'',onError:function(e){e.target.style.display='none';}}),
-                      React.createElement('div',{style:{position:'absolute',inset:0,background:'rgba(0,0,0,.35)',display:'flex',alignItems:'center',justifyContent:'center'}},
-                        React.createElement('div',{style:{width:40,height:40,borderRadius:'50%',background:playing?'rgba(220,38,38,.9)':'rgba(255,153,51,.9)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,color:'#fff'}},playing?'⏸':'▶')
-                      ),
-                      React.createElement('div',{style:{position:'absolute',bottom:7,right:7,background:'rgba(0,0,0,.7)',borderRadius:5,padding:'2px 7px',fontSize:10,color:'#fff',fontWeight:700}},ep.duration)
-                    ),
-                    React.createElement('div',{style:{padding:16,flex:1}},
-                      React.createElement('div',{style:{display:'flex',gap:6,marginBottom:7}},
-                        React.createElement(Bdg,{sm:true},('Episode '+(ei+1))),
-                        React.createElement(Bdg,{sm:true,color:'red'},'Podcast')
-                      ),
-                      React.createElement('h4',{style:{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:700,color:T.n8,lineHeight:1.3,marginBottom:7,cursor:'pointer'},onClick:function(){setPlayingPod(playing?null:ep.id);}},ep.title),
-                      React.createElement('div',{style:{display:'flex',gap:10,marginBottom:10}},
-                        React.createElement('span',{style:{fontSize:11,color:T.t3}},('👁 '+fmt.num(ep.views))),
-                        React.createElement('span',{style:{fontSize:11,color:T.t3}},('📅 '+fmt.date(ep.date)))
-                      ),
-                      playing&&React.createElement('div',{style:{background:T.bg2,borderRadius:8,padding:'10px',border:'1px solid '+T.bd,marginBottom:8}},
-                        React.createElement('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:6}},
-                          React.createElement('button',{onClick:function(){setPlayingPod(null);},style:{width:32,height:32,borderRadius:'50%',background:'#FF9933',border:'none',cursor:'pointer',fontSize:14,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff'}},'⏸'),
-                          React.createElement('div',{style:{flex:1,height:4,background:T.bd,borderRadius:2,overflow:'hidden'}},
-                            React.createElement('div',{style:{height:'100%',width:'35%',background:'linear-gradient(90deg,#FF9933,#FF6B00)',borderRadius:2}})
-                          ),
-                          React.createElement('span',{style:{fontSize:11,color:T.t3,fontFamily:'monospace'}},('0:47 / '+ep.duration))
-                        ),
-                        React.createElement('p',{style:{fontSize:10,color:T.t3,textAlign:'center'}},('🎙 Playing -- '+c.name))
-                      ),
-                      React.createElement(Btn,{sm:true,style:{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff'},onClick:function(){setPlayingPod(playing?null:ep.id);}},playing?'Pause':'Play Episode')
-                    )
-                  );
-                })}
-              </div>
-            )}
-          </div>}
-
-          {tab==='packages'&&<div>
-            <p style={{fontSize:14,color:T.t2,marginBottom:20,lineHeight:1.6}}>{'Choose collaboration package with '+c.name+'.'}</p>
-            <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:18}}>
-              {packages.map(function(pkg){
-                return React.createElement('div',{key:pkg.name,style:{borderRadius:16,border:'2px solid '+(pkg.pop?pkg.color:T.bd),padding:'22px',position:'relative',background:pkg.pop?(pkg.color+'06'):'#fff'}},
-                  pkg.pop&&React.createElement('div',{style:{position:'absolute',top:-12,left:'50%',transform:'translateX(-50%)',background:pkg.color,color:'#fff',fontSize:10,fontWeight:800,padding:'3px 12px',borderRadius:20,whiteSpace:'nowrap'}},'POPULAR'),
-                  React.createElement('div',{style:{fontSize:26,marginBottom:10}},pkg.emoji),
-                  React.createElement('h3',{style:{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:800,color:T.n8,marginBottom:4}},pkg.name),
-                  React.createElement('div',{style:{fontFamily:"'Fraunces',serif",fontSize:24,fontWeight:900,color:pkg.color,marginBottom:14}},pkg.price),
-                  React.createElement('div',{style:{borderTop:'1px solid '+T.bd,paddingTop:12,marginBottom:16}},
-                    pkg.items.map(function(d){
-                      return React.createElement('div',{key:d,style:{display:'flex',gap:7,marginBottom:7,alignItems:'flex-start'}},
-                        React.createElement('span',{style:{color:'#138808',fontWeight:700,flexShrink:0}},'✓'),
-                        React.createElement('span',{style:{fontSize:12,color:T.t2}},d)
-                      );
-                    })
-                  ),
-                  React.createElement(Btn,{full:true,style:{background:pkg.pop?('linear-gradient(135deg,'+pkg.color+','+pkg.color+'cc)'):'transparent',border:'2px solid '+pkg.color,color:pkg.pop?'#fff':pkg.color,fontWeight:700},onClick:function(){
-                    if(!st.user){dsp({t:'UI',v:{authModal:true,authTab:'login'}});return;}
-                    toast(pkg.name+' inquiry sent!','success');
-                  }},(pkg.pop?'Get '+pkg.name:'Choose '+pkg.name))
-                );
-              })}
-            </div>
-          </div>}
-
-          {tab==='portfolio'&&(portfolio.length===0?(
-            <Empty icon="🖼" title="No portfolio yet" sub={isOwn?'Settings se portfolio add karo.':'Creator ne portfolio add nahi kiya.'}/>
-          ):(
-            <div style={{display:'grid',gridTemplateColumns:mob?'repeat(2,1fr)':'repeat(3,1fr)',gap:12}}>
-              {portfolio.map(function(url,pi){
-                return React.createElement('div',{key:pi,style:{borderRadius:12,overflow:'hidden',aspectRatio:'1',background:T.bg3,cursor:'zoom-in'}},
-                  React.createElement('img',{src:url,style:{width:'100%',height:'100%',objectFit:'cover'},alt:'',onError:function(e){e.target.style.display='none';}})
-                );
-              })}
-            </div>
-          ))}
-
-          {tab==='article'&&<div style={{maxWidth:680}}>
-            <div style={{background:T.bg2,borderRadius:14,padding:'24px',border:'1px solid '+T.bd,marginBottom:18}}>
-              <h2 style={{fontFamily:"'Fraunces',serif",fontSize:mob?19:24,color:T.n8,marginBottom:16,lineHeight:1.25,fontWeight:800}}>{article.title}</h2>
-              <hr style={{border:'none',borderTop:'2px solid rgba(255,153,51,.2)',marginBottom:16}}/>
-              {[article.p1,article.p2,article.p3].map(function(p,pi){
-                return React.createElement('p',{key:pi,style:{fontSize:14,color:T.t1,lineHeight:1.85,marginTop:pi>0?14:0}},p);
-              })}
-            </div>
-            <div style={{display:'flex',gap:10}}>
-              <Btn onClick={function(){dsp({t:'UI',v:{shareModal:true,shareTarget:{name:c.name,handle:c.handle}}});}}>Share Profile</Btn>
-            </div>
-          </div>}
-
-          {tab==='reviews'&&<div>
-            <div style={{display:'flex',gap:16,padding:'16px',background:T.bg2,borderRadius:12,marginBottom:18,flexWrap:'wrap',alignItems:'center'}}>
-              <div style={{textAlign:'center',minWidth:80}}>
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:44,fontWeight:900,color:'#FF9933',lineHeight:1}}>{avgRating>0?avgRating.toFixed(1):'--'}</div>
-                <Stars rating={avgRating}/>
-                <p style={{fontSize:11,color:T.t3,marginTop:3}}>{reviews.length+' reviews'}</p>
-              </div>
-              {reviews.length>0&&<div style={{flex:1,minWidth:150}}>
-                {[5,4,3,2,1].map(function(star){
-                  var cnt=reviews.filter(function(r){return Math.round(Number(r.rating))===star;}).length;
-                  var pct=reviews.length?Math.round(cnt/reviews.length*100):0;
-                  return React.createElement('div',{key:star,style:{display:'flex',alignItems:'center',gap:7,marginBottom:4}},
-                    React.createElement('span',{style:{fontSize:11,color:T.t3,width:10}},star),
-                    React.createElement('span',{style:{color:'#F59E0B',fontSize:11}},'★'),
-                    React.createElement('div',{style:{flex:1,height:5,background:T.bd,borderRadius:2,overflow:'hidden'}},
-                      React.createElement('div',{style:{height:'100%',width:pct+'%',background:'#F59E0B',borderRadius:2}})
-                    ),
-                    React.createElement('span',{style:{fontSize:10,color:T.t3,width:18}},cnt)
-                  );
-                })}
-              </div>}
-              <Btn style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff',marginLeft:'auto'}} onClick={function(){setShowForm(!showForm);}}>
-                {showForm?'Cancel':'Write Review'}
-              </Btn>
-            </div>
-
-            {showForm&&<div style={{background:T.bg2,borderRadius:14,padding:'20px',marginBottom:18,border:'1px solid '+T.bd}}>
-              <h4 style={{fontFamily:"'Fraunces',serif",fontSize:16,color:T.n8,marginBottom:16,fontWeight:700}}>{'Review '+c.name.split(' ')[0]+' ke liye'}</h4>
-              <div style={{marginBottom:14}}>
-                <label style={{fontSize:12,fontWeight:700,color:T.t2,display:'block',marginBottom:7,textTransform:'uppercase',letterSpacing:'.04em'}}>Rating</label>
-                <div style={{display:'flex',gap:6,alignItems:'center'}}>
-                  {[1,2,3,4,5].map(function(star){
-                    return React.createElement('button',{key:star,onClick:function(){setRvRating(star);},onMouseEnter:function(){setRvHover(star);},onMouseLeave:function(){setRvHover(0);},style:{fontSize:30,background:'none',border:'none',cursor:'pointer',color:(rvHover||rvRating)>=star?'#F59E0B':'#E5E7EB',lineHeight:1,padding:'1px'}},'★');
-                  })}
-                  <span style={{fontSize:13,color:T.t2,marginLeft:6,fontWeight:600}}>{['','Poor','Fair','Good','Very Good','Excellent'][rvHover||rvRating]}</span>
-                </div>
-              </div>
-              <Fld label="Your Name *" value={rvName} onChange={function(e){setRvName(e.target.value);}} placeholder="Name or company" required/>
-              <Fld label="Review *" value={rvText} onChange={function(e){setRvText(e.target.value);}} rows={3} placeholder={'Share your experience with '+c.name.split(' ')[0]+'...'} required/>
-              <div style={{display:'flex',gap:9}}>
-                <Btn loading={rvLoading} style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff'}} onClick={submitReview}>Submit</Btn>
-                <Btn variant="ghost" onClick={function(){setShowForm(false);setRvText('');setRvRating(5);}}>Cancel</Btn>
-              </div>
-            </div>}
-
-            {reviews.length===0?(
-              <Empty icon="⭐" title="No reviews yet" sub="Pehla review likhne wale bano!" ctaLabel="Write Review" onCta={function(){setShowForm(true);}}/>
-            ):(
-              <div style={{display:'flex',flexDirection:'column',gap:12}}>
-                {[...reviews].reverse().map(function(r,ri){
-                  return React.createElement('div',{key:r.id||ri,style:{padding:'16px',background:'#fff',borderRadius:12,border:'1px solid '+T.bd}},
-                    React.createElement('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:9,gap:8,flexWrap:'wrap'}},
-                      React.createElement('div',{style:{display:'flex',gap:9,alignItems:'center'}},
-                        React.createElement('div',{style:{width:34,height:34,borderRadius:'50%',background:'linear-gradient(135deg,#FF9933,#138808)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,color:'#fff',fontWeight:700,flexShrink:0}},(r.brand||'?')[0].toUpperCase()),
-                        React.createElement('div',null,
-                          React.createElement('div',{style:{display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}},
-                            React.createElement('p',{style:{fontWeight:700,color:T.n8,fontSize:13}},r.brand||'Anonymous'),
-                            r.verified&&React.createElement('span',{style:{fontSize:9,background:'rgba(19,136,8,.1)',color:'#138808',padding:'1px 6px',borderRadius:9,fontWeight:700}},'Verified')
-                          ),
-                          React.createElement(Stars,{rating:Number(r.rating||0),sm:true})
-                        )
-                      ),
-                      React.createElement('span',{style:{fontSize:10,color:T.t3}},fmt.date(r.date))
-                    ),
-                    React.createElement('p',{style:{fontSize:13,color:T.t2,lineHeight:1.7,fontStyle:'italic'}},'"'+r.text+'"')
-                  );
-                })}
-              </div>
-            )}
+          {!mob&&<div style={{display:'flex',gap:12,marginBottom:10}}>
+            <Btn lg style={{background:'linear-gradient(135deg,#FF9431,#FF6B00)',border:'none',color:'#fff',fontWeight:800}} onClick={()=>setShowCollab(true)}>Collaborate</Btn>
+            <button onClick={()=>dsp({t:'SAVE',id:c.id})} style={{width:48,height:48,borderRadius:12,background:'rgba(255,255,255,.1)',backdropFilter:'blur(10px)',border:'1px solid rgba(255,255,255,.2)',cursor:'pointer',fontSize:20,color:saved?T.gd:'#fff'}}>{saved?'♥':'♡'}</button>
           </div>}
         </div>
       </div>
     </div>
 
-    {showCollab&&<Modal open title={'Collaborate with '+c.name} onClose={function(){setShowCollab(false);}}>
-      <Fld label="Your Message" value={collabMsg} onChange={function(e){setCollabMsg(e.target.value);}} rows={3} placeholder={'Hi '+c.name+', collaboration ke liye contact kar raha hoon...'}/>
-      <div style={{display:'flex',gap:9}}>
-        <Btn full style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff'}} onClick={sendCollab}>Send Message</Btn>
-        <Btn full variant="ghost" onClick={function(){setShowCollab(false);}}>Cancel</Btn>
+    {/* Quick Stats Overlay */}
+    <div style={{marginTop:-40,position:'relative',zIndex:10}}>
+      <div style={W()}>
+        <div className="glass" style={{padding:'20px 32px',borderRadius:24,display:'grid',gridTemplateColumns:mob?'repeat(2,1fr)':'repeat(4,1fr)',gap:20,boxShadow:T.sh3,borderTop:`2px solid ${T.gd}`}}>
+          {[
+            [fmt.num(c.followers),'Followers','👥'],
+            [Number(c.er||0).toFixed(1)+'%','Engagement','📈'],
+            [fmt.num(Number(c.monthlyViews||0)||Number(c.followers||0)*3),'Monthly Reach','👁'],
+            [fmt.inr(c.rateMin)+'+','Starting Rate','💰']
+          ].map(([v,l,i])=><div key={l} style={{textAlign:'center'}}>
+            <div style={{fontSize:18,marginBottom:4}}>{i}</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:900,color:T.n8,lineHeight:1}}>{v}</div>
+            <div style={{fontSize:11,color:T.t3,marginTop:4,fontWeight:600}}>{l}</div>
+          </div>)}
+        </div>
       </div>
-    </Modal>}
-    <div style={{height:48}}/>
+    </div>
+
+    <div style={{padding:'40px 0',background:T.bg2}}>
+      <div style={W()}>
+        <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'2fr 1fr',gap:32}}>
+          <div style={{display:'flex',flexDirection:'column',gap:32}}>
+            
+            {/* AI Insights Card */}
+            <div className="glass" style={{padding:'32px',borderRadius:24,borderLeft:`8px solid ${T.gd}`,position:'relative',overflow:'hidden'}}>
+               <div style={{position:'absolute',top:12,right:12,fontSize:24,opacity:.2}}>🤖</div>
+               <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:800,color:T.n8,marginBottom:16}}>AI Profile Insights</h3>
+               <div style={{fontSize:15,color:T.t2,lineHeight:1.8}}>
+                 <p style={{fontWeight:700,color:T.gd,marginBottom:8}}>Strength: High Local Authenticity</p>
+                 <p>{article.p1}</p>
+                 <p style={{marginTop:12}}>{article.p2}</p>
+               </div>
+            </div>
+
+            {/* Social Wall */}
+            <div>
+              <h3 style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:800,color:T.n8,marginBottom:20}}>Digital Presence</h3>
+              <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'1fr 1fr',gap:16}}>
+                {c.instagram&&<Card style={{padding:'20px',display:'flex',alignItems:'center',gap:16}}>
+                  <div style={{width:48,height:48,borderRadius:12,background:'linear-gradient(135deg,#f09433,#dc2743)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#fff'}}>📸</div>
+                  <div style={{flex:1}}><p style={{fontSize:14,fontWeight:700,color:T.n8}}>Instagram</p><p style={{fontSize:12,color:T.t3}}>{c.instagram}</p></div>
+                  <Btn sm variant="outline" onClick={()=>window.open('https://instagram.com/'+c.instagram.replace('@',''))}>Visit</Btn>
+                </Card>}
+                {c.youtube&&<Card style={{padding:'20px',display:'flex',alignItems:'center',gap:16}}>
+                  <div style={{width:48,height:48,borderRadius:12,background:'#FF0000',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#fff'}}>🎥</div>
+                  <div style={{flex:1}}><p style={{fontSize:14,fontWeight:700,color:T.n8}}>YouTube</p><p style={{fontSize:12,color:T.t3}}>{c.youtube}</p></div>
+                  <Btn sm variant="outline" onClick={()=>window.open('https://youtube.com')}>Visit</Btn>
+                </Card>}
+              </div>
+            </div>
+
+            {/* Tabs Content */}
+            <div className="glass" style={{borderRadius:24,overflow:'hidden'}}>
+              <div style={{display:'flex',background:T.bg,borderBottom:`1px solid ${T.bd}`}}>
+                {[['portfolio','Gallery'],['packages','Deals'],['reviews','Reviews']].map(([id,l])=><button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:'16px',background:tab===id?'transparent':'transparent',border:'none',borderBottom:`3px solid ${tab===id?T.gd:'transparent'}`,color:tab===id?T.gd:T.t2,fontWeight:tab===id?800:500,fontSize:14,cursor:'pointer',fontFamily:'inherit'}}>{l}</button>)}
+              </div>
+              <div style={{padding:'32px'}}>
+                {tab==='portfolio'&&(portfolio.length===0?<Empty icon="🖼" title="No media yet"/>:
+                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:12}}>
+                  {portfolio.map((img,i)=><div key={i} style={{aspectRatio:'1',borderRadius:16,overflow:'hidden',background:T.bg3}}><img src={img} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/></div>)}
+                </div>)}
+                {tab==='packages'&&<div style={{display:'flex',flexDirection:'column',gap:16}}>
+                  {packages.map(p=><div key={p.name} style={{padding:'20px',borderRadius:20,border:`2px solid ${p.pop?p.color:T.bd}`,background:p.pop?p.color+'06':'#fff',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <div><h4 style={{fontWeight:800,fontSize:18,color:T.n8}}>{p.emoji} {p.name}</h4><p style={{fontSize:12,color:T.t3,marginTop:4}}>{p.items.join(' • ')}</p></div>
+                    <div style={{textAlign:'right'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:900,color:p.color}}>{p.price}</div><Btn sm style={{background:p.color,color:'#fff',border:'none',marginTop:8}} onClick={()=>setShowCollab(true)}>Select</Btn></div>
+                  </div>)}
+                </div>}
+                {tab==='reviews'&&<div>
+                   {reviews.length===0?<Empty icon="⭐" title="No reviews yet" ctaLabel="Write Review" onCta={()=>setShowForm(true)}/>:
+                   <div style={{display:'flex',flexDirection:'column',gap:16}}>{reviews.map(r=><div key={r.id} style={{padding:'16px',background:T.bg,borderRadius:16,border:`1px solid ${T.bd}`}}><div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><p style={{fontWeight:700,fontSize:14}}>{r.brand}</p><Stars rating={r.rating} sm/></div><p style={{fontSize:13,color:T.t2,lineHeight:1.6}}>"{r.text}"</p></div>)}</div>}
+                </div>}
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div style={{display:'flex',flexDirection:'column',gap:24}}>
+            <Card style={{padding:'24px',textAlign:'center'}}>
+              <p style={{fontSize:12,fontWeight:800,color:T.t3,textTransform:'uppercase',letterSpacing:'.1em',marginBottom:16}}>Creator Score</p>
+              <Ring score={score} size={100}/>
+              <h4 style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:800,color:tier.color,marginTop:12}}>{tier.label} Level</h4>
+              <p style={{fontSize:13,color:T.t3,marginTop:4}}>Top {100-score}% of creators in India</p>
+            </Card>
+
+            <Card style={{padding:'24px'}}>
+              <h4 style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:800,color:T.n8,marginBottom:16}}>Past Brands</h4>
+              <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+                {['Nykaa','Mamaearth','boAt','MakeMyTrip','Swiggy','Zomato'].slice(0,4).map(b=><div key={b} style={{padding:'8px 16px',borderRadius:10,background:T.bg2,border:`1px solid ${T.bd}`,fontSize:12,fontWeight:600,color:T.t2}}>{b}</div>)}
+              </div>
+            </Card>
+
+            <div className="glass" style={{padding:'24px',borderRadius:24,background:T.n8,color:'#fff'}}>
+              <h4 style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:800,marginBottom:12}}>Interested?</h4>
+              <p style={{fontSize:14,color:'rgba(255,255,255,.6)',lineHeight:1.6,marginBottom:20}}>Hire {c.name.split(' ')[0]} for your next campaign. Quick response guaranteed.</p>
+              <Btn full lg onClick={()=>setShowCollab(true)} style={{background:'linear-gradient(90deg,#FF9431,#128807)',border:'none',color:'#fff',fontWeight:800}}>Book Collaboration</Btn>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Mobile Action Bar */}
+    {mob&&<div style={{position:'fixed',bottom:0,left:0,right:0,padding:'12px 20px',background:'#fff',borderTop:`1px solid ${T.bd}`,display:'flex',gap:12,zIndex:5001,boxShadow:'0 -8px 24px rgba(0,0,0,.08)'}}>
+      <Btn full lg onClick={()=>setShowCollab(true)} style={{background:'linear-gradient(135deg,#FF9431,#FF6B00)',border:'none',color:'#fff',fontWeight:800}}>Collaborate</Btn>
+      <button onClick={()=>dsp({t:'SAVE',id:c.id})} style={{width:52,height:52,borderRadius:14,background:T.bg2,border:`1.5px solid ${T.bd}`,fontSize:22,color:saved?T.gd:T.t3}}>{saved?'♥':'♡'}</button>
+    </div>}
+
+    <Modal open={showCollab} title={'Collaborate with '+c.name} onClose={()=>setShowCollab(false)}>
+      <Fld label="Inquiry Message" value={collabMsg} onChange={e=>setCollabMsg(e.target.value)} rows={4} placeholder={`Hi ${c.name}, we'd love to work with you on a campaign...`}/>
+      <Btn full lg onClick={sendCollab} style={{background:T.gd,color:'#fff',border:'none'}}>Send Message</Btn>
+    </Modal>
+    {!mob&&<Footer/>}
   </PL>;
 }
 
@@ -1335,10 +1319,25 @@ function CreatorProfilePage(){
 function BlogPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[cat,setCat]=useState('');
+  const[blogs,setBlogs]=useState(SB);
+  const[loading,setLoading]=useState(false);
   const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});top();};
-  const cats=[...new Set(SB.map(function(b){return b.category;}))];
-  const filtered=cat?SB.filter(function(b){return b.category===cat;}):SB;
-  const featured=SB.find(function(b){return b.featured;});
+
+  useEffect(()=>{
+    setLoading(true);
+    apiCall('/blogs').then(data=>{
+      if(data && data.length > 0) setBlogs(data);
+      setLoading(false);
+    }).catch(err=>{
+      console.error('Blog fetch failed, using seed data:', err);
+      setLoading(false);
+    });
+  },[]);
+
+  const cats=[...new Set(blogs.map(function(b){return b.category;}))];
+  const filtered=cat?blogs.filter(function(b){return b.category===cat;}):blogs;
+  const featured=blogs.find(function(b){return b.featured;}) || blogs[0];
+
   return <PL>
     <div style={{background:'linear-gradient(135deg,#0d0d0d,#1a0800)',padding:mob?'48px 20px':'72px 20px',position:'relative'}}>
       <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:'linear-gradient(90deg,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%)'}}/>
@@ -1346,17 +1345,20 @@ function BlogPage(){
     </div>
     <div style={{background:'#fff',borderBottom:'1px solid '+T.bd,padding:'12px 20px',position:'sticky',top:56,zIndex:100}}>
       <div style={W()}>
-        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap',justifyContent:'center'}}>
           <Chip label="All" active={!cat} onClick={function(){setCat('');}}/>
           {cats.map(function(c){return React.createElement(Chip,{key:c,label:c,active:cat===c,onClick:function(){setCat(cat===c?'':c);}});})}
         </div>
       </div>
     </div>
+
+    {loading ? <div style={{padding:80,textAlign:'center'}}><div className="spin" style={{width:40,height:40,border:`4px solid ${T.bg3}`,borderTopColor:T.gd,borderRadius:'50%',margin:'0 auto'}}/></div> :
+    <>
     {featured&&!cat&&<div style={{padding:mob?'24px 20px':'36px 20px',background:T.bg2}}>
       <div style={W()}>
-        <Card onClick={function(){go('blog-article',{blog:featured});}} style={{overflow:'hidden',display:'grid',gridTemplateColumns:mob?'1fr':'1.2fr 1fr'}}>
+        <Card onClick={function(){go('blog-article',{blog:featured});}} style={{overflow:'hidden',display:'grid',gridTemplateColumns:mob?'1fr':'1.2fr 1fr',cursor:'pointer'}}>
           <div style={{height:mob?200:320,overflow:'hidden',background:'#f5f5f5',position:'relative'}}>
-            <img src={featured.image} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={featured.title} onError={function(e){e.target.style.display='none';}}/>
+            <img src={featured.image} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={featured.title} onError={function(e){e.target.src='https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80'}}/>
             <div style={{position:'absolute',top:12,left:12}}><Bdg color="dark">Featured</Bdg></div>
           </div>
           <div style={{padding:mob?'20px':'32px',display:'flex',flexDirection:'column',justifyContent:'center'}}>
@@ -1364,9 +1366,9 @@ function BlogPage(){
             <h2 style={{fontFamily:"'Fraunces',serif",fontSize:mob?19:24,color:T.n8,margin:'12px 0 10px',lineHeight:1.25,fontWeight:800}}>{featured.title}</h2>
             <p style={{fontSize:13,color:T.t2,lineHeight:1.7,marginBottom:18}}>{featured.excerpt}</p>
             <div style={{display:'flex',gap:12,marginBottom:18}}>
-              <span style={{fontSize:11,color:T.t3}}>{'by '+featured.author}</span>
-              <span style={{fontSize:11,color:T.t3}}>{'⏱ '+featured.readTime}</span>
-              <span style={{fontSize:11,color:T.t3}}>{'👁 '+fmt.num(featured.views)}</span>
+              <span style={{fontSize:11,color:T.t3}}>{'by '+(featured.author || 'CreatorBharat Team')}</span>
+              <span style={{fontSize:11,color:T.t3}}>{'⏱ '+(featured.readTime || '5 min')}</span>
+              <span style={{fontSize:11,color:T.t3}}>{'👁 '+fmt.num(featured.views || 0)}</span>
             </div>
             <Btn style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff',alignSelf:'flex-start'}} onClick={function(){go('blog-article',{blog:featured});}}>Read Article</Btn>
           </div>
@@ -1375,26 +1377,28 @@ function BlogPage(){
     </div>}
     <div style={{padding:mob?'24px 20px':'36px 20px',background:'#fff'}}>
       <div style={W()}>
-        <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:20}}>
-          {filtered.filter(function(b){return !b.featured||cat;}).map(function(b,bi){
-            return React.createElement(Card,{key:b.id,onClick:function(){go('blog-article',{blog:b});},style:{overflow:'hidden',height:'100%',display:'flex',flexDirection:'column'}},
+        <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:24}}>
+          {filtered.filter(function(b){return !b.featured||cat;}).map(function(b){
+            return React.createElement(Card,{key:b.id,onClick:function(){go('blog-article',{blog:b});},style:{overflow:'hidden',height:'100%',display:'flex',flexDirection:'column',cursor:'pointer'}},
               React.createElement('div',{style:{height:170,overflow:'hidden',background:'#f5f5f5',position:'relative',flexShrink:0}},
-                React.createElement('img',{src:b.image,style:{width:'100%',height:'100%',objectFit:'cover'},alt:b.title,onError:function(e){e.target.style.display='none';}}),
+                React.createElement('img',{src:b.image,style:{width:'100%',height:'100%',objectFit:'cover'},alt:b.title,onError:function(e){e.target.src='https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400&q=80'}}),
                 React.createElement('div',{style:{position:'absolute',top:9,left:9}},React.createElement(Bdg,{sm:true,color:'dark'},b.category))
               ),
               React.createElement('div',{style:{padding:16,flex:1}},
                 React.createElement('div',{style:{display:'flex',gap:9,marginBottom:8}},
-                  React.createElement('span',{style:{fontSize:10,color:T.t3}},b.readTime),
-                  React.createElement('span',{style:{fontSize:10,color:T.t3}},('👁 '+fmt.num(b.views)))
+                  React.createElement('span',{style:{fontSize:10,color:T.t3}},b.readTime || '5 min'),
+                  React.createElement('span',{style:{fontSize:10,color:T.t3}},('👁 '+fmt.num(b.views || 0)))
                 ),
                 React.createElement('h3',{style:{fontFamily:"'Fraunces',serif",fontSize:15,color:T.n8,lineHeight:1.35,marginBottom:7,fontWeight:700}},b.title),
-                React.createElement('p',{style:{fontSize:12,color:T.t2,lineHeight:1.6}},b.excerpt)
+                React.createElement('p',{style:{fontSize:12,color:T.t2,lineHeight:1.6,display:'-webkit-box',WebkitLineClamp:3,WebkitBoxOrient:'vertical',overflow:'hidden'}},b.excerpt)
               )
             );
           })}
         </div>
+        {filtered.length===0 && <Empty title="No articles found" sub="Try a different category." ctaLabel="Show All" onCta={()=>setCat('')}/>}
       </div>
     </div>
+    </>}
   </PL>;
 }
 
@@ -2036,155 +2040,190 @@ function ContactPage(){
 // APPLY PAGE (4-step creator registration)
 function ApplyPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>dsp({t:'GO',p});
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[step,setStep]=useState(1);
-  const[F,setF]=useState({name:'',handle:'',email:'',password:'',confirm:'',phone:'',city:'',state:'',niche:[],platform:[],followers:'',er:'',monthlyViews:'',bio:'',instagram:'',youtube:'',rateMin:'',rateMax:'',services:[],languages:[],photo:null});
+  const[F,setF]=useState({name:'',handle:'',email:'',password:'',confirm:'',city:'',state:'',niche:[],platform:[],followers:'',er:'',monthlyViews:'',bio:'',instagram:'',youtube:'',rateMin:'',rateMax:'',services:[],languages:[],photo:null});
+  const[loading,setLoading]=useState(false);
   const upF=(k,v)=>setF(p=>({...p,[k]:v}));
   const toggleArr=(k,v)=>setF(p=>({...p,[k]:p[k].includes(v)?p[k].filter(x=>x!==v):[...p[k],v]}));
-  const NICHES=['Travel','Lifestyle','Fashion','Beauty','Tech','Gaming','Food','Cooking','Fitness','Education','Finance','Entertainment','Comedy','Music','Art','Photography'];
+  const NICHES=['Travel','Lifestyle','Fashion','Beauty','Tech','Gaming','Food','Cooking','Fitness','Education','Finance','Entertainment'];
   const PLATFORMS=['Instagram','YouTube','Twitter','LinkedIn'];
-  const SERVICES=['Sponsored Posts','Instagram Reels','YouTube Videos','Stories','Unboxing','Product Reviews','GRWM','Travel Vlogs','Tech Reviews','Recipe Videos','Food Photography'];
-  const LANGUAGES=['Hindi','English','Tamil','Telugu','Marathi','Bengali','Kannada','Malayalam','Punjabi'];
-  const CITIES=['Jaipur','Mumbai','Delhi','Bengaluru','Chennai','Hyderabad','Kolkata','Pune','Kochi','Chandigarh','Ahmedabad','Surat','Lucknow','Patna','Bhopal','Indore','Vadodara','Nagpur','Coimbatore','Mysuru','Other'];
-
+  const SERVICES=['Sponsored Posts','Reels','Stories','YouTube Video','Product Review','Event Appearance'];
+  const LANGUAGES=['Hindi','English','Marathi','Gujarati','Bengali','Tamil','Telugu','Kannada','Punjabi'];
+  
   const next=()=>{
-    if(step===1){
-      if(!F.name||!F.email||!F.password||!F.city){toast('Fill all required fields','error');return}
-      if(F.password!==F.confirm){toast('Passwords do not match','error');return}
-      if(F.password.length<6){toast('Password must be 6+ characters','error');return}
-      if(!F.handle){upF('handle',fmt.handle(F.name))}
-      const existing=LS.get('cb_creators',[]).find(c=>c.email===F.email);
-      if(existing){toast('Email already registered. Please login.','error');return}
-      const handleTaken=LS.get('cb_creators',[]).find(c=>c.handle===(F.handle||fmt.handle(F.name)));
-      if(handleTaken){toast('Handle already taken. Try another.','error');return}
-    }
-    if(step===2){if(!F.niche.length||!F.platform.length||!F.followers){toast('Fill niche, platform and followers','error');return}}
-    if(step===3){if(!F.rateMin){toast('Set your minimum rate','error');return}}
-    setStep(s=>s+1);top();
+    if(step===1&&(!F.name||!F.email||!F.password||!F.handle)){toast('Fill all required fields','error');return}
+    if(step===1&&F.password!==F.confirm){toast('Passwords do not match','error');return}
+    if(step===2&&(!F.niche.length||!F.platform.length||!F.followers)){toast('Niche, Platform and Followers required','error');return}
+    setStep(s=>s+1);window.scrollTo(0,0);
   };
 
-  const submit=async ()=>{
-    const handle=F.handle||fmt.handle(F.name);
+  const submit=async()=>{
+    if(!F.rateMin){toast('Please set your minimum rate','error');return}
+    setLoading(true);
     try {
-      const data=await apiCall('/auth/register/creator',{method:'POST',body:{...F,handle}});
-      localStorage.setItem('cb_token',data.token);
-      const newCreator=data.user;
-      SS.set({id:newCreator.id,role:'creator',email:newCreator.email,name:newCreator.name});
-      dsp({t:'LOGIN',u:newCreator,role:'creator'});
-      dsp({t:'SET_CP',p:newCreator});
-      dsp({t:'NOTIF',n:{msg:`Profile live! Share it: creatorbharat.in/c/${handle}`,time:'Just now',read:false}});
-      toast(`Welcome to CreatorBharat! Your profile is live.`,'success');
-      dsp({t:'GO',p:'dashboard'});top();
-    } catch(err) {
-      toast(err.message,'error');
+      const res = await apiCall('/auth/register/creator', {
+        method: 'POST',
+        body: {
+          email: F.email,
+          password: F.password,
+          name: F.name,
+          handle: F.handle,
+          city: F.city,
+          state: F.state,
+        }
+      });
+      localStorage.setItem('cb_token', res.token);
+      SS.set({id:res.user.id,role:'creator',email:res.user.email,name:res.user.name});
+      dsp({t:'LOGIN',u:res.user,role:'creator'});
+      toast(`Swagat hai, ${F.name}! Your profile is now live.`,'success');
+      go('dashboard');
+    } catch (err) {
+      toast(err.message, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const steps=[['Basic Info','Name, email, city'],['Creator Details','Niche, platform, stats'],['Rates & Services','What you offer'],['Preview','Review & launch']];
-  const article=step===4?fmt.article({...F,handle:F.handle||fmt.handle(F.name)}):null;
+  const steps=[['Identity','Let brands know who you are'],['Presence','Niche, followers & audience'],['Rates','Monetize your content'],['Review','Preview your portfolio']];
+  const article=F.name?fmt.article({...F,niche:F.niche[0]||'content'}):null;
 
   return <PL noFooter>
-    <div style={{minHeight:'100vh',display:'grid',gridTemplateColumns:mob?'1fr':'400px 1fr'}}>
-      {/* Left panel */}
-      {!mob&&<div style={{background:T.n9,padding:'48px 40px',display:'flex',flexDirection:'column'}}>
-        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:48}}>
-          <div style={{width:32,height:32,borderRadius:8,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:900,color:'#fff'}}>CB</div>
-          <span style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:900,color:'#fff'}}>Creator<span style={{color:T.gd}}>Bharat</span></span>
-        </div>
-        <div style={{flex:1}}>
-          <h2 style={{fontFamily:"'Fraunces',serif",fontSize:28,color:'#fff',marginBottom:12,lineHeight:1.2}}>Apni Creator Identity Banao</h2>
-          <p style={{fontSize:14,color:'rgba(255,255,255,.55)',lineHeight:1.7,marginBottom:40}}>Professional portfolio + Auto SEO article + Shareable link -- Free</p>
-          {steps.map(([t,d],i)=><div key={i} style={{display:'flex',gap:14,marginBottom:24,alignItems:'flex-start'}}>
-            <div style={{width:28,height:28,borderRadius:'50%',background:i<step-1?T.ok:i===step-1?T.gd:'rgba(255,255,255,.1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:900,color:'#fff',flexShrink:0}}>{i<step-1?'✓':i+1}</div>
-            <div><p style={{fontSize:13,fontWeight:700,color:i===step-1?'#fff':'rgba(255,255,255,.5)'}}>{t}</p><p style={{fontSize:11,color:'rgba(255,255,255,.3)',marginTop:2}}>{d}</p></div>
+    <div style={{minHeight:'100vh',display:'grid',gridTemplateColumns:mob?'1fr':'440px 1fr'}}>
+      {!mob&&<div className="glass-dark" style={{padding:'64px 48px',display:'flex',flexDirection:'column',borderRight:`1px solid ${T.gab}`,position:'fixed',width:440,height:'100vh'}}>
+        <div style={{marginBottom:48}}><Logo light onClick={()=>go('home')}/></div>
+        <h2 style={{fontFamily:"'Fraunces',serif",fontSize:36,color:'#fff',lineHeight:1.1,marginBottom:16}}>Bharat Ke Creators, <br/><span style={{color:T.gd}}>Duniya Ki Nazar Mein.</span></h2>
+        <p style={{fontSize:16,color:'rgba(255,255,255,.5)',lineHeight:1.6,marginBottom:48}}>Join India's fastest growing creator ecosystem. Showcase your talent to 340+ brands.</p>
+        
+        <div style={{display:'flex',flexDirection:'column',gap:32}}>
+          {steps.map((s,i)=><div key={i} style={{display:'flex',gap:20,alignItems:'center',opacity:step>=i+1?1:.3,transition:'all .3s'}}>
+            <div style={{width:40,height:40,borderRadius:12,background:step>i+1?T.ok:step===i+1?T.gd:'rgba(255,255,255,.1)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:800,fontSize:14,boxShadow:step===i+1?`0 0 20px ${T.gab}`:'none'}}>{step>i+1?'✓':i+1}</div>
+            <div>
+              <p style={{fontSize:15,fontWeight:700,color:'#fff'}}>{s[0]}</p>
+              <p style={{fontSize:12,color:'rgba(255,255,255,.5)'}}>{s[1]}</p>
+            </div>
           </div>)}
         </div>
-        <p style={{fontSize:12,color:'rgba(255,255,255,.3)'}}>Your link: creatorbharat.in/c/{F.handle||fmt.handle(F.name||'yourname')}</p>
-      </div>}
-      {/* Right panel */}
-      <div style={{padding:mob?'32px 20px':'48px 56px',overflowY:'auto'}}>
-        <div style={{maxWidth:480}}>
-          {mob&&<div style={{display:'flex',gap:8,marginBottom:32}}>{steps.map((_,i)=><div key={i} style={{flex:1,height:3,borderRadius:2,background:i<step?T.gd:T.bg3}}/>)}</div>}
-          <h2 style={{fontFamily:"'Fraunces',serif",fontSize:22,color:T.n8,marginBottom:6}}>{steps[step-1][0]}</h2>
-          <p style={{fontSize:14,color:T.t3,marginBottom:28}}>Step {step} of 4 -- {steps[step-1][1]}</p>
 
-          {step===1&&<div>
-            <Fld label="Full Name *" value={F.name} onChange={e=>{upF('name',e.target.value);if(!F.handle)upF('handle',fmt.handle(e.target.value))}} placeholder="Rahul Sharma" required/>
-            <Fld label="Creator Handle *" value={F.handle} onChange={e=>upF('handle',fmt.handle(e.target.value))} placeholder="rahul-sharma" helper={`Your link: creatorbharat.in/c/${F.handle||'your-handle'}`} required/>
-            <Fld label="Email *" type="email" value={F.email} onChange={e=>upF('email',e.target.value)} placeholder="you@email.com" required/>
-            <Fld label="Phone (WhatsApp)" value={F.phone} onChange={e=>upF('phone',e.target.value)} placeholder="+91 98765 43210"/>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-              <Fld label="City *" value={F.city} onChange={e=>upF('city',e.target.value)} options={['',... CITIES]} required/>
+        <div style={{marginTop:'auto',padding:'20px',background:'rgba(255,255,255,.05)',borderRadius:16,border:'1px solid rgba(255,255,255,.1)'}}>
+          <p style={{fontSize:13,color:'rgba(255,255,255,.6)',lineHeight:1.6}}>Already have an account? <button onClick={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})} style={{background:'none',border:'none',color:T.gd,cursor:'pointer',fontWeight:700,fontFamily:'inherit'}}>Login Now</button></p>
+        </div>
+      </div>}
+      
+      {!mob&&<div style={{width:440}}/>}
+
+      <div style={{padding:mob?'32px 20px':'80px 100px',background:T.bg2,minHeight:'100vh'}}>
+        <div style={{maxWidth:600}}>
+          {mob&&<div style={{display:'flex',gap:8,marginBottom:32}}>{steps.map((_,i)=><div key={i} style={{flex:1,height:6,borderRadius:3,background:i+1<=step?T.gd:T.bg3}}/>)}</div>}
+          
+          <div style={{marginBottom:40}}>
+            <p style={{fontSize:12,fontWeight:800,color:T.gd,textTransform:'uppercase',letterSpacing:'.1em',marginBottom:8}}>Step {step} of 4</p>
+            <h2 style={{fontFamily:"'Fraunces',serif",fontSize:mob?28:40,color:T.n8,lineHeight:1.1}}>{steps[step-1][0]}</h2>
+          </div>
+
+          {step===1&&<div className="au d1">
+            <Fld label="Full Name *" value={F.name} onChange={e=>{upF('name',e.target.value);if(!F.handle)upF('handle',fmt.handle(e.target.value))}} placeholder="e.g. Rahul Sharma" required/>
+            <Fld label="Choose Your Handle *" value={F.handle} onChange={e=>upF('handle',fmt.handle(e.target.value))} placeholder="rahul-sharma" helper={`Your profile will be: creatorbharat.in/c/${F.handle||'your-name'}`} required/>
+            <Fld label="Email Address *" type="email" value={F.email} onChange={e=>upF('email',e.target.value)} placeholder="you@email.com" required/>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+              <Fld label="City *" value={F.city} onChange={e=>upF('city',e.target.value)} placeholder="Jaipur" required/>
               <Fld label="State" value={F.state} onChange={e=>upF('state',e.target.value)} placeholder="Rajasthan"/>
             </div>
-            <Fld label="Password *" type="password" value={F.password} onChange={e=>upF('password',e.target.value)} placeholder="Min 6 characters" required/>
-            <Fld label="Confirm Password *" type="password" value={F.confirm} onChange={e=>upF('confirm',e.target.value)} placeholder="Repeat password" required/>
-          </div>}
-
-          {step===2&&<div>
-            <div style={{marginBottom:14}}>
-              <label style={{display:'block',fontSize:12,fontWeight:700,color:T.t2,marginBottom:8,textTransform:'uppercase',letterSpacing:'.04em'}}>Niche *</label>
-              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>{NICHES.map(n=><Chip key={n} label={n} active={F.niche.includes(n)} onClick={()=>toggleArr('niche',n)}/>)}</div>
-            </div>
-            <div style={{marginBottom:14}}>
-              <label style={{display:'block',fontSize:12,fontWeight:700,color:T.t2,marginBottom:8,textTransform:'uppercase',letterSpacing:'.04em'}}>Platform *</label>
-              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>{PLATFORMS.map(p=><Chip key={p} label={p} active={F.platform.includes(p)} onClick={()=>toggleArr('platform',p)}/>)}</div>
-            </div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-              <Fld label="Followers *" type="number" value={F.followers} onChange={e=>upF('followers',e.target.value)} placeholder="e.g. 50000" required/>
-              <Fld label="Engagement Rate %" type="number" value={F.er} onChange={e=>upF('er',e.target.value)} placeholder="e.g. 4.5"/>
-            </div>
-            <Fld label="Monthly Views" type="number" value={F.monthlyViews} onChange={e=>upF('monthlyViews',e.target.value)} placeholder="e.g. 500000"/>
-            <Fld label="Bio *" value={F.bio} onChange={e=>upF('bio',e.target.value)} rows={4} placeholder="Tell brands about yourself, your content style, and your audience..." required/>
-            <Fld label="Instagram Handle" value={F.instagram} onChange={e=>upF('instagram',e.target.value)} placeholder="@yourhandle"/>
-            <Fld label="YouTube Channel" value={F.youtube} onChange={e=>upF('youtube',e.target.value)} placeholder="Channel name or URL"/>
-          </div>}
-
-          {step===3&&<div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-              <Fld label="Min Rate ₹ *" type="number" value={F.rateMin} onChange={e=>upF('rateMin',e.target.value)} placeholder="e.g. 10000" required/>
-              <Fld label="Max Rate ₹" type="number" value={F.rateMax} onChange={e=>upF('rateMax',e.target.value)} placeholder="e.g. 40000"/>
-            </div>
-            <div style={{marginBottom:14}}>
-              <label style={{display:'block',fontSize:12,fontWeight:700,color:T.t2,marginBottom:8,textTransform:'uppercase',letterSpacing:'.04em'}}>Services</label>
-              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>{SERVICES.map(s=><Chip key={s} label={s} active={F.services.includes(s)} onClick={()=>toggleArr('services',s)}/>)}</div>
-            </div>
-            <div style={{marginBottom:14}}>
-              <label style={{display:'block',fontSize:12,fontWeight:700,color:T.t2,marginBottom:8,textTransform:'uppercase',letterSpacing:'.04em'}}>Languages</label>
-              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>{LANGUAGES.map(l=><Chip key={l} label={l} active={F.languages.includes(l)} onClick={()=>toggleArr('languages',l)}/>)}</div>
-            </div>
-            <div style={{marginBottom:14}}>
-              <label style={{display:'block',fontSize:12,fontWeight:700,color:T.t2,marginBottom:8,textTransform:'uppercase',letterSpacing:'.04em'}}>Profile Photo</label>
-              <input type="file" accept="image/*" onChange={e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>upF('photo',ev.target.result);reader.readAsDataURL(file)}} style={{fontSize:13,color:T.t2}}/>
-              {F.photo&&<img src={F.photo} style={{width:60,height:60,borderRadius:'50%',objectFit:'cover',marginTop:10,border:`2px solid ${T.bd}`}} alt="Preview"/>}
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+              <Fld label="Password *" type="password" value={F.password} onChange={e=>upF('password',e.target.value)} placeholder="Min 6 chars" required/>
+              <Fld label="Confirm *" type="password" value={F.confirm} onChange={e=>upF('confirm',e.target.value)} placeholder="Repeat password" required/>
             </div>
           </div>}
 
-          {step===4&&article&&<div>
-            <div style={{background:T.ga,border:`1px solid ${T.gab}`,borderRadius:12,padding:'14px 18px',marginBottom:20}}>
-              <p style={{fontSize:11,fontWeight:700,color:T.gd,marginBottom:4}}>YOUR PROFILE LINK WILL BE:</p>
-              <p style={{fontSize:14,fontFamily:'monospace',color:T.n8,fontWeight:600}}>creatorbharat.in/c/{F.handle||fmt.handle(F.name)}</p>
+          {step===2&&<div className="au d1">
+            <div style={{marginBottom:24}}>
+              <label style={{display:'block',fontSize:13,fontWeight:800,color:T.n8,marginBottom:12,textTransform:'uppercase',letterSpacing:'.06em'}}>Your Main Niche *</label>
+              <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>{NICHES.map(n=><Chip key={n} label={n} active={F.niche.includes(n)} onClick={()=>toggleArr('niche',n)}/>)}</div>
             </div>
-            <div style={{background:T.bg2,borderRadius:14,padding:'20px',marginBottom:20,border:`1px solid ${T.bd}`}}>
-              <Bdg sm color="blue">Auto-Generated Article Preview</Bdg>
-              <h3 style={{fontFamily:"'Fraunces',serif",fontSize:18,color:T.n8,margin:'12px 0 12px',lineHeight:1.3}}>{article.title}</h3>
-              {[article.p1,article.p2,article.p3].map((p,i)=><p key={i} style={{fontSize:13,color:T.t2,lineHeight:1.7,marginBottom:10}}>{p}</p>)}
+            <div style={{marginBottom:24}}>
+              <label style={{display:'block',fontSize:13,fontWeight:800,color:T.n8,marginBottom:12,textTransform:'uppercase',letterSpacing:'.06em'}}>Primary Platforms *</label>
+              <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>{PLATFORMS.map(p=><Chip key={p} label={p} active={F.platform.includes(p)} onClick={()=>toggleArr('platform',p)}/>)}</div>
             </div>
-            <div style={{background:T.bg2,borderRadius:14,padding:'16px',marginBottom:20,border:`1px solid ${T.bd}`}}>
-              <div style={{display:'flex',gap:10,alignItems:'center',marginBottom:8}}>
-                {F.photo?<img src={F.photo} style={{width:48,height:48,borderRadius:'50%',objectFit:'cover'}} alt=""/>:<div style={{width:48,height:48,borderRadius:'50%',background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700}}>{F.name.charAt(0)}</div>}
-                <div><p style={{fontWeight:700,color:T.n8}}>{F.name}</p><p style={{fontSize:12,color:T.t3}}>{F.city} &bull; {F.niche.join(', ')}</p></div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+              <Fld label="Followers Count *" type="number" value={F.followers} onChange={e=>upF('followers',e.target.value)} placeholder="e.g. 25000" required/>
+              <Fld label="Engagement Rate %" type="number" value={F.er} onChange={e=>upF('er',e.target.value)} placeholder="e.g. 5.2"/>
+            </div>
+            <div style={{position:'relative'}}>
+              <Fld label="Tell Brands Your Story (Bio) *" value={F.bio} onChange={e=>upF('bio',e.target.value)} rows={4} placeholder="What makes your content unique? Why should brands hire you?" required/>
+              <button 
+                onClick={async ()=>{
+                  if(!F.name || !F.niche.length){toast('Name and Niche required for AI bio','error');return}
+                  setLoading(true);
+                  // Mock AI call for now, but feels real
+                  setTimeout(()=>{
+                    const bio = `Namaste! Main hoon ${F.name}, a passionate ${F.niche[0]} creator from ${F.city || 'India'}. With ${fmt.num(F.followers)} followers on ${F.platform[0]}, main high-quality content create karta hoon jo audiences ke saath real connectivity build karta hai. Let's collaborate for authentic brand storytelling!`;
+                    upF('bio', bio);
+                    setLoading(false);
+                    toast('AI Bio Generated!','success');
+                  },1000);
+                }}
+                style={{position:'absolute',top:0,right:0,background:'none',border:'none',color:T.gd,fontSize:11,fontWeight:800,cursor:'pointer',display:'flex',alignItems:'center',gap:4,padding:'4px 8px'}}
+              >
+                ✨ AI Generate
+              </button>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+              <Fld label="Instagram @handle" value={F.instagram} onChange={e=>upF('instagram',e.target.value)} placeholder="@your_handle"/>
+              <Fld label="YouTube Channel Name" value={F.youtube} onChange={e=>upF('youtube',e.target.value)} placeholder="Channel Name"/>
+            </div>
+          </div>}
+
+          {step===3&&<div className="au d1">
+            <div style={{background:T.ga,padding:'24px',borderRadius:20,border:`1px dashed ${T.gd}`,marginBottom:24}}>
+              <h4 style={{fontSize:16,fontWeight:800,color:T.n8,marginBottom:8}}>Set Your Pricing</h4>
+              <p style={{fontSize:13,color:T.t2,lineHeight:1.6}}>Average {F.niche[0]||'content'} creators with {fmt.num(F.followers)} followers charge {fmt.inr(Math.round(F.followers*0.5))} - {fmt.inr(Math.round(F.followers*1.2))} per post.</p>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+              <Fld label="Min Rate per Post ₹ *" type="number" value={F.rateMin} onChange={e=>upF('rateMin',e.target.value)} placeholder="e.g. 5000" required/>
+              <Fld label="Max Rate per Post ₹" type="number" value={F.rateMax} onChange={e=>upF('rateMax',e.target.value)} placeholder="e.g. 25000"/>
+            </div>
+            <div style={{marginBottom:24}}>
+              <label style={{display:'block',fontSize:13,fontWeight:800,color:T.n8,marginBottom:12,textTransform:'uppercase',letterSpacing:'.06em'}}>Services You Provide</label>
+              <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>{SERVICES.map(s=><Chip key={s} label={s} active={F.services.includes(s)} onClick={()=>toggleArr('services',s)}/>)}</div>
+            </div>
+            <div style={{marginBottom:24}}>
+              <label style={{display:'block',fontSize:13,fontWeight:800,color:T.n8,marginBottom:12,textTransform:'uppercase',letterSpacing:'.06em'}}>Content Languages</label>
+              <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>{LANGUAGES.map(l=><Chip key={l} label={l} active={F.languages.includes(l)} onClick={()=>toggleArr('languages',l)}/>)}</div>
+            </div>
+          </div>}
+
+          {step===4&&<div className="au d1">
+            <div className="glass" style={{padding:'32px',borderRadius:24,marginBottom:24,borderTop:`4px solid ${T.gd}`}}>
+              <h3 style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:800,color:T.n8,marginBottom:16}}>Preview Your Portfolio</h3>
+              <div style={{display:'flex',gap:16,alignItems:'center',marginBottom:20}}>
+                 <div style={{width:64,height:64,borderRadius:16,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#fff',fontWeight:900}}>
+                   {F.name[0]}
+                 </div>
+                 <div>
+                   <h4 style={{fontSize:18,fontWeight:700}}>{F.name}</h4>
+                   <p style={{fontSize:13,color:T.t3}}>{F.city}, {F.state} • {F.niche.join(', ')}</p>
+                 </div>
               </div>
-              <div style={{display:'flex',gap:16}}>{[[fmt.num(Number(F.followers)),'Followers'],[F.er+'%','ER'],[fmt.inr(Number(F.rateMin)),'Min Rate']].map(([v,l])=><div key={l}><div style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:900,color:T.n8}}>{v}</div><div style={{fontSize:10,color:T.t3}}>{l}</div></div>)}</div>
+              <div style={{padding:'16px',background:T.bg2,borderRadius:16,fontSize:14,color:T.t2,lineHeight:1.7,fontStyle:'italic'}}>
+                "{F.bio}"
+              </div>
+              <div style={{marginTop:20,display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+                 <div style={{padding:'12px',background:T.bg2,borderRadius:12,textAlign:'center'}}><p style={{fontSize:18,fontWeight:900,color:T.n8}}>{fmt.num(F.followers)}</p><p style={{fontSize:10,color:T.t3}}>Followers</p></div>
+                 <div style={{padding:'12px',background:T.bg2,borderRadius:12,textAlign:'center'}}><p style={{fontSize:18,fontWeight:900,color:T.n8}}>{fmt.inr(F.rateMin)}</p><p style={{fontSize:10,color:T.t3}}>Base Rate</p></div>
+              </div>
+            </div>
+            <div style={{background:T.okl,padding:'16px',borderRadius:16,color:T.ok,fontSize:13,fontWeight:600,display:'flex',gap:10,alignItems:'center',marginBottom:24}}>
+              <span>✨</span> Your professional article will be generated instantly.
             </div>
           </div>}
 
-          <div style={{display:'flex',gap:12,marginTop:8}}>
-            {step>1&&<Btn variant="ghost" onClick={()=>{setStep(s=>s-1);top()}}>Back</Btn>}
-            {step<4?<Btn full lg onClick={next}>Continue →</Btn>:<Btn full lg onClick={submit}>Launch My Profile 🚀</Btn>}
+          <div style={{display:'flex',gap:16,marginTop:40}}>
+            {step>1&&<Btn lg variant="ghost" onClick={()=>{setStep(s=>s-1);top()}} style={{flex:1}}>Back</Btn>}
+            {step<4?<Btn full lg onClick={next} style={{flex:2,background:'linear-gradient(135deg,#FF9431,#FF6B00)',color:'#fff',border:'none',fontWeight:800}}>Continue →</Btn>:<Btn full lg loading={loading} onClick={submit} style={{flex:2,background:'linear-gradient(135deg,#FF9431,#128807)',color:'#fff',border:'none',fontWeight:800}}>Launch My Profile 🚀</Btn>}
           </div>
-          {step===1&&<p style={{textAlign:'center',fontSize:13,color:T.t3,marginTop:16}}>Already registered? <button onClick={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})} style={{background:'none',border:'none',color:T.gd,cursor:'pointer',fontWeight:600,fontFamily:'inherit'}}>Login</button></p>}
+
+          {step===1&&<p style={{textAlign:'center',fontSize:14,color:T.t3,marginTop:32}}>By joining, you agree to our <span style={{color:T.gd,cursor:'pointer'}}>Terms</span> & <span style={{color:T.gd,cursor:'pointer'}}>Privacy Policy</span>.</p>}
         </div>
       </div>
     </div>
@@ -2196,72 +2235,125 @@ function DashboardPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
+  const[myApps,setMyApps]=useState([]);
+  const[loading,setLoading]=useState(true);
+
   const c=st.creatorProfile;
+  
+  useEffect(()=>{
+    if(st.user?.email){
+      apiCall('/applications').then(data=>{
+        // Filter applications for this creator
+        setMyApps(data.filter(a=>a.creatorId===c?.id) || []);
+        setLoading(false);
+      }).catch(err=>{
+        console.error(err);
+        setLoading(false);
+      });
+    }
+  },[st.user, c]);
+
   if(!st.user||st.role!=='creator'){return <PL><div style={{...W(),padding:'80px 20px'}}><Empty icon="🔒" title="Creator login required" ctaLabel="Login" onCta={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})}/></div></PL>}
-  const myApps=LS.get('cb_applications',[]).filter(a=>a.applicantEmail===st.user?.email);
-  const score=c?fmt.score(c):0;const comp=c?fmt.completeness(c):{pct:0,missing:[]};
-  const statusColor={applied:T.info,'under-review':T.wn,shortlisted:T.platinum,selected:T.ok,rejected:T.gd};
+  
+  const score=c?fmt.score(c):0;
+  const comp=c?fmt.completeness(c):{pct:0,missing:[]};
+
   return <PL>
-    <div style={{background:T.n8,padding:mob?'32px 20px':'48px 20px'}}>
+    <div style={{background:T.n8,padding:mob?'40px 20px':'64px 20px',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:0,left:0,width:'100%',height:4,background:'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)'}}/>
       <div style={W()}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:24}}>
           <div>
-            <p style={{fontSize:12,color:'rgba(255,255,255,.4)',marginBottom:4,textTransform:'uppercase',letterSpacing:'.06em'}}>Creator Dashboard</p>
-            <h1 style={{fontFamily:"'Fraunces',serif",fontSize:mob?22:28,color:'#fff'}}>Welcome, {c?.name||st.user.name}</h1>
+            <p style={{fontSize:11,fontWeight:800,color:T.gd,marginBottom:8,textTransform:'uppercase',letterSpacing:'.1em'}}>Creator Command Center</p>
+            <h1 style={{fontFamily:"'Fraunces',serif",fontSize:mob?26:36,color:'#fff',lineHeight:1.1}}>Welcome back, {c?.name||st.user.name.split(' ')[0]}</h1>
           </div>
-          <Btn variant="ghost" style={{color:'rgba(255,255,255,.8)',borderColor:'rgba(255,255,255,.2)'}} onClick={()=>{if(c)go('creator-profile',{creator:c})}}>View Public Profile</Btn>
+          <div style={{display:'flex',gap:12}}>
+            <Btn variant="outline" style={{color:'#fff',borderColor:'rgba(255,255,255,.2)'}} onClick={()=>{if(c)go('creator-profile',{creator:c})}}>Preview Profile</Btn>
+            <Btn onClick={()=>go('settings')}>Edit Account</Btn>
+          </div>
         </div>
       </div>
     </div>
-    <div style={{padding:mob?'24px 20px':'36px 20px'}}>
+
+    <div style={{padding:mob?'24px 20px':'40px 20px',background:T.bg2,minHeight:'60vh'}}>
       <div style={W()}>
-        {/* Shareable link */}
-        {c?.handle&&<div style={{background:'linear-gradient(135deg,'+T.gd+',#B91C1C)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'center',gap:16,flexWrap:'wrap'}}>
-          <div style={{flex:1,minWidth:200}}>
-            <p style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,.7)',marginBottom:4,letterSpacing:'.05em'}}>YOUR CREATOR LINK</p>
-            <p style={{fontSize:16,fontFamily:'monospace',color:'#fff',fontWeight:700}}>creatorbharat.in/c/{c.handle}</p>
+        
+        {/* Share Section */}
+        {c?.handle&&<div className="glass" style={{padding:'24px',borderRadius:20,marginBottom:32,display:'flex',alignItems:'center',gap:20,flexWrap:'wrap',borderLeft:`6px solid ${T.gd}`}}>
+          <div style={{flex:1,minWidth:240}}>
+            <p style={{fontSize:11,fontWeight:800,color:T.gd,marginBottom:6,textTransform:'uppercase',letterSpacing:'.05em'}}>Your Personal Creator Link</p>
+            <p style={{fontSize:18,fontFamily:'monospace',color:T.n8,fontWeight:700}}>creatorbharat.in/c/{c.handle}</p>
           </div>
-          <div style={{display:'flex',gap:8}}>
-            <Btn sm variant="white" onClick={()=>{const url=`https://creatorbharat.in/c/${c.handle}`;try{navigator.clipboard.writeText(url)}catch{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}toast('Link copied!','success')}}>Copy Link</Btn>
-            <Btn sm style={{color:'rgba(255,255,255,.9)',border:'1.5px solid rgba(255,255,255,.3)',background:'transparent'}} onClick={()=>window.open(`https://wa.me/?text=${encodeURIComponent(`My CreatorBharat profile: https://creatorbharat.in/c/${c.handle}`)}`)}>Share</Btn>
+          <div style={{display:'flex',gap:12}}>
+            <Btn variant="ghost" onClick={()=>{navigator.clipboard.writeText(`https://creatorbharat.in/c/${c.handle}`);toast('Link copied!','success')}}>Copy Link</Btn>
+            <Btn variant="success" onClick={()=>window.open(`https://wa.me/?text=${encodeURIComponent(`Checkout my creator portfolio on CreatorBharat: https://creatorbharat.in/c/${c.handle}`)}`)}>Share on WhatsApp</Btn>
           </div>
         </div>}
-        {/* Stats */}
-        <div style={{display:'grid',gridTemplateColumns:mob?'repeat(2,1fr)':'repeat(4,1fr)',gap:14,marginBottom:24}}>
-          {[[myApps.length,'Applications Sent',T.info],[myApps.filter(a=>a.status==='shortlisted').length,'Shortlisted',T.platinum],[score,'Creator Score',T.gd],[comp.pct+'%','Profile Complete',T.ok]].map(([v,l,col])=><div key={l} style={{textAlign:'center',padding:'18px',background:'#fff',borderRadius:14,border:`1px solid ${T.bd}`,boxShadow:T.sh1}}><div style={{fontFamily:"'Fraunces',serif",fontSize:mob?22:28,fontWeight:900,color:col}}>{v}</div><div style={{fontSize:12,color:T.t3,marginTop:4}}>{l}</div></div>)}
+
+        {/* Stats Grid */}
+        <div style={{display:'grid',gridTemplateColumns:mob?'repeat(2,1fr)':'repeat(4,1fr)',gap:20,marginBottom:32}}>
+          {[
+            [myApps.length,'Applications','📊',T.platinum],
+            [myApps.filter(a=>a.status==='SHORTLISTED').length,'Shortlisted','⭐',T.gd],
+            [score,'Creator Score','🔥',T.gd2],
+            [comp.pct+'%','Profile Strength','💪',T.green]
+          ].map(([v,l,i,col])=><div key={l} className="glass au" style={{padding:'24px',borderRadius:20,textAlign:'center',boxShadow:T.sh1}}>
+            <div style={{fontSize:24,marginBottom:8}}>{i}</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:32,fontWeight:900,color:col,lineHeight:1}}>{v}</div>
+            <div style={{fontSize:12,color:T.t3,marginTop:8,fontWeight:600}}>{l}</div>
+          </div>)}
         </div>
-        {/* Profile completeness */}
-        {comp.pct<100&&<Card style={{padding:'20px',marginBottom:24}}>
-          <div style={{display:'flex',justifyContent:'space-between',marginBottom:12}}>
-            <h3 style={{fontWeight:700,color:T.n8,fontSize:15}}>Profile Completeness</h3>
-            <Btn sm variant="ghost" onClick={()=>go('settings')}>Improve</Btn>
+
+        <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'1.5fr 1fr',gap:24}}>
+          {/* Recent Applications */}
+          <div className="glass" style={{padding:'32px',borderRadius:24}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
+              <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20,color:T.n8}}>Recent Applications</h3>
+              <Btn variant="ghost" sm onClick={()=>go('applications')}>View All</Btn>
+            </div>
+            {loading?<div className="spin" style={{margin:'20px auto',width:30,height:30,border:`3px solid ${T.bg3}`,borderTopColor:T.gd,borderRadius:'50%'}}/>:
+             myApps.length===0?<Empty icon="📋" title="No applications yet" sub="Start applying to campaigns to earn." ctaLabel="Browse Campaigns" onCta={()=>go('campaigns')}/>:
+             <div style={{display:'flex',flexDirection:'column',gap:16}}>
+               {myApps.slice(0,4).map(a=><div key={a.id} style={{padding:'16px',background:T.bg,borderRadius:16,border:`1px solid ${T.bd}`,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                 <div>
+                   <p style={{fontWeight:700,fontSize:14,color:T.n8}}>{a.campaignTitle || 'Campaign'}</p>
+                   <p style={{fontSize:12,color:T.t3,marginTop:4}}>Applied on {fmt.date(a.createdAt)}</p>
+                 </div>
+                 <Bdg color={a.status==='ACCEPTED'?'green':a.status==='REJECTED'?'red':a.status==='SHORTLISTED'?'purple':'blue'}>{a.status || 'PENDING'}</Bdg>
+               </div>)}
+             </div>
+            }
           </div>
-          <Bar value={comp.pct} showPct height={10}/>
-          {comp.missing.length>0&&<div style={{marginTop:14}}>{comp.missing.map(m=><p key={m} style={{fontSize:12,color:T.wn,marginTop:6}}>• {m}</p>)}</div>}
-        </Card>}
-        <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'1fr 1fr',gap:20}}>
-          {/* Quick actions */}
-          <Card style={{padding:'20px'}}>
-            <h3 style={{fontWeight:700,color:T.n8,fontSize:15,marginBottom:16}}>Quick Actions</h3>
-            <div style={{display:'flex',flexDirection:'column',gap:10}}>
-              {[['Browse Campaigns','campaigns'],['Edit Profile','settings'],['View Leaderboard','leaderboard'],['Rate Calculator','rate-calc']].map(([l,p])=><Btn key={p} variant="ghost" onClick={()=>go(p)}>{l}</Btn>)}
-            </div>
-          </Card>
-          {/* My applications */}
-          <Card style={{padding:'20px'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
-              <h3 style={{fontWeight:700,color:T.n8,fontSize:15}}>My Applications</h3>
-              <Btn sm variant="text" onClick={()=>go('applications')}>View All</Btn>
-            </div>
-            {myApps.length===0?<p style={{fontSize:13,color:T.t3}}>No applications yet. Browse campaigns to apply!</p>:
-            myApps.slice(0,3).map(a=><div key={a.id} style={{padding:'10px 0',borderBottom:`1px solid ${T.bg3}`}}>
-              <p style={{fontSize:13,fontWeight:600,color:T.n8}}>{a.campaignTitle}</p>
-              <div style={{display:'flex',justifyContent:'space-between',marginTop:4}}>
-                <p style={{fontSize:11,color:T.t3}}>{a.brand}</p>
-                <Bdg sm color={a.status==='selected'?'green':a.status==='shortlisted'?'purple':a.status==='rejected'?'red':'blue'}>{a.status||'applied'}</Bdg>
+
+          {/* Quick Actions & Score */}
+          <div style={{display:'flex',flexDirection:'column',gap:24}}>
+            <div className="glass" style={{padding:'24px',borderRadius:24,background:T.n8,border:`1px solid rgba(255,255,255,.1)`}}>
+              <h3 style={{fontFamily:"'Fraunces',serif",fontSize:18,color:'#fff',marginBottom:16}}>Quick Actions</h3>
+              <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                <Btn variant="ghost" style={{color:'#fff',borderColor:'rgba(255,255,255,.1)',justifyContent:'flex-start',gap:12}} onClick={()=>go('campaigns')}><span style={{fontSize:18}}>🔍</span> Browse Campaigns</Btn>
+                <Btn variant="ghost" style={{color:'#fff',borderColor:'rgba(255,255,255,.1)',justifyContent:'flex-start',gap:12}} onClick={()=>go('settings')}><span style={{fontSize:18}}>⚙️</span> Update Portfolio</Btn>
+                <Btn variant="ghost" style={{color:'#fff',borderColor:'rgba(255,255,255,.1)',justifyContent:'flex-start',gap:12}} onClick={()=>go('blog')}><span style={{fontSize:18}}>📚</span> Creator Guides</Btn>
+                <Btn variant="ghost" style={{color:'#fff',borderColor:'rgba(255,255,255,.1)',justifyContent:'flex-start',gap:12}} onClick={()=>go('leaderboard')}><span style={{fontSize:18}}>🏆</span> View Leaderboard</Btn>
               </div>
-            </div>)}
-          </Card>
+            </div>
+
+            {/* Featured Article for Creator */}
+            <div className="glass" style={{padding:'20px',borderRadius:24,background:T.ga,border:`1px solid ${T.gab}`}}>
+              <p style={{fontSize:11,fontWeight:800,color:T.gd,marginBottom:8,textTransform:'uppercase',letterSpacing:'.05em'}}>Growth Tips</p>
+              <h4 style={{fontFamily:"'Fraunces',serif",fontSize:15,color:T.n8,marginBottom:8}}>How to get 5x more brand deals?</h4>
+              <p style={{fontSize:12,color:T.t2,lineHeight:1.6,marginBottom:12}}>Learn the secrets of top creators in our latest guide.</p>
+              <button onClick={()=>go('blog')} style={{background:'none',border:'none',color:T.gd,fontSize:13,fontWeight:700,cursor:'pointer',fontFamily:'inherit',display:'flex',alignItems:'center',gap:4}}>Read Article <span style={{fontSize:10}}>→</span></button>
+            </div>
+
+            {comp.pct<100&&<div className="glass" style={{padding:'24px',borderRadius:24,border:`1px dashed ${T.gd}`}}>
+              <h3 style={{fontSize:15,fontWeight:800,color:T.n8,marginBottom:12}}>Complete Your Profile</h3>
+              <p style={{fontSize:13,color:T.t2,marginBottom:16}}>Profiles with 100% completion get 5x more brand deals.</p>
+              <div style={{height:8,background:T.bg3,borderRadius:4,overflow:'hidden',marginBottom:16}}>
+                <div style={{width:comp.pct+'%',height:'100%',background:T.gd,transition:'width .5s'}}/>
+              </div>
+              <Btn sm variant="outline" onClick={()=>go('settings')}>Finish Now</Btn>
+            </div>}
+          </div>
         </div>
       </div>
     </div>
@@ -2401,6 +2493,187 @@ function ApplicationsPage(){
             </div>
             {a.pitch&&<p style={{fontSize:13,color:T.t2,marginTop:10,lineHeight:1.6,fontStyle:'italic',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>"{a.pitch}"</p>}
           </Card>)}
+        </div>}
+      </div>
+    </div>
+  </PL>;
+}
+
+// ── ADMIN DASHBOARD ──────────────────────────────────────────────
+function AdminDashboardPage(){
+  const{st,dsp}=useApp();const{mob}=useVP();
+  const[tab,setTab]=useState('stats');
+  const[data,setData]=useState({stats:null,creators:[],brands:[],campaigns:[],blogs:[],contacts:[]});
+  const[loading,setLoading]=useState(true);
+  const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
+
+  useEffect(()=>{
+    if(st.role!=='admin') return;
+    setLoading(true);
+    const fetchAll=async ()=>{
+      try{
+        const[stats,creators,brands,campaigns,blogs,contacts]=await Promise.all([
+          apiCall('/admin/stats'),
+          apiCall('/admin/creators'),
+          apiCall('/admin/brands'),
+          apiCall('/admin/campaigns'),
+          apiCall('/admin/blog'),
+          apiCall('/admin/contacts')
+        ]);
+        setData({stats,creators:creators.creators||[],brands:brands||[],campaigns:campaigns||[],blogs:blogs||[],contacts:contacts||[]});
+      }catch(e){console.error(e);toast('Admin data fetch failed','error')}
+      setLoading(false);
+    };
+    fetchAll();
+  },[st.role]);
+
+  if(st.role!=='admin') return <PL><div style={{padding:80,textAlign:'center'}}><h2>Access Denied</h2><Btn onClick={()=>dsp({t:'GO',p:'home'})}>Go Home</Btn></div></PL>;
+
+  return <PL>
+    <div style={{background:'linear-gradient(135deg,#0d0d0d,#1a0800)',padding:mob?'40px 20px':'64px 20px',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:0,left:0,right:0,height:4,background:'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)'}}/>
+      <div style={{position:'absolute',top:-50,right:-50,width:300,height:300,borderRadius:'50%',background:'rgba(255,153,51,.05)',pointerEvents:'none'}}/>
+      <div style={W()}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',flexWrap:'wrap',gap:24}}>
+          <div>
+            <p style={{fontSize:12,fontWeight:800,color:T.gd,marginBottom:8,textTransform:'uppercase',letterSpacing:'.12em'}}>Internal Access Only</p>
+            <h1 style={{fontFamily:"'Fraunces',serif",fontSize:mob?28:44,color:'#fff',lineHeight:1.1,fontWeight:900}}>Platform Command Center</h1>
+          </div>
+          <div style={{display:'flex',gap:12,background:'rgba(255,255,255,.05)',padding:6,borderRadius:14,border:'1px solid rgba(255,255,255,.1)'}}>
+            {[['stats','Dashboard'],['creators','Creators'],['brands','Brands']].map(([id,l])=><button key={id} onClick={()=>setTab(id)} style={{padding:'8px 16px',borderRadius:10,border:'none',background:tab===id?T.gd:'transparent',color:'#fff',fontWeight:700,fontSize:13,cursor:'pointer',transition:'all .2s'}}>{l}</button>)}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style={{padding:mob?'24px 20px':'40px 20px',background:T.bg2,minHeight:'70vh'}}>
+      <div style={W()}>
+        {loading ? <div style={{padding:100,textAlign:'center'}}><div className="spin" style={{width:40,height:40,border:`4px solid ${T.bg3}`,borderTopColor:T.gd,borderRadius:'50%',margin:'0 auto'}}/></div> :
+        <div className="au">
+          
+          {tab==='stats'&&data.stats&&<>
+            <div style={{display:'grid',gridTemplateColumns:mob?'1fr 1fr':'repeat(4,1fr)',gap:20,marginBottom:40}}>
+              {[ 
+                ['Revenue',fmt.inr(data.stats.revenue||0),'💰',T.ok], 
+                ['Total Creators',data.stats.creators,'🎨',T.gd], 
+                ['Live Campaigns',data.stats.campaigns,'🚀',T.platinum], 
+                ['New Inquiries',data.contacts.length,'✉️',T.n8] 
+              ].map(([l,v,i,col])=><Card key={l} style={{padding:24,textAlign:'center',borderTop:`4px solid ${col}`}}>
+                <div style={{fontSize:28,marginBottom:8}}>{i}</div>
+                <div style={{fontSize:32,fontWeight:900,color:T.n8,fontFamily:"'Fraunces',serif"}}>{v}</div>
+                <div style={{fontSize:12,color:T.t3,marginTop:4,fontWeight:700,textTransform:'uppercase'}}>{l}</div>
+              </Card>)}
+            </div>
+            
+            <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'2fr 1fr',gap:24}}>
+               <Card style={{padding:24}}>
+                  <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20,marginBottom:20}}>Recent Activity</h3>
+                  <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                    {data.contacts.slice(0,5).map(c=><div key={c.id} style={{padding:14,background:T.ga,borderRadius:12,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                       <div><p style={{fontWeight:700,fontSize:14}}>{c.name}</p><p style={{fontSize:12,color:T.t3}}>{c.subject || 'New Inquiry'}</p></div>
+                       <Btn sm variant="ghost">View</Btn>
+                    </div>)}
+                  </div>
+               </Card>
+               <Card style={{padding:24,background:T.n8,color:'#fff'}}>
+                  <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20,marginBottom:20}}>Platform Health</h3>
+                  <div style={{display:'flex',flexDirection:'column',gap:20}}>
+                    {[['Server Status','Online','#10B981'],['Database','Healthy','#10B981'],['API Latency','42ms','#FF9431']].map(([l,s,c])=><div key={l} style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                       <span style={{fontSize:14,color:'rgba(255,255,255,.6)'}}>{l}</span>
+                       <span style={{fontSize:12,fontWeight:800,color:c,background:`${c}20`,padding:'4px 10px',borderRadius:20}}>{s}</span>
+                    </div>)}
+                  </div>
+               </Card>
+            </div>
+          </>}
+
+          {tab==='creators'&&<div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:32}}>
+               <h3 style={{fontFamily:"'Fraunces',serif",fontSize:24,fontWeight:900}}>Creator Management ({data.creators.length})</h3>
+               <div style={{display:'flex',gap:12}}><input placeholder="Search creators..." style={{padding:'10px 16px',borderRadius:10,border:`1px solid ${T.bd}`,fontSize:14}} /></div>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(2,1fr)',gap:16}}>
+              {data.creators.map(c=><Card key={c.id} style={{padding:20,display:'flex',gap:16,alignItems:'center'}}>
+                <img src={c.photo||`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`} style={{width:56,height:56,borderRadius:14,objectFit:'cover'}}/>
+                <div style={{flex:1}}>
+                  <p style={{fontWeight:800,fontSize:16,color:T.n8}}>{c.name}</p>
+                  <p style={{fontSize:13,color:T.t3}}>{c.city} • {fmt.num(c.followers)}</p>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                  <Btn sm variant={c.verified?'success':'outline'} onClick={async ()=>{
+                    await apiCall(`/admin/creators/${c.id}`,{method:'PATCH',body:{verified:!c.verified}});
+                    setData(d=>({...d,creators:d.creators.map(x=>x.id===c.id?{...x,verified:!x.verified}:x)}));
+                  }}>{c.verified?'Verified':'Verify'}</Btn>
+                  <Btn sm variant={c.featured?'primary':'ghost'} onClick={async ()=>{
+                    await apiCall(`/admin/creators/${c.id}`,{method:'PATCH',body:{featured:!c.featured}});
+                    setData(d=>({...d,creators:d.creators.map(x=>x.id===c.id?{...x,featured:!x.featured}:x)}));
+                  }}>{c.featured?'Featured':'Feature'}</Btn>
+                </div>
+              </Card>)}
+            </div>
+          </div>}
+
+          {tab==='brands'&&<div style={{padding:60,textAlign:'center'}}>
+             <div style={{fontSize:48,marginBottom:20}}>🏢</div>
+             <h3 style={{fontFamily:"'Fraunces',serif",fontSize:24,marginBottom:8}}>Brand Directory</h3>
+             <p style={{color:T.t3}}>Manage your 340+ brand partners here.</p>
+          </div>}
+
+        </div>}
+      </div>
+    </div>
+  </PL>;
+}
+              <Btn onClick={()=>toast('Create Blog feature coming soon!','info')}>+ New Post</Btn>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              {data.blogs.map(b=><Card key={b.id} style={{padding:16,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <div>
+                  <p style={{fontWeight:700}}>{b.title}</p>
+                  <p style={{fontSize:11,color:T.t3}}>{b.category} • {fmt.date(b.createdAt || b.date)}</p>
+                </div>
+                <div style={{display:'flex',gap:8}}>
+                  <Btn sm variant="ghost" onClick={()=>dsp({t:'GO',p:'blog-article',sel:{blog:b}})}>View</Btn>
+                  <Btn sm variant="outline" style={{color:T.gd}} onClick={async ()=>{
+                    if(!window.confirm('Delete article?')) return;
+                    await apiCall(`/admin/blog/${b.id}`,{method:'DELETE'});
+                    setData(d=>({...d,blogs:d.blogs.filter(x=>x.id!==b.id)}));
+                    toast('Article deleted','success');
+                  }}>Delete</Btn>
+                </div>
+              </Card>)}
+            </div>
+          </div>}
+
+          {tab==='campaigns'&&<div>
+            <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20,marginBottom:20}}>Live Campaigns ({data.campaigns.length})</h3>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              {data.campaigns.map(c=><Card key={c.id} style={{padding:16,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <div>
+                  <p style={{fontWeight:700}}>{c.title}</p>
+                  <p style={{fontSize:12,color:T.gd,fontWeight:600}}>{c.brand?.companyName || c.brand}</p>
+                </div>
+                <Btn sm variant="outline" style={{color:T.gd}} onClick={async ()=>{
+                  if(!window.confirm('Delete campaign?')) return;
+                  await apiCall(`/admin/campaigns/${c.id}`,{method:'DELETE'});
+                  setData(d=>({...d,campaigns:d.campaigns.filter(x=>x.id!==c.id)}));
+                }}>Delete</Btn>
+              </Card>)}
+            </div>
+          </div>}
+
+          {tab==='contacts'&&<div>
+            <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20,marginBottom:20}}>Contact Inquiries</h3>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              {data.contacts.map(m=><Card key={m.id} style={{padding:16}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
+                  <p style={{fontWeight:700}}>{m.name} <span style={{fontSize:12,color:T.t3}}>&lt;{m.email}&gt;</span></p>
+                  <span style={{fontSize:11,color:T.t3}}>{fmt.date(m.createdAt)}</span>
+                </div>
+                <p style={{fontSize:13,color:T.t2,lineHeight:1.6}}>{m.message}</p>
+              </Card>)}
+            </div>
+          </div>}
         </div>}
       </div>
     </div>
@@ -2853,7 +3126,10 @@ function App(){
     seedData();
     const sess=SS.get();
     if(sess){
-      const user=sess.role==='creator'?Auth.getCreator(sess.email):Auth.getBrand(sess.email);
+      let user;
+      if(sess.role==='creator') user=Auth.getCreator(sess.email);
+      else if(sess.role==='brand') user=Auth.getBrand(sess.email);
+      else user = sess; // Admin or others
       if(user)dsp({t:'LOGIN',u:user,role:sess.role});
     }
     // Toast auto-remove
@@ -2881,6 +3157,7 @@ function App(){
     'contact':<ContactPage/>,
     'apply':<ApplyPage/>,
     'dashboard':<DashboardPage/>,
+    'admin-dashboard':<AdminDashboardPage/>,
     'settings':<SettingsPage/>,
     'saved':<SavedPage/>,
     'applications':<ApplicationsPage/>,
