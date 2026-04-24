@@ -15,7 +15,6 @@ async function main() {
       email: 'admin@creatorbharat.in',
       password: adminPassword,
       role: 'ADMIN',
-      name: 'Super Admin',
     },
   });
 
@@ -91,13 +90,12 @@ async function main() {
         email: c.email,
         password: c.password,
         role: 'CREATOR',
-        name: c.name,
       }
     });
 
     await prisma.creator.upsert({
       where: { userId: user.id },
-      update: {},
+      update: { status: 'ACTIVE' },
       create: {
         userId: user.id,
         handle: c.handle,
@@ -107,11 +105,12 @@ async function main() {
         niche: c.niche,
         platform: c.platform,
         followers: c.followers,
-        er: c.er,
+        engagementRate: c.er,
         verified: c.verified,
         featured: c.featured,
         score: c.score,
         pro: true,
+        status: 'ACTIVE',
       }
     });
   }
@@ -124,7 +123,6 @@ async function main() {
       email: 'brand@demo.in',
       password: await bcrypt.hash('demo123', 10),
       role: 'BRAND',
-      name: 'MakeMyTrip',
     }
   });
 
@@ -134,6 +132,7 @@ async function main() {
     create: {
       userId: brandUser.id,
       companyName: 'MakeMyTrip',
+      contactName: 'Brand Manager',
       industry: 'Travel',
     }
   });
@@ -148,7 +147,7 @@ async function main() {
       slots: 10,
       filled: 0,
       urgent: true,
-      status: 'live',
+      status: 'LIVE',
       niche: ['Travel'],
       platform: ['Instagram', 'YouTube']
     },
@@ -161,7 +160,7 @@ async function main() {
       slots: 15,
       filled: 0,
       urgent: false,
-      status: 'live',
+      status: 'LIVE',
       niche: ['Fashion', 'Beauty'],
       platform: ['Instagram']
     },
@@ -174,7 +173,7 @@ async function main() {
       slots: 8,
       filled: 0,
       urgent: false,
-      status: 'live',
+      status: 'LIVE',
       niche: ['Tech', 'Gaming'],
       platform: ['YouTube', 'Instagram']
     }
@@ -200,6 +199,7 @@ async function main() {
       category: 'Creator Stories',
       excerpt: 'From Jaipur to Patna, creators from Tier 2 and 3 cities are building massive audiences.',
       body: 'The narrative around Indian content creation has always centered on Mumbai and Delhi. But 2026 has rewritten that story entirely...',
+      author: 'CreatorBharat Team',
       featured: true,
       image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80',
     },
@@ -209,6 +209,7 @@ async function main() {
       category: 'Creator Tips',
       excerpt: 'Step-by-step guide to landing your first brand collaboration.',
       body: 'Landing your first brand deal feels impossible until it happens...',
+      author: 'Rahul Sharma',
       featured: false,
       image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&q=80',
     },
@@ -218,6 +219,7 @@ async function main() {
       category: 'Brand Guides',
       excerpt: 'The metric that actually predicts campaign success.',
       body: 'Creator A: 1M followers, 1.2% ER. Creator B: 150K followers, 8.5% ER. Same reach. Creator B costs 5-8x less...',
+      author: 'CreatorBharat Team',
       featured: false,
       image: 'https://images.unsplash.com/photo-1611605698335-8441051e7b47?w=800&q=80',
     },
@@ -227,6 +229,7 @@ async function main() {
       category: 'Top Lists',
       excerpt: 'India\'s regional creator landscape is richer than ever.',
       body: '1. Jaipur 2. Ahmedabad 3. Lucknow 4. Indore 5. Surat...',
+      author: 'Editorial Team',
       featured: false,
       image: 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=800&q=80',
     },
@@ -236,13 +239,14 @@ async function main() {
       category: 'Creator Tips',
       excerpt: 'Stop undercharging. Start using the 2026 formula.',
       body: 'Use the CreatorBharat Rate Calculator. Base = followers x ER x platform multiplier...',
+      author: 'CreatorBharat Team',
       featured: false,
       image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80',
     }
   ];
 
   for (const b of blogs) {
-    await prisma.blogPost.upsert({
+    await prisma.blog.upsert({
       where: { slug: b.slug },
       update: {},
       create: b
