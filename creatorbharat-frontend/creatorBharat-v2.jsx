@@ -2897,8 +2897,17 @@ function App(){
   );
 }
 
+console.log("BABEL COMPILED SUCCESSFULLY! PREPARING TO MOUNT...");
 setTimeout(() => {
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    React.createElement(App)
-  );
+  console.log("SET TIMEOUT FIRED! MOUNTING APP NOW...");
+  const root = document.getElementById('root');
+  console.log("ROOT ELEMENT:", root);
+  try {
+    ReactDOM.createRoot(root).render(
+      React.createElement(App)
+    );
+    console.log("MOUNT SUCCESSFUL!");
+  } catch (err) {
+    console.error("REACT RENDER ERROR:", err);
+  }
 }, 0);
