@@ -1045,7 +1045,7 @@ function HomePage(){
                 React.createElement('div',{style:{width:48,height:48,borderRadius:14,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,color:'#fff',fontSize:16}},t.avatar),
                 React.createElement('div',null,
                   React.createElement('p',{style:{fontWeight:800,color:'#fff',fontSize:15}},t.name),
-                  React.createElement('p',{style:{fontSize:12,color:'rgba(255,255,255,0.4)',marginTop:2,fontWeight:600}}>{t.role}</p>
+                  React.createElement('p',{style:{fontSize:12,color:'rgba(255,255,255,0.4)',marginTop:2,fontWeight:600}},t.role)
                 )
               )
             );
