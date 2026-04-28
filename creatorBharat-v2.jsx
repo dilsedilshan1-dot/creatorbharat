@@ -93,7 +93,7 @@ const fmt={
     return{pct:Math.min(100,Math.round((done/total)*100)),missing:missing.slice(0,4)}
   }
 };
-const top=()=>window.scrollTo({top:0,behavior:'smooth'});
+const scrollToTop=()=>window.scrollTo({top:0,behavior:'smooth'});
 const useVP=()=>{const[w,setW]=useState(window.innerWidth);useEffect(()=>{const h=()=>setW(window.innerWidth);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[]);return{mob:w<768,tab:w<1024,w}};
 const W=(max=1200)=>({maxWidth:max,margin:'0 auto',padding:'0 20px'});
 
@@ -336,14 +336,14 @@ function AuthModal(){
         </div>:<div className="ai">
           <p style={{textAlign:'center',fontSize:14,color:T.t2,marginBottom:20,lineHeight:1.6}}>Chahiye kya? Choose your account type to continue.</p>
           <div style={{display:'flex',flexDirection:'column',gap:12}}>
-            <button onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'apply'});top()}} style={{display:'flex',alignItems:'center',gap:16,padding:'16px',borderRadius:16,border:`1.5px solid ${T.bd}`,background:'#fff',cursor:'pointer',textAlign:'left',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gd} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
+            <button onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'apply'});scrollToTop()}} style={{display:'flex',alignItems:'center',gap:16,padding:'16px',borderRadius:16,border:`1.5px solid ${T.bd}`,background:'#fff',cursor:'pointer',textAlign:'left',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gd} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
               <div style={{width:40,height:40,borderRadius:10,background:T.ga,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>🎨</div>
               <div>
                 <p style={{fontWeight:700,color:T.n8,fontSize:15}}>I am a Creator</p>
                 <p style={{fontSize:12,color:T.t3}}>Build portfolio & get brand deals</p>
               </div>
             </button>
-            <button onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'brand-register'});top()}} style={{display:'flex',alignItems:'center',gap:16,padding:'16px',borderRadius:16,border:`1.5px solid ${T.bd}`,background:'#fff',cursor:'pointer',textAlign:'left',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.ok} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
+            <button onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'brand-register'});scrollToTop()}} style={{display:'flex',alignItems:'center',gap:16,padding:'16px',borderRadius:16,border:`1.5px solid ${T.bd}`,background:'#fff',cursor:'pointer',textAlign:'left',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.ok} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
               <div style={{width:40,height:40,borderRadius:10,background:T.okl,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>🏢</div>
               <div>
                 <p style={{fontWeight:700,color:T.n8,fontSize:15}}>I am a Brand</p>
@@ -371,7 +371,7 @@ function CompareBar(){
   if(st.compared.length===0)return null;
   const all=LS.get('cb_creators',[]);
   const clist=st.compared.map(id=>all.find(c=>c.id===id)).filter(Boolean);
-  return <div style={{position:'fixed',bottom:0,left:0,right:0,background:'#fff',borderTop:`2px solid ${T.gd}`,zIndex:6000,padding:'10px 20px',display:'flex',alignItems:'center',gap:12,boxShadow:'0 -4px 20px rgba(0,0,0,.08)'}}><span style={{fontSize:13,fontWeight:700,color:T.n8,flexShrink:0}}>Compare ({clist.length}/3)</span><div style={{display:'flex',gap:8,flex:1,overflowX:'auto'}}>{clist.map(c=><div key={c.id} style={{display:'flex',alignItems:'center',gap:7,background:T.bg2,borderRadius:8,padding:'5px 10px',flexShrink:0}}><img src={c.photo||`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff`} style={{width:26,height:26,borderRadius:'50%',objectFit:'cover'}} alt="" onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff`}}/><span style={{fontSize:12,fontWeight:600,color:T.n8}}>{c.name}</span><button onClick={()=>dsp({t:'COMPARE',id:c.id})} style={{background:'none',border:'none',cursor:'pointer',color:T.t3,fontSize:14}}>x</button></div>)}</div><div style={{display:'flex',gap:8,flexShrink:0}}>{clist.length>=2&&<Btn sm onClick={()=>{dsp({t:'GO',p:'compare'});top()}}>Compare</Btn>}<Btn sm variant="ghost" onClick={()=>clist.forEach(c=>dsp({t:'COMPARE',id:c.id}))}>Clear</Btn></div></div>;
+  return <div style={{position:'fixed',bottom:0,left:0,right:0,background:'#fff',borderTop:`2px solid ${T.gd}`,zIndex:6000,padding:'10px 20px',display:'flex',alignItems:'center',gap:12,boxShadow:'0 -4px 20px rgba(0,0,0,.08)'}}><span style={{fontSize:13,fontWeight:700,color:T.n8,flexShrink:0}}>Compare ({clist.length}/3)</span><div style={{display:'flex',gap:8,flex:1,overflowX:'auto'}}>{clist.map(c=><div key={c.id} style={{display:'flex',alignItems:'center',gap:7,background:T.bg2,borderRadius:8,padding:'5px 10px',flexShrink:0}}><img src={c.photo||`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff`} style={{width:26,height:26,borderRadius:'50%',objectFit:'cover'}} alt="" onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff`}}/><span style={{fontSize:12,fontWeight:600,color:T.n8}}>{c.name}</span><button onClick={()=>dsp({t:'COMPARE',id:c.id})} style={{background:'none',border:'none',cursor:'pointer',color:T.t3,fontSize:14}}>x</button></div>)}</div><div style={{display:'flex',gap:8,flexShrink:0}}>{clist.length>=2&&<Btn sm onClick={()=>{dsp({t:'GO',p:'compare'});scrollToTop()}}>Compare</Btn>}<Btn sm variant="ghost" onClick={()=>clist.forEach(c=>dsp({t:'COMPARE',id:c.id}))}>Clear</Btn></div></div>;
 }
 
 // NAVBAR
@@ -379,7 +379,7 @@ function Navbar(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[scroll,setScroll]=useState(false);
   useEffect(()=>{const h=()=>setScroll(window.scrollY>20);window.addEventListener('scroll',h);return()=>window.removeEventListener('scroll',h)},[]);
-  const go=(p)=>{dsp({t:'GO',p});top();dsp({t:'UI',v:{mobileMenu:false,notifPanel:false}})};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop();dsp({t:'UI',v:{mobileMenu:false,notifPanel:false}})};
   const unread=st.notifications.filter(n=>!n.read).length;
   const isCreator=st.role==='creator',isBrand=st.role==='brand',isAdmin=st.role==='admin';
   const links=isAdmin?[['admin-dashboard','Admin'],['creators','Creators'],['campaigns','Campaigns'],['blog','Blog']]:isCreator?[['dashboard','Dashboard'],['monetize','Monetize 💰'],['campaigns','Campaigns'],['leaderboard','Leaderboard'],['blog','Blog']]:isBrand?[['creators','Find Creators'],['campaigns','Campaigns'],['brand-dashboard','Dashboard'],['blog','Blog']]:[['creators','Creators'],['campaigns','Campaigns'],['monetize','Monetize 💰'],['pricing','Pricing'],['about','About']];
@@ -421,7 +421,7 @@ function Navbar(){
 // FOOTER
 function Footer(){
   const{dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const[email,setEmail]=useState('');const[ok,setOk]=useState(false);
   const sub=()=>{if(!email.includes('@'))return;const ex=LS.get('cb_newsletter',[]);if(!ex.find(e=>e.email===email))LS.push('cb_newsletter',{email,date:new Date().toISOString()});setOk(true);setEmail('')};
   return <footer style={{background:'#050505',color:'rgba(255,255,255,.6)',paddingTop:mob?48:80,position:'relative',overflow:'hidden'}}>
@@ -738,7 +738,7 @@ function CampCard({campaign:c,onApply}){
       <div style={{flex:1}}>
         <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:6}}>{c.urgent&&<Bdg sm color="red">Urgent</Bdg>}{c.bidding&&<Bdg sm color="purple">Bidding</Bdg>}{niches.slice(0,2).map(n=><Bdg key={n} sm>{n}</Bdg>)}</div>
         <h3 style={{fontSize:15,fontWeight:700,color:T.n8,lineHeight:1.3}}>{c.title}</h3>
-        <p style={{fontSize:13,color:T.gd,fontWeight:600,marginTop:4}}>{c.brand}</p>
+        <p style={{fontSize:13,color:T.gd,fontWeight:600,marginTop:4}}>{c.brand?.companyName || c.brand}</p>
       </div>
       <div style={{textAlign:'right',flexShrink:0}}><div style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:900,color:T.ok}}>{fmt.inr(c.budgetMin)}</div><div style={{fontSize:11,color:T.t3}}>to {fmt.inr(c.budgetMax)}</div></div>
     </div>
@@ -781,7 +781,7 @@ function NewsletterForm(){
 // ── HOME PAGE ─────────────────────────────────────────────────────
 function HomePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top();};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop();};
   const[creators,setCreators]=useState([]);
   const[campaigns,setCampaigns]=useState([]);
   const[totalC,setTotalC]=useState(2400);
@@ -875,7 +875,7 @@ function HomePage(){
           <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:20}}>
             {featured.slice(0,mob?3:6).map(function(c,i){
               return React.createElement('div',{key:c.id,className:'au d'+(i+1)},
-                React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});top();}})
+                React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});scrollToTop();}})
               );
             })}
           </div>
@@ -941,7 +941,7 @@ function HomePage(){
 function CreatorsPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const{cf:f}=st;
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top();};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop();};
   const[showFilters,setShowFilters]=useState(false);
   const[viewMode,setViewMode]=useState('grid');
   const[all,setAll]=useState([]);
@@ -1097,7 +1097,7 @@ function CreatorsPage(){
           <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(auto-fill,minmax(270px,1fr))',gap:18}}>
             {filtered.map(function(c,i){
               return React.createElement('div',{key:c.id,className:'au d'+(Math.min(i%6+1,6))},
-                React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});top();}})
+                React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});scrollToTop();}})
               );
             })}
           </div>
@@ -1113,7 +1113,7 @@ function CreatorProfilePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[tab,setTab]=useState('about');
   const toast=function(msg,type){dsp({t:'TOAST',d:{type:type||'info',msg:msg}});};
-  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});top();};
+  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});scrollToTop();};
   const c=st.sel.creator||st.creatorProfile;
   if(!c)return <PL><div style={{...W(),padding:'80px 20px',textAlign:'center'}}><Empty icon="👤" title="Creator not found" ctaLabel="Browse Creators" onCta={function(){go('creators');}}/></div></PL>;
 
@@ -1321,7 +1321,7 @@ function BlogPage(){
   const[cat,setCat]=useState('');
   const[blogs,setBlogs]=useState(SB);
   const[loading,setLoading]=useState(false);
-  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});top();};
+  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});scrollToTop();};
 
   useEffect(()=>{
     setLoading(true);
@@ -1405,7 +1405,7 @@ function BlogPage(){
 // ── BLOG ARTICLE PAGE ─────────────────────────────────────────────
 function BlogArticlePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});top();};
+  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});scrollToTop();};
   const b=st.sel.blog;
   const[liked,setLiked]=useState(false);
   const[readPct,setReadPct]=useState(0);
@@ -1558,7 +1558,7 @@ function BlogArticlePage(){
                   <p style={{fontSize:11,color:tm,marginBottom:4}}>{'📍 '+linkedCreator.city+' · '+fmt.num(linkedCreator.followers)+' followers'}</p>
                   <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>{(Array.isArray(linkedCreator.niche)?linkedCreator.niche:[linkedCreator.niche]).filter(Boolean).slice(0,3).map(function(n){return React.createElement(Bdg,{key:n,sm:true},n);})}</div>
                 </div>
-                <Btn sm style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff',flexShrink:0}} onClick={function(){dsp({t:'GO',p:'creator-profile',sel:{creator:linkedCreator}});top();}}>View Profile</Btn>
+                <Btn sm style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff',flexShrink:0}} onClick={function(){dsp({t:'GO',p:'creator-profile',sel:{creator:linkedCreator}});scrollToTop();}}>View Profile</Btn>
               </div>
             </div>}
 
@@ -1677,7 +1677,7 @@ function BlogArticlePage(){
         </div>
         <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:18}}>
           {related.map(function(r){
-            return React.createElement(Card,{key:r.id,onClick:function(){go('blog-article',{blog:r});top();},style:{overflow:'hidden'}},
+            return React.createElement(Card,{key:r.id,onClick:function(){go('blog-article',{blog:r});scrollToTop();},style:{overflow:'hidden'}},
               React.createElement('div',{style:{height:140,overflow:'hidden',background:'#f5f5f5',position:'relative'}},
                 React.createElement('img',{src:r.image,style:{width:'100%',height:'100%',objectFit:'cover'},alt:'',onError:function(e){e.target.style.display='none';}}),
                 React.createElement('div',{style:{position:'absolute',top:8,left:8}},React.createElement(Bdg,{sm:true,color:'dark'},r.category))
@@ -1768,7 +1768,7 @@ function CampaignsPage(){
 // BLOG PAGE
 function PricingPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[faq,setFaq]=useState(null);
   const plans=[
@@ -1823,7 +1823,7 @@ function PricingPage(){
 function LeaderboardPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[niche,setNiche]=useState('');const[period,setPeriod]=useState('all');
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const[allC,setAllC]=useState([]);
   useEffect(()=>{apiCall('/creators?limit=100').then(d=>setAllC(d.creators||[])).catch(console.error)},[]);
   const niches=[...new Set(allC.flatMap(c=>Array.isArray(c.niche)?c.niche:[c.niche]).filter(Boolean))];
@@ -1866,7 +1866,7 @@ function LeaderboardPage(){
 // RATE CALCULATOR
 function RateCalcPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const[F,setF]=useState({platform:'Instagram',followers:'',niche:'Lifestyle',er:''});
   const[result,setResult]=useState(null);
   const upF=(k,v)=>setF(p=>({...p,[k]:v}));
@@ -1917,7 +1917,7 @@ function RateCalcPage(){
 // CREATOR SCORE PAGE
 function CreatorScorePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const c=st.creatorProfile;
   const score=c?fmt.score(c):0;
   const tier=fmt.tier(score);
@@ -1954,7 +1954,7 @@ function CreatorScorePage(){
 // ABOUT PAGE
 function AboutPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   return <PL>
     <div style={{background:T.n9,padding:mob?'60px 20px':'100px 20px',textAlign:'center'}}>
       <div style={W(700)}>
@@ -2219,7 +2219,7 @@ function ApplyPage(){
           </div>}
 
           <div style={{display:'flex',gap:16,marginTop:40}}>
-            {step>1&&<Btn lg variant="ghost" onClick={()=>{setStep(s=>s-1);top()}} style={{flex:1}}>Back</Btn>}
+            {step>1&&<Btn lg variant="ghost" onClick={()=>{setStep(s=>s-1);scrollToTop()}} style={{flex:1}}>Back</Btn>}
             {step<4?<Btn full lg onClick={next} style={{flex:2,background:'linear-gradient(135deg,#FF9431,#FF6B00)',color:'#fff',border:'none',fontWeight:800}}>Continue →</Btn>:<Btn full lg loading={loading} onClick={submit} style={{flex:2,background:'linear-gradient(135deg,#FF9431,#128807)',color:'#fff',border:'none',fontWeight:800}}>Launch My Profile 🚀</Btn>}
           </div>
 
@@ -2233,7 +2233,7 @@ function ApplyPage(){
 // DASHBOARD (Creator)
 function DashboardPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[myApps,setMyApps]=useState([]);
   const[loading,setLoading]=useState(true);
@@ -2429,7 +2429,7 @@ function SettingsPage(){
 // SAVED PAGE
 function SavedPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const[tab,setTab]=useState('creators');
   const[allC,setAllC]=useState([]);
   const[allCp,setAllCp]=useState([]);
@@ -2462,7 +2462,7 @@ function SavedPage(){
 // APPLICATIONS PAGE
 function ApplicationsPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const[filter,setFilter]=useState('');
   const myApps=LS.get('cb_applications',[]).filter(a=>a.applicantEmail===st.user?.email);
   const filtered=filter?myApps.filter(a=>(a.status||'applied')===filter):myApps;
@@ -2682,7 +2682,7 @@ function AdminDashboardPage(){
 function BrandRegisterPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const[F,setF]=useState({companyName:'',industry:'',website:'',size:'',contactName:'',email:'',password:'',phone:'',budget:'',about:'',gstin:''});
   const[loading,setLoading]=useState(false);
   const upF=(k,v)=>setF(p=>({...p,[k]:v}));
@@ -2737,7 +2737,7 @@ function BrandRegisterPage(){
 // BRAND DASHBOARD
 function BrandDashboardPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   if(!st.user||st.role!=='brand')return <PL><div style={{...W(),padding:'80px 20px'}}><Empty icon="🔒" title="Brand login required" ctaLabel="Register as Brand" onCta={()=>go('brand-register')}/></div></PL>;
   const myBrand=Auth.getBrand(st.user.email);
@@ -2798,7 +2798,7 @@ function BrandDashboardPage(){
 // CAMPAIGN BUILDER (4-step)
 function CampaignBuilderPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[step,setStep]=useState(1);const[paying,setPaying]=useState(false);const[done,setDone]=useState(false);
   const[F,setF]=useState({title:'',niche:[],goal:'',platform:[],description:'',minFollowers:'',minER:'',budgetMin:'',budgetMax:'',slots:5,deadline:'',bidding:false,deliverables:[],usageRights:'',exclusivity:false,requirements:''});
@@ -2813,7 +2813,7 @@ function CampaignBuilderPage(){
     if(step===1&&(!F.title||!F.niche.length||!F.platform.length)){toast('Fill title, niche and platform','error');return}
     if(step===2&&(!F.budgetMin||!F.budgetMax||!F.deadline)){toast('Fill budget and deadline','error');return}
     if(step===3&&!F.deliverables.length){toast('Add at least one deliverable','error');return}
-    setStep(s=>s+1);top();
+    setStep(s=>s+1);scrollToTop();
   };
 
   const pay=()=>{
@@ -2890,7 +2890,7 @@ function CampaignBuilderPage(){
           <p style={{textAlign:'center',fontSize:11,color:T.t3,marginTop:10}}>Secured by Razorpay. All major cards, UPI, netbanking accepted.</p>
         </div>}
         <div style={{display:'flex',gap:12,marginTop:20}}>
-          {step>1&&<Btn variant="ghost" onClick={()=>{setStep(s=>s-1);top()}}>Back</Btn>}
+          {step>1&&<Btn variant="ghost" onClick={()=>{setStep(s=>s-1);scrollToTop()}}>Back</Btn>}
           {step<4&&<Btn full lg onClick={next}>Continue →</Btn>}
         </div>
       </div>
@@ -2901,7 +2901,7 @@ function CampaignBuilderPage(){
 // COMPARE PAGE
 function ComparePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const allC=LS.get('cb_creators',[]);
   const creators=st.compared.map(id=>allC.find(c=>c.id===id)).filter(Boolean);
   if(creators.length<2)return <PL><div style={{...W(),padding:'80px 20px'}}><Empty icon="⚖" title="Select at least 2 creators to compare" sub="Browse creators and click Compare to add them." ctaLabel="Browse Creators" onCta={()=>go('creators')}/></div></PL>;
@@ -2949,7 +2949,7 @@ function ComparePage(){
 // ── MONETIZATION HUB PAGE ─────────────────────────────────────────
 function MonetizationPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=function(p){dsp({t:'GO',p:p});top();};
+  const go=function(p){dsp({t:'GO',p:p});scrollToTop();};
   const[activeTab,setActiveTab]=useState('overview');
   const isCreator=st.role==='creator';
   const toast=function(msg,type){dsp({t:'TOAST',d:{type:type||'info',msg:msg}});};
