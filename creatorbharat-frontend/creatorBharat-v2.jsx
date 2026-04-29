@@ -379,7 +379,19 @@ function Logo({sm,light,onClick}){
       CreatorBharat
     </span>
 
-    <style>{`\n      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }\n
+    <style>{`
+      ::-webkit-scrollbar { width: 10px; }
+      ::-webkit-scrollbar-track { background: #f8fafc; }
+      ::-webkit-scrollbar-thumb { 
+        background: linear-gradient(180deg, #FF9431 0%, #DC2626 100%); 
+        border-radius: 10px; border: 2px solid #f8fafc; 
+      }
+      html.lenis { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto !important; }
+      .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+      .lenis.lenis-stopped { overflow: hidden; }
+      .lenis.lenis-scrolling iframe { pointer-events: none; }
+\n      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }\n
       .logo-text-animated {
         background: linear-gradient(90deg, #FF9431, #FFFFFF, #128807, #FF9431);
         background-size: 200% auto;
@@ -3695,6 +3707,28 @@ function App(){
   const[st,dsp]=useReducer(reducer,IS);
   const toast=(msg,type='info')=>dsp({t:'TOAST',d:{type,msg}});
   const go=(p,sel={})=>{dsp({t:'GO',p,sel:Object.keys(sel).length?sel:undefined});window.scrollTo({top:0,behavior:'smooth'});};
+
+  
+  useEffect(() => {
+    // Inject Lenis for 3D smooth scroll
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js';
+    script.onload = () => {
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        wheelMultiplier: 1.1,
+        smoothWheel: true,
+      });
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+      window.lenis = lenis;
+    };
+    document.head.appendChild(script);
+  }, []);
 
   useEffect(()=>{
     seedData();
