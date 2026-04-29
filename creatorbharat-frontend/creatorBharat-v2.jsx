@@ -357,19 +357,42 @@ function Card({children,style:sx={},onClick,glass}){
 function Chip({label,active,onClick}){
   return <button onClick={onClick} style={{padding:'6px 14px',borderRadius:20,border:`1.5px solid ${active?T.gd:T.bd}`,background:active?T.ga:'transparent',color:active?T.gd:T.t2,fontSize:13,fontWeight:active?700:500,cursor:'pointer',transition:'all .15s',fontFamily:'inherit',whiteSpace:'nowrap'}}>{label}</button>;
 }
+
+
+
 function Logo({sm,light,onClick}){
-  const sz=sm?32:40;
-  return <div onClick={onClick} style={{display:'flex',alignItems:'center',gap:sm?8:12,cursor:onClick?'pointer':'default',userSelect:'none'}}>
-    <div style={{position:'relative',width:sz,height:sz,background:light?'rgba(255,255,255,.1)':'#000',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:sm?14:18,color:'#fff',boxShadow:T.sh2,border:'1px solid rgba(255,255,255,.2)',overflow:'hidden'}}>
-      {/* Indian Flag Inspired Icon */}
+  const sz=sm?34:44;
+  return <div onClick={onClick} className="logo-container" style={{display:'flex',alignItems:'center',gap:sm?10:14,cursor:onClick?'pointer':'default',userSelect:'none',position:'relative'}}>
+    <div style={{position:'relative',width:sz,height:sz,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:'50%',overflow:'hidden',boxShadow:'0 4px 12px rgba(0,0,0,0.1)',border:'1px solid rgba(0,0,0,0.05)'}}>
+      {/* Premium Indian Flag Icon */}
       <div style={{position:'absolute',top:0,left:0,right:0,height:'33.33%',background:'#FF9431'}}/>
-      <div style={{position:'absolute',top:'33.33%',left:0,right:0,height:'33.34%',background:'#FFFFFF'}}/>
+      <div style={{position:'absolute',top:'33.33%',left:0,right:0,height:'33.34%',background:'#FFFFFF',display:'flex',alignItems:'center',justifyContent:'center'}}>
+        {/* Subtle Ashoka Chakra */}
+        <div style={{width:'25%',height:'25%',borderRadius:'50%',border:'1px solid #000080',position:'relative'}}>
+          {[...Array(12)].map((_,i)=><div key={i} style={{position:'absolute',top:'50%',left:'50%',width:'100%',height:1,background:'#000080',transform:`translate(-50%,-50%) rotate(${i*15}deg)` }}/>)}
+        </div>
+      </div>
       <div style={{position:'absolute',top:'66.67%',left:0,right:0,height:'33.33%',background:'#128807'}}/>
-      <div style={{position:'relative',zIndex:1,color:'#000080',textShadow:'0 0 1px #fff'}}>CB</div>
     </div>
-    <span style={{fontFamily:"'Fraunces',serif",fontSize:sm?20:26,fontWeight:900,color:light?'#fff':T.n8,letterSpacing:'-0.03em'}}>
-      Creator<span style={{color:T.gd}}>Bharat</span>
+    
+    <span className="logo-text-animated" style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:sm?22:28,fontWeight:900,letterSpacing:'-0.04em',display:'flex',alignItems:'center'}}>
+      CreatorBharat
     </span>
+
+    <style>{`
+      .logo-text-animated {
+        background: linear-gradient(90deg, #FF9431, #FFFFFF, #128807, #FF9431);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: flagSweep 3s linear infinite;
+        /* Shadow for readability on white */
+        filter: drop-shadow(0 1px 1px rgba(0,0,0,0.05));
+      }
+      @keyframes flagSweep {
+        to { background-position: 200% center; }
+      }
+    `}</style>
   </div>;
 }
 
@@ -407,6 +430,8 @@ function CompareBar(){
 }
 
 // NAVBAR
+// NAVBAR
+// NAVBAR
 function Navbar(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[scroll,setScroll]=useState(false);
@@ -416,38 +441,113 @@ function Navbar(){
   const isCreator=st.role==='creator',isBrand=st.role==='brand';
   const links=isCreator?[['dashboard','Dashboard'],['monetize','Monetize 💰'],['campaigns','Campaigns'],['leaderboard','Leaderboard'],['blog','Blog']]:isBrand?[['creators','Find Creators'],['campaigns','Campaigns'],['brand-dashboard','Dashboard'],['blog','Blog']]:[['creators','Creators'],['campaigns','Campaigns'],['monetize','Monetize 💰'],['pricing','Pricing'],['about','About']];
 
-  return <>
-    <nav style={{position:'sticky',top:0,zIndex:5000,background:scroll?'rgba(255,255,255,.85)':'#fff',backdropFilter:scroll?'blur(20px)':'none',borderBottom:`1px solid ${scroll?T.bd:'transparent'}`,transition:'all .4s ease',padding:mob?'0 16px':'0 40px',height:mob?64:80,display:'flex',alignItems:'center',gap:24,boxShadow:scroll?T.sh2:'none'}}>
+  // 2027 Premium Light Mode Nav
+  const navBg = scroll ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)';
+  const navBorder = 'transparent'; // Outer wrapper handles border now
+  const navText = '#111';
+  const navTextDim = 'rgba(0, 0, 0, 0.6)';
 
-      <Logo onClick={()=>go('home')} sm={mob} />
-      {!mob&&<div style={{display:'flex',alignItems:'center',gap:4,flex:1,marginLeft:40}}>{links.map(([p,l])=><button key={p} onClick={()=>go(p)} style={{padding:'8px 20px',background:st.page===p?'rgba(255,148,49,0.08)':'transparent',border:'none',color:st.page===p?T.gd:T.t2,fontWeight:st.page===p?800:600,fontSize:14,cursor:'pointer',borderRadius:12,fontFamily:'inherit',transition:'all .2s'}} onMouseEnter={e=>e.target.style.color=T.gd} onMouseLeave={e=>e.target.style.color=st.page===p?T.gd:T.t2}>{l}</button>)}</div>}
-      <div style={{display:'flex',alignItems:'center',gap:16,marginLeft:'auto'}}>
-        {st.compared.length>0&&!mob&&<Btn sm variant="outline" onClick={()=>go('compare')}>Compare ({st.compared.length})</Btn>}
-        {st.user?<>
-          <button onClick={()=>dsp({t:'UI',v:{notifPanel:!st.ui.notifPanel,mobileMenu:false}})} style={{position:'relative',background:T.bg2,border:`1px solid ${T.bd}`,cursor:'pointer',width:44,height:44,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',transition:'all .2s'}}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={T.t2} strokeWidth="2.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
-            {unread>0&&<span style={{position:'absolute',top:-4,right:-4,minWidth:20,height:20,padding:'0 4px',background:T.gd,borderRadius:10,fontSize:10,fontWeight:900,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid #fff'}}>{unread>9?'9+':unread}</span>}
-          </button>
-          {!mob&&<div style={{position:'relative'}}>
-            <button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu,notifPanel:false}})} style={{display:'flex',alignItems:'center',gap:12,background:T.bg2,border:`1px solid ${T.bd}`,borderRadius:16,padding:'6px 16px 6px 8px',cursor:'pointer',fontFamily:'inherit',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gd} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
-              <img src={(st.creatorProfile?.photo||st.creatorProfile?.avatarUrl)||`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=FF9431&color=fff`} style={{width:36,height:36,borderRadius:12,objectFit:'cover',border:`2px solid ${T.gd}`}} alt="" onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=FF9431&color=fff`}}/>
-              <span style={{fontSize:14,fontWeight:800,color:T.t1,maxWidth:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{st.user.name||st.user.companyName}</span>
-              <svg width="12" height="8" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke={T.t3} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </button>
-            {st.ui.mobileMenu&&<div className="si" style={{position:'absolute',right:0,top:'calc(100% + 16px)',background:'#fff',border:`1px solid ${T.bd}`,borderRadius:22,minWidth:240,boxShadow:T.sh4,zIndex:100,overflow:'hidden',padding:10}}>
-              {[isCreator&&['Dashboard','dashboard'],isCreator&&['Applications','applications'],isBrand&&['Brand Dashboard','brand-dashboard'],isBrand&&['Post Campaign','campaign-builder'],['Settings','settings'],['Saved Items','saved']].filter(Boolean).map(([l,p])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:st.page===p?T.ga:'none',border:'none',textAlign:'left',fontSize:14,color:st.page===p?T.gd:T.t1,cursor:'pointer',fontFamily:'inherit',borderRadius:12,fontWeight:st.page===p?800:600,marginBottom:4}}>{l}</button>)}
-              <div style={{height:1,background:T.bd,margin:'10px 0'}}/>
-              <button onClick={()=>{dsp({t:'LOGOUT'});dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:'none',border:'none',textAlign:'left',fontSize:14,color:T.gd,cursor:'pointer',fontFamily:'inherit',fontWeight:800,borderRadius:12}}>Logout</button>
-            </div>}
+  return <>
+    <style>{`
+      @keyframes spinBorder {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+    `}</style>
+    <div style={{position:'fixed',top:0,left:0,right:0,zIndex:5000,padding:mob?'12px 16px':(scroll?'16px 40px':'24px 40px'),transition:'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',pointerEvents:'none'}}>
+      
+      {/* Outer wrapper for animated border */}
+      <div style={{maxWidth:1200,margin:'0 auto',position:'relative',borderRadius:mob?22:102,padding:2,overflow:'hidden',pointerEvents:'auto',boxShadow:scroll?'0 20px 40px -10px rgba(0,0,0,0.1)':'0 10px 30px -10px rgba(0,0,0,0.05)',transition:'all 0.4s ease'}}>
+        
+        {/* The spinning Indian flag gradient */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '200%',
+          height: '500%',
+          background: 'conic-gradient(from 0deg, #138808 0%, #FFFFFF 20%, #FF9933 40%, #FF9933 60%, #FFFFFF 80%, #138808 100%)',
+          animation: 'spinBorder 5s linear infinite',
+          zIndex: 0
+        }} />
+
+        {/* The actual navbar */}
+        <nav style={{position:'relative',zIndex:1,background:navBg,backdropFilter:'blur(40px)',WebkitBackdropFilter:'blur(40px)',borderRadius:mob?20:100,padding:mob?'0 16px':'0 24px',height:mob?60:72,display:'flex',alignItems:'center',gap:24}}>
+
+          <Logo onClick={()=>go('home')} sm={mob} light={false} />
+          
+          {!mob&&<div style={{display:'flex',alignItems:'center',gap:4,flex:1,marginLeft:40}}>
+            {links.map(([p,l])=><button key={p} onClick={()=>go(p)} style={{padding:'8px 16px',background:st.page===p?'rgba(255,148,49,0.08)':'transparent',border:'none',color:st.page===p?T.gd:navTextDim,fontWeight:st.page===p?700:600,fontSize:14,cursor:'pointer',borderRadius:100,fontFamily:"'Inter',sans-serif",transition:'all .2s',letterSpacing:'0.2px'}} onMouseEnter={e=>e.target.style.color=T.gd} onMouseLeave={e=>e.target.style.color=st.page===p?T.gd:navTextDim}>{l}</button>)}
           </div>}
-        </>:<>
-          {!mob&&<Btn lg variant="ghost" onClick={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})} style={{border:'none',color:T.t1}}>Login</Btn>}
-          {!mob&&<Btn lg onClick={()=>{go('apply')}} style={{fontWeight:800}}>Join Now</Btn>}
-        </>}
-        {mob&&<button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu}})} style={{background:T.bg2,border:'none',cursor:'pointer',width:48,height:48,borderRadius:14,display:'flex',flexDirection:'column',gap:5,alignItems:'center',justifyContent:'center'}}>{[0,1,2].map(i=><span key={i} style={{display:'block',width:24,height:3,background:T.t1,borderRadius:1.5}}/>)}</button>}
+          
+          <div style={{display:'flex',alignItems:'center',gap:16,marginLeft:'auto'}}>
+            {st.compared.length>0&&!mob&&<Btn sm variant="outline" onClick={()=>go('compare')} style={{borderColor:'rgba(0,0,0,0.1)',color:navText}}>Compare ({st.compared.length})</Btn>}
+            {st.user?<>
+              <button onClick={()=>dsp({t:'UI',v:{notifPanel:!st.ui.notifPanel,mobileMenu:false}})} style={{position:'relative',background:'#fff',border:`1px solid rgba(0,0,0,0.05)`,cursor:'pointer',width:40,height:40,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',transition:'all .2s',boxShadow:'0 2px 8px rgba(0,0,0,0.05)'}}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={navText} strokeWidth="2.2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+                {unread>0&&<span style={{position:'absolute',top:-2,right:-2,minWidth:18,height:18,padding:'0 4px',background:'#EF4444',borderRadius:10,fontSize:10,fontWeight:900,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',border:`2px solid #fff`}}>{unread>9?'9+':unread}</span>}
+              </button>
+              {!mob&&<div style={{position:'relative'}}>
+                <button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu,notifPanel:false}})} style={{display:'flex',alignItems:'center',gap:10,background:'#fff',border:`1px solid rgba(0,0,0,0.05)`,borderRadius:100,padding:'4px 16px 4px 4px',cursor:'pointer',fontFamily:"'Inter',sans-serif",transition:'all .2s',boxShadow:'0 2px 8px rgba(0,0,0,0.05)'}}>
+                  <img src={(st.creatorProfile?.photo||st.creatorProfile?.avatarUrl)||`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=FF9431&color=fff`} style={{width:32,height:32,borderRadius:'50%',objectFit:'cover'}} alt=""/>
+                  <span style={{fontSize:14,fontWeight:700,color:navText,maxWidth:100,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{st.user.name||st.user.companyName}</span>
+                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke={navTextDim} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+                {st.ui.mobileMenu&&<div className="si" style={{position:'absolute',right:0,top:'calc(100% + 16px)',background:'#fff',border:`1px solid ${T.bd}`,borderRadius:24,minWidth:240,boxShadow:T.sh4,zIndex:100,overflow:'hidden',padding:10}}>
+                  {[isCreator&&['Dashboard','dashboard'],isCreator&&['Applications','applications'],isBrand&&['Brand Dashboard','brand-dashboard'],isBrand&&['Post Campaign','campaign-builder'],['Settings','settings'],['Saved Items','saved']].filter(Boolean).map(([l,p])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:st.page===p?T.ga:'none',border:'none',textAlign:'left',fontSize:14,color:st.page===p?T.gd:T.t1,cursor:'pointer',fontFamily:"'Inter',sans-serif",borderRadius:12,fontWeight:st.page===p?800:600,marginBottom:4}}>{l}</button>)}
+                  <div style={{height:1,background:T.bd,margin:'10px 0'}}/>
+                  <button onClick={()=>{dsp({t:'LOGOUT'});dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:'none',border:'none',textAlign:'left',fontSize:14,color:T.gd,cursor:'pointer',fontFamily:"'Inter',sans-serif",fontWeight:800,borderRadius:12}}>Logout</button>
+                </div>}
+              </div>}
+            </>:<>
+              {!mob&&<button onClick={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})} style={{background:'transparent',border:'none',color:navText,fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:"'Inter',sans-serif",padding:'8px 16px'}}>Login</button>}
+              {!mob&&<Btn lg onClick={()=>{go('apply')}} style={{fontWeight:800,borderRadius:100,padding:'10px 24px',fontSize:14,background:'#111',color:'#fff',border:'none',boxShadow:'0 4px 14px rgba(0,0,0,0.1)'}}>Create Portfolio</Btn>}
+            </>}
+            {mob&&<button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu}})} style={{background:'#fff',border:`1px solid rgba(0,0,0,0.05)`,cursor:'pointer',width:40,height:40,borderRadius:'50%',display:'flex',flexDirection:'column',gap:4,alignItems:'center',justifyContent:'center',boxShadow:'0 2px 8px rgba(0,0,0,0.05)'}}>{[0,1,2].map(i=><span key={i} style={{display:'block',width:18,height:2,background:navText,borderRadius:1}}/>)}</button>}
+          </div>
+        </nav>
       </div>
-    </nav>
-    {mob&&st.ui.mobileMenu&&<div className="ai" style={{position:'fixed',inset:0,zIndex:4999,background:'rgba(0,0,0,.6)',backdropFilter:'blur(8px)'}} onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})}><div className="sr" onClick={e=>e.stopPropagation()} style={{position:'absolute',top:0,right:0,bottom:0,width:'85%',maxWidth:320,background:'#fff',boxShadow:T.sh4,padding:'32px 24px',display:'flex',flexDirection:'column',gap:16,overflowY:'auto'}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}><Logo onClick={()=>go('home')}/><button onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})} style={{width:40,height:40,borderRadius:'50%',background:T.bg2,border:'none',fontSize:24,display:'flex',alignItems:'center',justifyContent:'center',color:T.n8}}>×</button></div>{links.map(([p,l])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:st.page===p?T.ga:'transparent',border:'none',textAlign:'left',fontSize:16,color:st.page===p?T.gd:T.t1,cursor:'pointer',fontFamily:'inherit',fontWeight:st.page===p?900:600,borderRadius:14}}>{l}</button>)}<div style={{height:1,background:T.bd,margin:'8px 0'}}/>{!st.user?<><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:true,authTab:'login',mobileMenu:false}})}}>Sign In</Btn><Btn full lg variant="outline" onClick={()=>{go('apply');dsp({t:'UI',v:{mobileMenu:false}})}} style={{borderColor:T.gd,color:T.gd}}>Get Listed Free</Btn></>:(<>{[isCreator&&['Dashboard','dashboard'],isCreator&&['Applications','applications'],isBrand&&['Brand Dashboard','brand-dashboard'],isBrand&&['Post Campaign','campaign-builder'],['Settings','settings'],['Saved Items','saved']].filter(Boolean).map(([l,p])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:st.page===p?T.ga:'transparent',border:'none',textAlign:'left',fontSize:16,color:st.page===p?T.gd:T.t1,cursor:'pointer',fontFamily:'inherit',fontWeight:st.page===p?900:600,borderRadius:14}}>{l}</button>)}<button onClick={()=>{dsp({t:'LOGOUT'});dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:'none',border:'none',textAlign:'left',fontSize:16,color:T.gd,cursor:'pointer',fontFamily:'inherit',fontWeight:900,borderRadius:14}}>Logout</button></>)}</div></div>}
+    </div>
+    
+    {mob&&st.ui.mobileMenu&&<div className="ai" style={{position:'fixed',inset:0,zIndex:999999,background:'rgba(0,0,0,0.4)',backdropFilter:'blur(10px)'}} onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})}>
+      <div className="sr" onClick={e=>e.stopPropagation()} style={{position:'absolute',top:16,right:16,bottom:16,width:'85%',maxWidth:360,background:'#fff',borderRadius:32,boxShadow:'0 30px 60px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(0,0,0,0.05)',padding:'32px 24px',display:'flex',flexDirection:'column',overflowY:'auto',animation:'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)'}}>
+        
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:40}}>
+          <Logo onClick={()=>go('home')} />
+          <button onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})} style={{width:44,height:44,borderRadius:100,background:'#F3F4F6',border:'1px solid rgba(0,0,0,0.05)',fontSize:20,display:'flex',alignItems:'center',justifyContent:'center',color:'#111',cursor:'pointer',transition:'background 0.2s'}}>✕</button>
+        </div>
+
+        {st.user && <div style={{display:'flex',alignItems:'center',gap:14,padding:'16px',background:'#F9FAFB',borderRadius:20,marginBottom:32,border:'1px solid rgba(0,0,0,0.05)'}}>
+          <img src={(st.creatorProfile?.photo||st.creatorProfile?.avatarUrl)||(`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=FF9431&color=fff`)} style={{width:52,height:52,borderRadius:'50%',objectFit:'cover',border:'2px solid #fff',boxShadow:'0 4px 10px rgba(0,0,0,0.05)'}} alt=""/>
+          <div>
+            <div style={{fontSize:16,fontWeight:800,color:'#111',fontFamily:"'Inter',sans-serif"}}>{st.user.name||st.user.companyName}</div>
+            <div style={{fontSize:13,fontWeight:600,color:'rgba(0,0,0,0.5)',fontFamily:"'Inter',sans-serif"}}>{st.role === 'creator' ? 'Creator Account' : 'Brand Account'}</div>
+          </div>
+        </div>}
+
+        <div style={{display:'flex',flexDirection:'column',gap:8,flex:1}}>
+          {links.map(([p,l])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',padding:'16px 20px',background:st.page===p?'#F9FAFB':'transparent',border:st.page===p?'1px solid rgba(0,0,0,0.05)':'1px solid transparent',textAlign:'left',fontSize:18,color:st.page===p?'#111':'rgba(0,0,0,0.6)',cursor:'pointer',fontFamily:"'Inter',sans-serif",fontWeight:st.page===p?800:600,borderRadius:20,transition:'all 0.2s'}}>
+            {l}
+            {st.page===p && <div style={{width:8,height:8,borderRadius:'50%',background:'linear-gradient(135deg, #FF9431, #DC2626)'}}/>}
+          </button>)}
+          
+          {st.user && <div style={{height:1,background:'rgba(0,0,0,0.05)',margin:'16px 0'}}/>}
+
+          {st.user && [
+            isCreator&&['Dashboard','dashboard'],
+            isCreator&&['Applications','applications'],
+            isBrand&&['Brand Dashboard','brand-dashboard'],
+            isBrand&&['Post Campaign','campaign-builder'],
+            ['Settings','settings'],
+            ['Saved Items','saved']
+          ].filter(Boolean).map(([l,p])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 20px',background:st.page===p?'#F9FAFB':'transparent',border:'none',textAlign:'left',fontSize:16,color:st.page===p?'#111':'rgba(0,0,0,0.7)',cursor:'pointer',fontFamily:"'Inter',sans-serif",fontWeight:st.page===p?800:600,borderRadius:16}}>{l}</button>)}
+        </div>
+
+        <div style={{marginTop:40,display:'flex',flexDirection:'column',gap:12}}>
+          {!st.user?<><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:true,authTab:'login',mobileMenu:false}})}} style={{background:'#111',color:'#fff',padding:'20px',borderRadius:20,fontSize:16,fontFamily:"'Inter',sans-serif",boxShadow:'0 10px 30px rgba(0,0,0,0.1)'}}>Sign In</Btn><Btn full lg variant="outline" onClick={()=>{go('apply');dsp({t:'UI',v:{mobileMenu:false}})}} style={{borderColor:'rgba(0,0,0,0.1)',color:'#111',background:'#fff',padding:'20px',borderRadius:20,fontSize:16,fontFamily:"'Inter',sans-serif",boxShadow:'0 4px 10px rgba(0,0,0,0.02)'}}>Create Free Portfolio</Btn></>:(<button onClick={()=>{dsp({t:'LOGOUT'});dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'18px',background:'rgba(239,68,68,0.08)',border:'none',textAlign:'center',fontSize:16,color:'#EF4444',cursor:'pointer',fontFamily:"'Inter',sans-serif",fontWeight:800,borderRadius:20}}>Logout Account</button>)}
+        </div>
+      </div>
+    </div>}
     {st.ui.notifPanel&&<NotifPanel/>}
   </>;
 }
@@ -796,6 +896,7 @@ function PL({children,noFooter}){
     <AIChatbot/>
     {st.ui.shareModal&&<ShareModal/>}
     {st.ui.authModal&&<AuthModal/>}
+    {st.ui.demoModal&&<DemoModal/>}
   </div>;
 }
 
@@ -925,6 +1026,134 @@ function NewsletterForm(){
 
 
 // ── HOME PAGE ─────────────────────────────────────────────────────
+
+
+// DEMO CREATOR PORTFOLIO MODAL
+function DemoModal() {
+  const { dsp } = useApp();
+  const onClose = () => dsp({t:'UI', v:{demoModal: false}});
+
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => document.body.style.overflow = 'auto';
+  }, []);
+
+  return (
+    <div style={{position:'fixed',inset:0,zIndex:999999,background:'rgba(0,0,0,0.85)',backdropFilter:'blur(20px)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
+      {/* Close button outside */}
+      <button onClick={onClose} style={{position:'absolute',top:20,right:30,background:'rgba(255,255,255,0.1)',border:'none',color:'#fff',width:48,height:48,borderRadius:'50%',fontSize:24,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1000000,transition:'all 0.2s'}} onMouseEnter={e=>e.target.style.background='rgba(255,255,255,0.2)'} onMouseLeave={e=>e.target.style.background='rgba(255,255,255,0.1)'}>×</button>
+      
+      <div style={{display:'flex',gap:40,alignItems:'center',maxWidth:1000,width:'100%'}}>
+        
+        {/* Left Side: Explanation for User */}
+        <div style={{flex:1,color:'#fff',display:window.innerWidth>800?'block':'none'}}>
+           <div style={{background:'rgba(16,185,129,0.1)',color:'#10B981',padding:'8px 16px',borderRadius:100,display:'inline-block',fontWeight:800,marginBottom:24,border:'1px solid rgba(16,185,129,0.2)'}}>
+             What You Get
+           </div>
+           <h2 style={{fontSize:48,fontWeight:900,lineHeight:1.1,marginBottom:24,fontFamily:"'Inter',sans-serif"}}>Your Ultimate <br/>Link-in-Bio & Media Kit.</h2>
+           <p style={{fontSize:18,color:'rgba(255,255,255,0.6)',lineHeight:1.6,marginBottom:32,fontFamily:"'Inter',sans-serif"}}>
+             CreatorBharat gives you a premium, verified portfolio to showcase your stats, services, and past work. Share this single link with brands to get booked instantly via our secure Escrow system.
+           </p>
+           <ul style={{listStyle:'none',padding:0,display:'flex',flexDirection:'column',gap:16}}>
+             {[
+               '✓ Auto-updated Instagram & YouTube stats',
+               '✓ List your pricing and collab packages',
+               '✓ Receive payments safely via Escrow',
+               '✓ Stand out to top Tier-1 brands'
+             ].map((text, i) => (
+               <li key={i} style={{fontSize:16,fontWeight:600,display:'flex',alignItems:'center',gap:12}}>
+                 <span style={{color:'#10B981',fontSize:20}}>•</span> {text}
+               </li>
+             ))}
+           </ul>
+        </div>
+
+        {/* Mobile Frame Container */}
+        <div style={{width:'100%',maxWidth:400,height:'90vh',maxHeight:840,background:'#fff',borderRadius:40,border:'8px solid #111',boxShadow:'0 40px 80px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(255,255,255,0.2)',position:'relative',display:'flex',flexDirection:'column',overflow:'hidden',animation:'fadeUp 0.3s ease-out',flexShrink:0,margin:'0 auto'}}>
+          
+          {/* Fake Notch */}
+          <div style={{position:'absolute',top:0,left:'50%',transform:'translateX(-50%)',width:120,height:28,background:'#111',borderBottomLeftRadius:16,borderBottomRightRadius:16,zIndex:10}}/>
+
+          {/* Scrollable Inside */}
+          <div style={{flex:1,overflowY:'auto',background:'#F9FAFB',paddingBottom:120}} className="no-scrollbar">
+            {/* Live Link Banner */}
+            <div style={{background:'#f3f4f6',padding:'12px 20px',textAlign:'center',fontSize:11,color:'#666',fontWeight:700,borderBottom:'1px solid #e5e7eb'}}>
+               creatorbharat.in/rahulsharma
+            </div>
+
+            {/* Cover */}
+            <div style={{height:160,background:'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80) center/cover'}}/>
+            
+            {/* Avatar & Verification */}
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:-50,position:'relative',zIndex:2}}>
+               <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80" style={{width:100,height:100,borderRadius:'50%',border:'4px solid #fff',boxShadow:'0 10px 20px rgba(0,0,0,0.1)',objectFit:'cover'}} alt="Rahul"/>
+               <div style={{marginTop:-12,background:'#fff',color:'#10B981',fontSize:11,fontWeight:800,padding:'4px 12px',borderRadius:20,border:'1px solid rgba(16,185,129,0.2)',display:'flex',alignItems:'center',gap:4,boxShadow:'0 4px 10px rgba(16,185,129,0.15)'}}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#10B981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Verified Profile
+               </div>
+            </div>
+
+            <div style={{padding:'20px 24px',textAlign:'center'}}>
+              <h2 style={{fontSize:24,fontWeight:900,color:'#111',fontFamily:"'Inter',sans-serif",marginBottom:4}}>Rahul Sharma</h2>
+              <p style={{fontSize:14,color:'rgba(0,0,0,0.5)',fontFamily:"'Inter',sans-serif",marginBottom:16,fontWeight:600}}>📍 Jaipur • Travel & Culture</p>
+              
+              {/* Social Links Row */}
+              <div style={{display:'flex',justifyContent:'center',gap:12,marginBottom:24}}>
+                 <div style={{width:44,height:44,borderRadius:'50%',background:'#fff',boxShadow:'0 4px 12px rgba(0,0,0,0.05)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>📸</div>
+                 <div style={{width:44,height:44,borderRadius:'50%',background:'#fff',boxShadow:'0 4px 12px rgba(0,0,0,0.05)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>🎥</div>
+                 <div style={{width:44,height:44,borderRadius:'50%',background:'#fff',boxShadow:'0 4px 12px rgba(0,0,0,0.05)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>🐦</div>
+              </div>
+
+              {/* Stats */}
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:24}}>
+                 <div style={{background:'#fff',border:'1px solid rgba(0,0,0,0.05)',borderRadius:16,padding:'16px',boxShadow:'0 2px 10px rgba(0,0,0,0.02)'}}>
+                    <div style={{fontSize:22,fontWeight:900,color:'#111',fontFamily:"'Inter',sans-serif"}}>248K</div>
+                    <div style={{fontSize:11,fontWeight:700,color:'rgba(0,0,0,0.4)',textTransform:'uppercase',letterSpacing:'0.5px',marginTop:4}}>Followers</div>
+                 </div>
+                 <div style={{background:'#fff',border:'1px solid rgba(0,0,0,0.05)',borderRadius:16,padding:'16px',boxShadow:'0 2px 10px rgba(0,0,0,0.02)'}}>
+                    <div style={{fontSize:22,fontWeight:900,color:'#FF9431',fontFamily:"'Inter',sans-serif"}}>6.8%</div>
+                    <div style={{fontSize:11,fontWeight:700,color:'rgba(0,0,0,0.4)',textTransform:'uppercase',letterSpacing:'0.5px',marginTop:4}}>Avg. Eng.</div>
+                 </div>
+              </div>
+              
+              {/* Bio */}
+              <p style={{fontSize:14,color:'#4B5563',lineHeight:1.6,marginBottom:32,textAlign:'left'}}>
+                Hi! I explore the unseen beauty of Rajasthan and share it with my amazing community. Let's create something awesome together! 🏜️
+              </p>
+
+              {/* Links / Services */}
+              <h3 style={{fontSize:15,fontWeight:800,textAlign:'left',marginBottom:16,color:'#111',textTransform:'uppercase',letterSpacing:'1px'}}>Book Me For</h3>
+              <div style={{display:'flex',flexDirection:'column',gap:12,marginBottom:32}}>
+                 <div style={{background:'#fff',padding:'16px',borderRadius:16,border:'1px solid rgba(0,0,0,0.05)',display:'flex',alignItems:'center',justifyContent:'space-between',boxShadow:'0 4px 12px rgba(0,0,0,0.02)'}}>
+                   <span style={{fontWeight:700,fontSize:14,color:'#111'}}>📸 Insta Reel Collab</span>
+                   <span style={{fontWeight:800,fontSize:14,color:'#10B981'}}>₹15k</span>
+                 </div>
+                 <div style={{background:'#fff',padding:'16px',borderRadius:16,border:'1px solid rgba(0,0,0,0.05)',display:'flex',alignItems:'center',justifyContent:'space-between',boxShadow:'0 4px 12px rgba(0,0,0,0.02)'}}>
+                   <span style={{fontWeight:700,fontSize:14,color:'#111'}}>🎥 YouTube Integration</span>
+                   <span style={{fontWeight:800,fontSize:14,color:'#10B981'}}>₹25k</span>
+                 </div>
+              </div>
+
+              {/* Past Campaigns */}
+              <h3 style={{fontSize:15,fontWeight:800,textAlign:'left',marginBottom:16,color:'#111',textTransform:'uppercase',letterSpacing:'1px'}}>Trusted By</h3>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:32}}>
+                 {['MakeMyTrip','Zomato','Oyo','Royal Enfield'].map(b=><div key={b} style={{background:'#fff',padding:'12px',borderRadius:12,border:'1px solid rgba(0,0,0,0.05)',fontWeight:800,fontSize:13,color:'#6B7280',textAlign:'center'}}>{b}</div>)}
+              </div>
+              
+            </div>
+          </div>
+
+          {/* Sticky Action Footer inside Mobile */}
+          <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'24px 20px',background:'linear-gradient(to top, #fff 70%, rgba(255,255,255,0))',display:'flex',flexDirection:'column',gap:12}}>
+             <button onClick={()=>alert('Demo: Request sent via Escrow')} style={{background:'linear-gradient(90deg, #FF9431, #DC2626)',color:'#fff',border:'none',padding:'18px',borderRadius:100,fontSize:16,fontWeight:800,cursor:'pointer',boxShadow:'0 10px 24px rgba(255,148,49,0.3)',fontFamily:"'Inter',sans-serif",width:'100%'}}>🤝 Send Collab Request</button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 function HomePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop();};
@@ -933,6 +1162,7 @@ function HomePage(){
   const[totalC,setTotalC]=useState(2400);
   const[totalCp,setTotalCp]=useState(340);
   const[loading,setLoading]=useState(true);
+  
   useEffect(()=>{
     setLoading(true);
     apiCall('/creators?limit=10').then(d=>{
@@ -950,73 +1180,120 @@ function HomePage(){
   const featured=creators.filter(c=>c.featured).slice(0,6);
 
   return <PL>
-    <section style={{background:'#050505',minHeight:mob?'auto':'100vh',display:'flex',alignItems:'center',padding:mob?'80px 20px 64px':'0 20px',position:'relative',overflow:'hidden'}}>
-      {/* Premium Background Elements */}
-      <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'radial-gradient(circle at 80% 20%, rgba(255,148,49,0.15) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(18,136,7,0.1) 0%, transparent 50%)',animation:'glowPulse 8s ease-in-out infinite'}}/>
-      <div style={{position:'absolute',top:0,left:0,right:0,height:6,background:'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)',zIndex:10}}/>
-      <div style={{position:'absolute',top:'-20%',right:'-10%',width:'60%',height:'80%',background:'radial-gradient(ellipse at center, rgba(255,148,49,0.08) 0%, transparent 70%)',transform:'rotate(-15deg)',filter:'blur(80px)',animation:'glowPulse 6s ease-in-out infinite alternate'}}/>
+        <section style={{background:'#FAFAFA',minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center',paddingTop:mob?140:180,paddingBottom:mob?80:120,position:'relative',overflow:'hidden',textAlign:'center'}}>
       
-      <div style={{...W(),position:'relative',zIndex:2,width:'100%'}}>
-        <div style={{maxWidth:680}}>
-          <div className="au" style={{display:'inline-flex',alignItems:'center',gap:12,marginBottom:32,padding:'10px 20px',borderRadius:40,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',backdropFilter:'blur(20px)'}}>
-            <span style={{fontSize:18,filter:'drop-shadow(0 0 10px rgba(255,148,49,0.5))'}}>🇮🇳</span>
-            <span style={{fontSize:12,fontWeight:900,color:'#fff',letterSpacing:'.15em',textTransform:'uppercase'}}>Bharat's Largest Creator Network</span>
-          </div>
-          
-          <h1 className="au d1" style={{fontFamily:"'Fraunces',serif",fontSize:mob?'clamp(32px,10vw,48px)':'clamp(56px,7vw,92px)',fontWeight:900,color:'#fff',lineHeight:0.95,marginBottom:28,letterSpacing:'-0.03em'}}>
-            Empowering the<br/>
-            <span style={{background:'linear-gradient(135deg, #FF9431 0%, #FFB36E 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Next-Gen Bharat</span>
-          </h1>
-          
-          <p className="au d2" style={{fontSize:mob?16:21,color:'rgba(255,255,255,0.65)',lineHeight:1.6,maxWidth:640,marginBottom:48,fontWeight:500}}>
-            Join 2,400+ verified creators across 50+ cities. Build your professional portfolio, connect with global brands, and scale your influence.
-          </p>
-          
-          <div className="au d3" style={{display:'flex',gap:20,flexWrap:'wrap',marginBottom:72,flexDirection:mob?'column':'row'}}>
-            <Btn lg onClick={()=>go('apply')} style={{padding:mob?'16px 32px':'20px 48px',fontSize:mob?16:18,boxShadow:'0 12px 40px rgba(255,148,49,0.4)',borderRadius:16,fontWeight:900,width:mob?'100%':'auto'}}>Join for Free 🚀</Btn>
-            <Btn lg variant="ghost" style={{color:'#fff',borderColor:'rgba(255,255,255,0.2)',padding:mob?'16px 32px':'20px 48px',fontSize:mob?16:18,background:'rgba(255,255,255,0.05)',backdropFilter:'blur(10px)',borderRadius:16,width:mob?'100%':'auto'}} onClick={()=>go('creators')}>Explore Creators</Btn>
-          </div>
-          
-          <div className="au d4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))',gap:mob?32:56,paddingTop:48,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
-            {[[totalC.toLocaleString(),'Verified Creators'],[totalCp+'+','Brand Campaigns'],['50+','Cities Represented'],['₹8Cr+','Creator Earnings']].map(function(item){
-              return React.createElement('div',{key:item[1]},
-                React.createElement('div',{style:{fontFamily:"'Fraunces',serif",fontSize:mob?28:36,fontWeight:900,color:'#fff',lineHeight:1,marginBottom:8}},item[0]),
-                React.createElement('div',{style:{fontSize:12,color:'rgba(255,255,255,0.4)',fontWeight:800,textTransform:'uppercase',letterSpacing:'.1em'}},item[1])
-              );
-            })}
-          </div>
+      {/* Light Mode Ambient Background Elements */}
+      <div style={{position:'absolute',top:'-20%',left:'50%',transform:'translateX(-50%)',width:'100vw',height:'70vh',background:'radial-gradient(ellipse at top, rgba(255, 148, 49, 0.12), transparent 70%)',filter:'blur(60px)',pointerEvents:'none',zIndex:0}}/>
+      <div style={{position:'absolute',top:'20%',left:'20%',width:'40vw',height:'40vw',background:'radial-gradient(circle, rgba(16, 185, 129, 0.08), transparent 60%)',filter:'blur(80px)',pointerEvents:'none',zIndex:0,animation:'float 10s ease-in-out infinite alternate'}}/>
+      <div style={{position:'absolute',top:'10%',right:'15%',width:'35vw',height:'35vw',background:'radial-gradient(circle, rgba(59, 130, 246, 0.05), transparent 60%)',filter:'blur(80px)',pointerEvents:'none',zIndex:0,animation:'float 12s ease-in-out infinite alternate-reverse'}}/>
+      
+      {/* Light Grid Pattern */}
+      <div style={{position:'absolute',inset:0,backgroundImage:'radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none',maskImage:'linear-gradient(to bottom, black 40%, transparent 100%)',WebkitMaskImage:'linear-gradient(to bottom, black 40%, transparent 100%)'}}/>
+      
+      <div style={{...W(),position:'relative',zIndex:2,display:'flex',flexDirection:'column',alignItems:'center',width:'100%'}}>
+        
+        {/* Verification Pill */}
+        <div className="au" style={{display:'inline-flex',alignItems:'center',gap:10,padding:'8px 16px',borderRadius:100,background:'#fff',border:'1px solid rgba(0,0,0,0.08)',marginBottom:32,boxShadow:'0 10px 30px -10px rgba(0,0,0,0.1)'}}>
+          <div style={{background:'#10B981',color:'#fff',width:20,height:20,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:900}}>✓</div>
+          <span style={{fontSize:14,fontWeight:700,color:'#111',fontFamily:"'Inter',sans-serif"}}>Trusted by 50,000+ Creators</span>
         </div>
         
-        {/* Hero Interactive Element (Visual Only) */}
-        {!mob&&<div className="au d5" style={{position:'absolute',right:0,top:'10%',zIndex:5}}>
-          <div style={{width:400,height:560,background:'rgba(255,255,255,0.04)',borderRadius:32,border:'1px solid rgba(255,255,255,0.15)',backdropFilter:'blur(40px)',overflow:'hidden',animation:'float 6s ease-in-out infinite'}}>
-          <div style={{height:6,background:T.gd}}/>
-          <div style={{padding:32}}>
-            <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:32}}>
-              <div style={{width:64,height:64,borderRadius:20,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:32,boxShadow:'0 8px 24px rgba(255,148,49,0.3)'}}>🇮🇳</div>
-              <div>
-                <p style={{fontWeight:900,color:'#fff',fontSize:20}}>Top Trending</p>
-                <p style={{fontSize:14,color:'rgba(255,255,255,0.5)'}}>Real-time Analytics</p>
-              </div>
-            </div>
-            {[
-              {n:'Jaipur Travel',v:'88%',c:T.gd},
-              {n:'Tech Reviews',v:'94%',c:'#3B82F6'},
-              {n:'Fashion Hub',v:'82%',c:'#EC4899'}
-            ].map(i=><div key={i.n} style={{marginBottom:24}}>
-              <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}><span style={{color:'#fff',fontWeight:700}}>{i.n}</span><span style={{color:i.c,fontWeight:900,textShadow:`0 0 10px ${i.c}`}}>{i.v}</span></div>
-              <div style={{height:8,background:'rgba(255,255,255,0.1)',borderRadius:4}}><div style={{height:'100%',width:i.v,background:i.c,borderRadius:4,boxShadow:`0 0 10px ${i.c}`}}/></div>
-            </div>)}
-            <div style={{marginTop:32,padding:24,background:'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))',borderRadius:20,textAlign:'center',border:'1px solid rgba(255,255,255,0.05)'}}>
-              <p style={{fontSize:14,color:'rgba(255,255,255,0.8)',marginBottom:4,textTransform:'uppercase',letterSpacing:'.1em'}}>Total Engagement</p>
-              <p style={{fontSize:40,fontWeight:900,color:'#fff',fontFamily:"'Fraunces',serif",filter:'drop-shadow(0 4px 10px rgba(255,255,255,0.2))'}}>14.2M+</p>
-            </div>
-          </div>
+        {/* Clear Identity Headline */}
+        <h1 className="au d1" style={{fontFamily:"'Inter',sans-serif",fontSize:mob?'clamp(44px,12vw,56px)':'clamp(64px,8vw,88px)',fontWeight:900,color:'#111',lineHeight:1.1,marginBottom:24,letterSpacing:'-0.04em',maxWidth:1000}}>
+          Your Digital <span style={{position:'relative',display:'inline-block'}}>
+            <span style={{position:'relative',zIndex:2,background:'linear-gradient(90deg, #FF9431, #DC2626)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Identity</span>
+            <svg style={{position:'absolute',bottom:-10,left:0,width:'100%',height:16,zIndex:1}} viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q 50 0 100 15" fill="none" stroke="rgba(255,148,49,0.3)" strokeWidth="6" strokeLinecap="round"/></svg>
+          </span> <br/>
+          Built in Minutes.
+        </h1>
+        
+        {/* Tier 2 / Tier 3 Focused Subtitle */}
+        <p className="au d2" style={{fontSize:mob?17:22,color:'rgba(0,0,0,0.6)',lineHeight:1.6,marginBottom:48,fontWeight:500,maxWidth:720,fontFamily:"'Inter',sans-serif"}}>
+          Launch your verified creator portfolio, showcase your social reach, and attract top brand deals directly. The all-in-one link for Indian creators.
+        </p>
+        
+        {/* Modern Solid Buttons */}
+        <div className="au d3" style={{display:'flex',gap:16,flexWrap:'wrap',marginBottom:mob?80:100,justifyContent:'center',width:'100%'}}>
+          <Btn lg onClick={()=>go('apply')} style={{padding:'20px 40px',fontSize:17,background:'#111',color:'#fff',borderRadius:100,fontWeight:800,border:'none',boxShadow:'0 10px 30px rgba(0,0,0,0.2)',flex:mob?1:'none',justifyContent:'center',fontFamily:"'Inter',sans-serif"}}>Claim Your Link</Btn>
+          <Btn lg variant="ghost" style={{padding:'20px 40px',fontSize:17,background:'#fff',color:'#111',borderRadius:100,fontWeight:700,border:'1px solid rgba(0,0,0,0.1)',boxShadow:'0 4px 14px rgba(0,0,0,0.05)',flex:mob?1:'none',justifyContent:'center',fontFamily:"'Inter',sans-serif"}} onClick={()=>dsp({t:'UI',v:{demoModal:true}})}>View Demo</Btn>
         </div>
-      </div>}
-      
+        
+        {/* Portfolio Showcase Mockup (White / Bright App style) */}
+        <div className="au d4" style={{width:'100%',maxWidth:1000,position:'relative',display:'flex',justifyContent:'center',perspective:1500,minHeight:600}}>
+          
+          <div style={{position:'relative',transform:'rotateY(-10deg) rotateX(5deg)',transformStyle:'preserve-3d'}}>
+             
+             {/* Main Phone Frame (White) */}
+             <div style={{width:320,height:660,background:'#fff',borderRadius:48,border:'12px solid #F3F4F6',boxShadow:'0 40px 100px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(0,0,0,0.05)',position:'relative',display:'flex',flexDirection:'column',overflow:'hidden',zIndex:5,animation:'float 6s ease-in-out infinite'}}>
+                
+                {/* Notch */}
+                <div style={{position:'absolute',top:8,left:'50%',transform:'translateX(-50%)',width:100,height:26,background:'#F3F4F6',borderRadius:20,zIndex:10}}/>
+
+                {/* Portfolio Content Layer */}
+                <div style={{flex:1,background:'#FAFAFA',display:'flex',flexDirection:'column',overflow:'hidden',position:'relative'}}>
+                   {/* Cover */}
+                   <div style={{height:150,background:'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80) center/cover'}}/>
+                   
+                   {/* Profile Avatar */}
+                   <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:-50,position:'relative',zIndex:2}}>
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" style={{width:100,height:100,borderRadius:'50%',border:'4px solid #fff',boxShadow:'0 10px 20px rgba(0,0,0,0.1)',objectFit:'cover'}} alt="Creator"/>
+                      <div style={{marginTop:-14,background:'#fff',color:'#10B981',fontSize:11,fontWeight:800,padding:'4px 12px',borderRadius:20,border:'1px solid rgba(16,185,129,0.2)',display:'flex',alignItems:'center',gap:4,boxShadow:'0 4px 10px rgba(16,185,129,0.15)'}}>
+                         ✓ Verified Creator
+                      </div>
+                   </div>
+
+                   <div style={{padding:'20px 24px',textAlign:'center',flex:1,display:'flex',flexDirection:'column'}}>
+                     <h3 style={{fontSize:24,fontWeight:900,color:'#111',fontFamily:"'Inter',sans-serif",marginBottom:4}}>Rahul Sharma</h3>
+                     <p style={{fontSize:14,color:'rgba(0,0,0,0.6)',fontFamily:"'Inter',sans-serif",marginBottom:24,fontWeight:500}}>📍 Jaipur • Travel & Culture</p>
+                     
+                     {/* Stats Blocks */}
+                     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:24}}>
+                        <div style={{background:'#fff',border:'1px solid rgba(0,0,0,0.05)',borderRadius:16,padding:'16px',boxShadow:'0 2px 10px rgba(0,0,0,0.02)'}}>
+                           <div style={{fontSize:20,fontWeight:900,color:'#111',fontFamily:"'Inter',sans-serif"}}>248K</div>
+                           <div style={{fontSize:11,fontWeight:600,color:'rgba(0,0,0,0.5)',textTransform:'uppercase',letterSpacing:'0.5px',marginTop:4}}>Followers</div>
+                        </div>
+                        <div style={{background:'#fff',border:'1px solid rgba(0,0,0,0.05)',borderRadius:16,padding:'16px',boxShadow:'0 2px 10px rgba(0,0,0,0.02)'}}>
+                           <div style={{fontSize:20,fontWeight:900,color:'#FF9431',fontFamily:"'Inter',sans-serif"}}>6.8%</div>
+                           <div style={{fontSize:11,fontWeight:600,color:'rgba(0,0,0,0.5)',textTransform:'uppercase',letterSpacing:'0.5px',marginTop:4}}>Engagement</div>
+                        </div>
+                     </div>
+
+                     {/* Clean Modern Buttons */}
+                     <div style={{display:'flex',flexDirection:'column',gap:12,marginTop:'auto'}}>
+                        <div style={{background:'#fff',border:'1px solid rgba(0,0,0,0.08)',padding:'16px',borderRadius:16,fontSize:14,fontWeight:700,color:'#111',boxShadow:'0 4px 12px rgba(0,0,0,0.03)'}}>📸 View Instagram</div>
+                        <div style={{background:'linear-gradient(90deg, #FF9431, #DC2626)',padding:'16px',borderRadius:16,fontSize:15,fontWeight:800,color:'#fff',boxShadow:'0 8px 20px rgba(255,148,49,0.3)'}}>🤝 Book for ₹15,000</div>
+                     </div>
+                   </div>
+                </div>
+             </div>
+
+             {/* Floating Identity & Growth Elements */}
+             {!mob && <>
+                {/* Brand Deal Alert */}
+                <div className="au d5" style={{position:'absolute',top:120,right:-120,background:'#fff',border:'1px solid rgba(0,0,0,0.05)',borderRadius:20,padding:'16px 20px',boxShadow:'0 20px 40px rgba(0,0,0,0.1)',display:'flex',alignItems:'center',gap:16,zIndex:10,animation:'float 5s ease-in-out infinite 0.5s',transform:'translateZ(80px)'}}>
+                  <div style={{width:48,height:48,borderRadius:'50%',background:'#F3F4F6',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24}}>✈️</div>
+                  <div>
+                     <p style={{fontSize:14,fontWeight:800,color:'#111',marginBottom:2,fontFamily:"'Inter',sans-serif"}}>MakeMyTrip</p>
+                     <p style={{fontSize:12,fontWeight:500,color:'rgba(0,0,0,0.5)',fontFamily:"'Inter',sans-serif"}}>New campaign request</p>
+                  </div>
+                </div>
+
+                {/* Identity Tag */}
+                <div className="au d5" style={{position:'absolute',bottom:140,left:-100,background:'#fff',border:'1px solid rgba(0,0,0,0.05)',borderRadius:20,padding:'16px 20px',boxShadow:'0 20px 40px rgba(0,0,0,0.1)',display:'flex',alignItems:'center',gap:16,zIndex:10,animation:'float 6s ease-in-out infinite 1s',transform:'translateZ(60px)'}}>
+                  <div style={{width:48,height:48,borderRadius:'50%',background:'rgba(16,185,129,0.1)',color:'#10B981',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,fontWeight:900}}>✓</div>
+                  <div>
+                     <p style={{fontSize:14,fontWeight:800,color:'#111',marginBottom:2,fontFamily:"'Inter',sans-serif"}}>Profile Verified</p>
+                     <p style={{fontSize:12,fontWeight:500,color:'rgba(0,0,0,0.5)',fontFamily:"'Inter',sans-serif"}}>creatorbharat.in/rahul</p>
+                  </div>
+                </div>
+             </>}
+
+          </div>
+
+        </div>
       </div>
     </section>
+
 
 
     {(loading||featured.length>0)&&(
