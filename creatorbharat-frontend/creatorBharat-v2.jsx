@@ -15,12 +15,16 @@ img{max-width:100%;display:block}input,select,textarea,button{font-family:inheri
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @keyframes toastIn{from{opacity:0;transform:translateX(100px)}to{opacity:1;transform:none}}
-.au{animation:fadeUp .3s ease both}.ai{animation:fadeIn .2s ease both}.si{animation:scaleIn .25s ease both}
+@keyframes slideInRight{from{transform:translateX(100%)}to{transform:none}}
+.au{animation:fadeUp .3s ease both}.ai{animation:fadeIn .2s ease both}.si{animation:scaleIn .25s ease both}.sr{animation:slideInRight .3s cubic-bezier(0.4,0,0.2,1) both}
 .d1{animation-delay:.05s}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.1)}}
 .d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
 .spin{animation:spin .8s linear infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(3deg);box-shadow:0 24px 64px rgba(0,0,0,0.16)}50%{transform:translateY(-20px) rotate(1deg);box-shadow:0 32px 80px rgba(255,148,49,0.15)}}
+@keyframes glowPulse{0%,100%{opacity:0.8;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+.btn-int{transition:transform .1s cubic-bezier(0.4,0,0.2,1)}.btn-int:active:not(:disabled){transform:scale(0.96)!important}
 `;document.head.appendChild(s);}catch(e){}
 
 // TOKENS
@@ -231,7 +235,7 @@ function Btn({children,onClick,variant='primary',sm,lg,full,disabled,loading,sty
     success:{background:T.ok,color:'#fff',boxShadow:h?'0 8px 24px rgba(16,185,129,0.25)':'none'}
   };
   const Tag=href?'a':'button';
-  return <Tag onClick={onClick} disabled={disabled||loading} href={href} style={{...base,...(vs[variant]||vs.primary)}} onMouseEnter={()=>sh(true)} onMouseLeave={()=>sh(false)}>{loading?<span className="spin" style={{width:16,height:16,border:'2px solid rgba(255,255,255,.3)',borderTopColor:'#fff',borderRadius:'50%'}}/>:children}</Tag>;
+  return <Tag className="btn-int" onClick={onClick} disabled={disabled||loading} href={href} style={{...base,...(vs[variant]||vs.primary)}} onMouseEnter={()=>sh(true)} onMouseLeave={()=>sh(false)}>{loading?<span className="spin" style={{width:16,height:16,border:'2px solid rgba(255,255,255,.3)',borderTopColor:'#fff',borderRadius:'50%'}}/>:children}</Tag>;
 }
 
 function Bdg({children,color='gray',sm}){
@@ -384,10 +388,10 @@ function Navbar(){
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={T.t2} strokeWidth="2.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
             {unread>0&&<span style={{position:'absolute',top:-4,right:-4,minWidth:20,height:20,padding:'0 4px',background:T.gd,borderRadius:10,fontSize:10,fontWeight:900,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid #fff'}}>{unread>9?'9+':unread}</span>}
           </button>
-          <div style={{position:'relative'}}>
+          {!mob&&<div style={{position:'relative'}}>
             <button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu,notifPanel:false}})} style={{display:'flex',alignItems:'center',gap:12,background:T.bg2,border:`1px solid ${T.bd}`,borderRadius:16,padding:'6px 16px 6px 8px',cursor:'pointer',fontFamily:'inherit',transition:'all .2s'}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gd} onMouseLeave={e=>e.currentTarget.style.borderColor=T.bd}>
               <img src={(st.creatorProfile?.photo||st.creatorProfile?.avatarUrl)||`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=FF9431&color=fff`} style={{width:36,height:36,borderRadius:12,objectFit:'cover',border:`2px solid ${T.gd}`}} alt="" onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name||'U')}&background=FF9431&color=fff`}}/>
-              {!mob&&<span style={{fontSize:14,fontWeight:800,color:T.t1,maxWidth:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{st.user.name||st.user.companyName}</span>}
+              <span style={{fontSize:14,fontWeight:800,color:T.t1,maxWidth:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{st.user.name||st.user.companyName}</span>
               <svg width="12" height="8" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke={T.t3} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
             {st.ui.mobileMenu&&<div className="si" style={{position:'absolute',right:0,top:'calc(100% + 16px)',background:'#fff',border:`1px solid ${T.bd}`,borderRadius:22,minWidth:240,boxShadow:T.sh4,zIndex:100,overflow:'hidden',padding:10}}>
@@ -395,15 +399,15 @@ function Navbar(){
               <div style={{height:1,background:T.bd,margin:'10px 0'}}/>
               <button onClick={()=>{dsp({t:'LOGOUT'});dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:'none',border:'none',textAlign:'left',fontSize:14,color:T.gd,cursor:'pointer',fontFamily:'inherit',fontWeight:800,borderRadius:12}}>Logout</button>
             </div>}
-          </div>
+          </div>}
         </>:<>
-          <Btn lg variant="ghost" onClick={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})} style={{border:'none',color:T.t1}}>Login</Btn>
-          <Btn lg onClick={()=>{go('apply')}} style={{fontWeight:800}}>Join Now</Btn>
+          {!mob&&<Btn lg variant="ghost" onClick={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})} style={{border:'none',color:T.t1}}>Login</Btn>}
+          {!mob&&<Btn lg onClick={()=>{go('apply')}} style={{fontWeight:800}}>Join Now</Btn>}
         </>}
         {mob&&<button onClick={()=>dsp({t:'UI',v:{mobileMenu:!st.ui.mobileMenu}})} style={{background:T.bg2,border:'none',cursor:'pointer',width:48,height:48,borderRadius:14,display:'flex',flexDirection:'column',gap:5,alignItems:'center',justifyContent:'center'}}>{[0,1,2].map(i=><span key={i} style={{display:'block',width:24,height:3,background:T.t1,borderRadius:1.5}}/>)}</button>}
       </div>
     </nav>
-    {mob&&st.ui.mobileMenu&&!st.user&&<div style={{position:'fixed',inset:0,zIndex:4999,background:'rgba(0,0,0,.6)',backdropFilter:'blur(8px)'}} onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})}><div className="si" onClick={e=>e.stopPropagation()} style={{position:'absolute',top:20,right:20,left:20,background:'#fff',borderRadius:32,boxShadow:T.sh4,padding:'32px',display:'flex',flexDirection:'column',gap:12}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}><Logo onClick={()=>go('home')}/><button onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})} style={{width:44,height:44,borderRadius:'50%',background:T.bg2,border:'none',fontSize:24}}>×</button></div>{links.map(([p,l])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'16px 20px',background:st.page===p?T.ga:'transparent',border:'none',textAlign:'left',fontSize:18,color:st.page===p?T.gd:T.t1,cursor:'pointer',fontFamily:'inherit',fontWeight:st.page===p?900:600,borderRadius:16}}>{l}</button>)}<div style={{height:1,background:T.bd,margin:'16px 0'}}/><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:true,authTab:'login',mobileMenu:false}})}}>Sign In</Btn><Btn full lg variant="outline" onClick={()=>{go('apply');dsp({t:'UI',v:{mobileMenu:false}})}} style={{borderColor:T.gd,color:T.gd}}>Get Listed Free</Btn></div></div>}
+    {mob&&st.ui.mobileMenu&&<div className="ai" style={{position:'fixed',inset:0,zIndex:4999,background:'rgba(0,0,0,.6)',backdropFilter:'blur(8px)'}} onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})}><div className="sr" onClick={e=>e.stopPropagation()} style={{position:'absolute',top:0,right:0,bottom:0,width:'85%',maxWidth:320,background:'#fff',boxShadow:T.sh4,padding:'32px 24px',display:'flex',flexDirection:'column',gap:16,overflowY:'auto'}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}><Logo onClick={()=>go('home')}/><button onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})} style={{width:40,height:40,borderRadius:'50%',background:T.bg2,border:'none',fontSize:24,display:'flex',alignItems:'center',justifyContent:'center',color:T.n8}}>×</button></div>{links.map(([p,l])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:st.page===p?T.ga:'transparent',border:'none',textAlign:'left',fontSize:16,color:st.page===p?T.gd:T.t1,cursor:'pointer',fontFamily:'inherit',fontWeight:st.page===p?900:600,borderRadius:14}}>{l}</button>)}<div style={{height:1,background:T.bd,margin:'8px 0'}}/>{!st.user?<><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:true,authTab:'login',mobileMenu:false}})}}>Sign In</Btn><Btn full lg variant="outline" onClick={()=>{go('apply');dsp({t:'UI',v:{mobileMenu:false}})}} style={{borderColor:T.gd,color:T.gd}}>Get Listed Free</Btn></>:(<>{[isCreator&&['Dashboard','dashboard'],isCreator&&['Applications','applications'],isBrand&&['Brand Dashboard','brand-dashboard'],isBrand&&['Post Campaign','campaign-builder'],['Settings','settings'],['Saved Items','saved']].filter(Boolean).map(([l,p])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:st.page===p?T.ga:'transparent',border:'none',textAlign:'left',fontSize:16,color:st.page===p?T.gd:T.t1,cursor:'pointer',fontFamily:'inherit',fontWeight:st.page===p?900:600,borderRadius:14}}>{l}</button>)}<button onClick={()=>{dsp({t:'LOGOUT'});dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:'none',border:'none',textAlign:'left',fontSize:16,color:T.gd,cursor:'pointer',fontFamily:'inherit',fontWeight:900,borderRadius:14}}>Logout</button></>)}</div></div>}
     {st.ui.notifPanel&&<NotifPanel/>}
   </>;
 }
@@ -815,7 +819,7 @@ function CampCard({campaign:c,onApply}){
   const fillPct=c.slots>0?Math.round((c.filled/c.slots)*100):0;
   
   return <Card style={{padding:'32px',display:'flex',flexDirection:'column',gap:24,border:`1.5px solid ${applied?T.ok:T.bd}`,position:'relative'}}>
-    {c.urgent&&<div style={{position:'absolute',top:16,right:16,background:'rgba(255,148,49,0.1)',color:T.gd,fontSize:10,fontWeight:900,padding:'6px 14px',borderRadius:20,border:`1px solid rgba(255,148,49,0.2)`,letterSpacing:'.05em'}}>URGENT</div>}
+    {c.urgent&&<div style={{position:'absolute',top:16,right:16,background:'rgba(255,148,49,0.1)',color:T.gd,fontSize:10,fontWeight:900,padding:'6px 14px',borderRadius:20,border:`1px solid rgba(255,148,49,0.2)`,letterSpacing:'.05em',animation:'pulse 2s infinite'}}>URGENT</div>}
     
     <div>
       <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:16}}>
@@ -905,18 +909,18 @@ function HomePage(){
   return <PL>
     <section style={{background:'#050505',minHeight:mob?'auto':'100vh',display:'flex',alignItems:'center',padding:mob?'80px 20px 64px':'0 20px',position:'relative',overflow:'hidden'}}>
       {/* Premium Background Elements */}
-      <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'radial-gradient(circle at 80% 20%, rgba(255,148,49,0.15) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(18,136,7,0.1) 0%, transparent 50%)'}}/>
+      <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'radial-gradient(circle at 80% 20%, rgba(255,148,49,0.15) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(18,136,7,0.1) 0%, transparent 50%)',animation:'glowPulse 8s ease-in-out infinite'}}/>
       <div style={{position:'absolute',top:0,left:0,right:0,height:6,background:'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)',zIndex:10}}/>
-      <div style={{position:'absolute',top:'-20%',right:'-10%',width:'60%',height:'80%',background:'radial-gradient(ellipse at center, rgba(255,148,49,0.05) 0%, transparent 70%)',transform:'rotate(-15deg)',filter:'blur(80px)'}}/>
+      <div style={{position:'absolute',top:'-20%',right:'-10%',width:'60%',height:'80%',background:'radial-gradient(ellipse at center, rgba(255,148,49,0.08) 0%, transparent 70%)',transform:'rotate(-15deg)',filter:'blur(80px)',animation:'glowPulse 6s ease-in-out infinite alternate'}}/>
       
-      <div style={{...W(),position:'relative',zIndex:2}}>
-        <div style={{maxWidth:860}}>
+      <div style={{...W(),position:'relative',zIndex:2,width:'100%'}}>
+        <div style={{maxWidth:680}}>
           <div className="au" style={{display:'inline-flex',alignItems:'center',gap:12,marginBottom:32,padding:'10px 20px',borderRadius:40,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',backdropFilter:'blur(20px)'}}>
             <span style={{fontSize:18,filter:'drop-shadow(0 0 10px rgba(255,148,49,0.5))'}}>🇮🇳</span>
             <span style={{fontSize:12,fontWeight:900,color:'#fff',letterSpacing:'.15em',textTransform:'uppercase'}}>Bharat's Largest Creator Network</span>
           </div>
           
-          <h1 className="au d1" style={{fontFamily:"'Fraunces',serif",fontSize:mob?'clamp(42px,12vw,64px)':'clamp(56px,7vw,92px)',fontWeight:900,color:'#fff',lineHeight:0.95,marginBottom:28,letterSpacing:'-0.03em'}}>
+          <h1 className="au d1" style={{fontFamily:"'Fraunces',serif",fontSize:mob?'clamp(32px,10vw,48px)':'clamp(56px,7vw,92px)',fontWeight:900,color:'#fff',lineHeight:0.95,marginBottom:28,letterSpacing:'-0.03em'}}>
             Empowering the<br/>
             <span style={{background:'linear-gradient(135deg, #FF9431 0%, #FFB36E 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Next-Gen Bharat</span>
           </h1>
@@ -925,9 +929,9 @@ function HomePage(){
             Join 2,400+ verified creators across 50+ cities. Build your professional portfolio, connect with global brands, and scale your influence.
           </p>
           
-          <div className="au d3" style={{display:'flex',gap:20,flexWrap:'wrap',marginBottom:72}}>
-            <Btn lg onClick={()=>go('apply')} style={{padding:'20px 48px',fontSize:18,boxShadow:'0 12px 40px rgba(255,148,49,0.4)',borderRadius:16,fontWeight:900}}>Join for Free 🚀</Btn>
-            <Btn lg variant="ghost" style={{color:'#fff',borderColor:'rgba(255,255,255,0.2)',padding:'20px 48px',fontSize:18,background:'rgba(255,255,255,0.05)',backdropFilter:'blur(10px)',borderRadius:16}} onClick={()=>go('creators')}>Explore Creators</Btn>
+          <div className="au d3" style={{display:'flex',gap:20,flexWrap:'wrap',marginBottom:72,flexDirection:mob?'column':'row'}}>
+            <Btn lg onClick={()=>go('apply')} style={{padding:mob?'16px 32px':'20px 48px',fontSize:mob?16:18,boxShadow:'0 12px 40px rgba(255,148,49,0.4)',borderRadius:16,fontWeight:900,width:mob?'100%':'auto'}}>Join for Free 🚀</Btn>
+            <Btn lg variant="ghost" style={{color:'#fff',borderColor:'rgba(255,255,255,0.2)',padding:mob?'16px 32px':'20px 48px',fontSize:mob?16:18,background:'rgba(255,255,255,0.05)',backdropFilter:'blur(10px)',borderRadius:16,width:mob?'100%':'auto'}} onClick={()=>go('creators')}>Explore Creators</Btn>
           </div>
           
           <div className="au d4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))',gap:mob?32:56,paddingTop:48,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
@@ -939,33 +943,36 @@ function HomePage(){
             })}
           </div>
         </div>
-      </div>
-      
-      {/* Hero Interactive Element (Visual Only) */}
-      {!mob&&<div className="au d5" style={{position:'absolute',right:'5%',top:'20%',width:420,height:560,background:'rgba(255,255,255,0.03)',borderRadius:32,border:'1px solid rgba(255,255,255,0.1)',backdropFilter:'blur(40px)',transform:'rotate(3deg)',boxShadow:T.sh4,overflow:'hidden'}}>
-        <div style={{height:6,background:T.gd}}/>
-        <div style={{padding:32}}>
-          <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:32}}>
-            <div style={{width:64,height:64,borderRadius:20,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:32}}>🇮🇳</div>
-            <div>
-              <p style={{fontWeight:900,color:'#fff',fontSize:20}}>Top Trending</p>
-              <p style={{fontSize:14,color:'rgba(255,255,255,0.5)'}}>Real-time Analytics</p>
+        
+        {/* Hero Interactive Element (Visual Only) */}
+        {!mob&&<div className="au d5" style={{position:'absolute',right:0,top:'10%',zIndex:5}}>
+          <div style={{width:400,height:560,background:'rgba(255,255,255,0.04)',borderRadius:32,border:'1px solid rgba(255,255,255,0.15)',backdropFilter:'blur(40px)',overflow:'hidden',animation:'float 6s ease-in-out infinite'}}>
+          <div style={{height:6,background:T.gd}}/>
+          <div style={{padding:32}}>
+            <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:32}}>
+              <div style={{width:64,height:64,borderRadius:20,background:T.gd,display:'flex',alignItems:'center',justifyContent:'center',fontSize:32,boxShadow:'0 8px 24px rgba(255,148,49,0.3)'}}>🇮🇳</div>
+              <div>
+                <p style={{fontWeight:900,color:'#fff',fontSize:20}}>Top Trending</p>
+                <p style={{fontSize:14,color:'rgba(255,255,255,0.5)'}}>Real-time Analytics</p>
+              </div>
             </div>
-          </div>
-          {[
-            {n:'Jaipur Travel',v:'88%',c:T.gd},
-            {n:'Tech Reviews',v:'94%',c:'#3B82F6'},
-            {n:'Fashion Hub',v:'82%',c:'#EC4899'}
-          ].map(i=><div key={i.n} style={{marginBottom:24}}>
-            <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}><span style={{color:'#fff',fontWeight:700}}>{i.n}</span><span style={{color:i.c,fontWeight:900}}>{i.v}</span></div>
-            <div style={{height:8,background:'rgba(255,255,255,0.1)',borderRadius:4}}><div style={{height:'100%',width:i.v,background:i.c,borderRadius:4}}/></div>
-          </div>)}
-          <div style={{marginTop:32,padding:24,background:'rgba(255,255,255,0.05)',borderRadius:20,textAlign:'center'}}>
-            <p style={{fontSize:14,color:'rgba(255,255,255,0.8)',marginBottom:4}}>Total Engagement</p>
-            <p style={{fontSize:32,fontWeight:900,color:'#fff',fontFamily:"'Fraunces',serif"}}>14.2M+</p>
+            {[
+              {n:'Jaipur Travel',v:'88%',c:T.gd},
+              {n:'Tech Reviews',v:'94%',c:'#3B82F6'},
+              {n:'Fashion Hub',v:'82%',c:'#EC4899'}
+            ].map(i=><div key={i.n} style={{marginBottom:24}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}><span style={{color:'#fff',fontWeight:700}}>{i.n}</span><span style={{color:i.c,fontWeight:900,textShadow:`0 0 10px ${i.c}`}}>{i.v}</span></div>
+              <div style={{height:8,background:'rgba(255,255,255,0.1)',borderRadius:4}}><div style={{height:'100%',width:i.v,background:i.c,borderRadius:4,boxShadow:`0 0 10px ${i.c}`}}/></div>
+            </div>)}
+            <div style={{marginTop:32,padding:24,background:'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))',borderRadius:20,textAlign:'center',border:'1px solid rgba(255,255,255,0.05)'}}>
+              <p style={{fontSize:14,color:'rgba(255,255,255,0.8)',marginBottom:4,textTransform:'uppercase',letterSpacing:'.1em'}}>Total Engagement</p>
+              <p style={{fontSize:40,fontWeight:900,color:'#fff',fontFamily:"'Fraunces',serif",filter:'drop-shadow(0 4px 10px rgba(255,255,255,0.2))'}}>14.2M+</p>
+            </div>
           </div>
         </div>
       </div>}
+      
+      </div>
     </section>
 
 
