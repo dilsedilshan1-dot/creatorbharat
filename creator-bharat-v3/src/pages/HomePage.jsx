@@ -64,6 +64,10 @@ export default function HomePage() {
               0% { left: -100%; }
               50%, 100% { left: 200%; }
             }
+            @keyframes blink {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0; }
+            }
           `}</style>
 
           <div className="au d3" style={{ width: '100%', maxWidth: 800, background: '#fff', borderRadius: mob ? 28 : 100, padding: mob ? 12 : 8, display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 8, boxShadow: '0 20px 50px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', marginBottom: mob ? 80 : 100 }}>
@@ -181,7 +185,11 @@ function Typewriter({ words, interval = 2000 }) {
   return (
     <span style={{ position: 'relative', display: 'inline-block' }}>
       <span style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(90deg, #FF9431, #DC2626)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{sub}</span>
-      <span style={{ width: 2, height: '80%', background: '#FF9431', position: 'absolute', right: -4, top: '10%', animation: 'blink 0.8s infinite' }} />
+      <span style={{ width: 3, height: '80%', background: '#FF9431', position: 'absolute', right: -6, top: '10%', animation: 'blink 1s infinite' }} />
+      {/* Dynamic Pro Underline */}
+      <svg style={{ position: 'absolute', bottom: -12, left: 0, width: '100%', height: 16, zIndex: 1, pointerEvents: 'none' }} viewBox="0 0 100 20" preserveAspectRatio="none">
+        <path d="M2 15 Q 50 2 98 15" stroke="rgba(255, 148, 49, 0.4)" strokeWidth="8" strokeLinecap="round" fill="none" />
+      </svg>
     </span>
   );
 }
