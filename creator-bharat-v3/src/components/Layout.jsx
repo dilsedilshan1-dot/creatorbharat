@@ -34,10 +34,10 @@ export function Navbar() {
 
   const isCreator = st.role === 'creator', isBrand = st.role === 'brand';
   const links = isCreator
-    ? [['dashboard', 'Command Center'], ['campaigns', 'Deals'], ['leaderboard', 'Leaderboard'], ['blog', 'Learning']]
+    ? [['dashboard', 'Dashboard'], ['campaigns', 'Deals'], ['leaderboard', 'Leaderboard'], ['blog', 'Blogs']]
     : isBrand
-      ? [['creators', 'Discover'], ['campaigns', 'My Campaigns'], ['blog', 'Trends']]
-      : [['creators', 'Find Talent'], ['campaigns', 'Campaigns'], ['leaderboard', 'Top List'], ['about', 'Vision']];
+      ? [['creators', 'Discover'], ['campaigns', 'My Ads'], ['blog', 'Blogs']]
+      : [['creators', 'Creators'], ['campaigns', 'Campaigns'], ['monetize', 'Monetize 💰'], ['blog', 'Blogs'], ['about', 'About']];
 
   return (
     <>
@@ -143,12 +143,12 @@ export function Navbar() {
                     onClick={() => go(p)} 
                     className="nav-link"
                     style={{ 
-                      padding: '8px 20px', 
+                      padding: '8px 16px', 
                       background: st.page === p ? 'rgba(0,0,0,0.05)' : 'transparent', 
                       border: 'none', 
                       color: st.page === p ? '#111' : 'rgba(0,0,0,0.5)', 
                       fontWeight: 800, 
-                      fontSize: 14, 
+                      fontSize: 12.5, 
                       cursor: 'pointer', 
                       borderRadius: 100 
                     }}
@@ -176,12 +176,12 @@ export function Navbar() {
                   }}
                 >
                   <img src={st.user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}&background=FF9431&color=fff`} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} alt="" />
-                  {!mob && <span style={{ fontSize: 14, fontWeight: 900, color: '#111' }}>{st.user.name.split(' ')[0]}</span>}
+                  {!mob && <span style={{ fontSize: 13, fontWeight: 900, color: '#111' }}>{st.user.name.split(' ')[0]}</span>}
                 </button>
               ) : (
                 <>
-                  {!mob && <button onClick={() => dsp({ t: 'UI', v: { authModal: true } })} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 14, fontWeight: 800, cursor: 'pointer', padding: '0 12px' }}>Login</button>}
-                  <Btn lg onClick={() => go('apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '12px 20px' : '12px 32px', fontSize: 14, background: '#111', color: '#fff', border: 'none' }}>
+                  {!mob && <button onClick={() => dsp({ t: 'UI', v: { authModal: true } })} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '0 12px' }}>Login</button>}
+                  <Btn lg onClick={() => go('apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 18px' : '10px 28px', fontSize: 12.5, background: '#111', color: '#fff', border: 'none' }}>
                     {mob ? 'Join' : 'Start My Journey'}
                   </Btn>
                 </>
