@@ -32,13 +32,34 @@ export default function CommunityPulse({ mob }) {
   return (
     <section style={{ padding: mob ? '40px 20px' : '40px 20px 120px 20px', background: '#fff', position: 'relative' }}>
       <div style={W()}>
-        {/* Pro Heading UI with reduced gap */}
-        <div style={{ textAlign: 'left', marginBottom: 80, borderLeft: '4px solid #FF9431', paddingLeft: 32 }}>
-          <span style={{ fontSize: 13, fontWeight: 900, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '4px' }}>How it Works</span>
-          <h2 style={{ fontSize: mob ? 40 : 72, fontWeight: 900, color: '#111', marginTop: 12, lineHeight: 1, letterSpacing: '-0.05em' }}>
-            The Creator Success <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #138808)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Roadmap.</span>
-          </h2>
+        {/* Pro Heading UI with Indian Flag */}
+        <div style={{ textAlign: 'left', marginBottom: 80, borderLeft: '4px solid #FF9431', paddingLeft: 32, position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', flexWrap: 'wrap', gap: 24 }}>
+            <div style={{ flex: 1, minWidth: mob ? '100%' : 600 }}>
+              <span style={{ fontSize: 13, fontWeight: 900, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '4px' }}>How it Works</span>
+              <h2 style={{ fontSize: mob ? 40 : 72, fontWeight: 900, color: '#111', marginTop: 12, lineHeight: 1, letterSpacing: '-0.05em' }}>
+                The Creator Success <br />
+                <span style={{ background: 'linear-gradient(90deg, #FF9431, #138808)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Roadmap.</span>
+              </h2>
+            </div>
+            
+            {/* ANIMATED INDIAN FLAG */}
+            <div className="flag-wave-container" style={{ marginBottom: 10 }}>
+               <div style={{ width: mob ? 80 : 120, height: mob ? 50 : 75, borderRadius: 8, overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ flex: 1, background: '#FF9933' }} />
+                  <div style={{ flex: 1, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                     <div style={{ width: mob ? 14 : 20, height: mob ? 14 : 20, borderRadius: '50%', border: '1.5px solid #000080', position: 'relative' }}>
+                        {[...Array(12)].map((_, i) => (
+                           <div key={i} style={{ position: 'absolute', top: '50%', left: '50%', width: '100%', height: 1, background: '#000080', transform: `translate(-50%, -50%) rotate(${i * 30}deg)` }} />
+                        ))}
+                     </div>
+                  </div>
+                  <div style={{ flex: 1, background: '#138808' }} />
+                  <div className="flag-wave-overlay" />
+               </div>
+            </div>
+          </div>
+          
           <p style={{ fontSize: 18, color: 'rgba(0,0,0,0.5)', marginTop: 24, maxWidth: 600, fontWeight: 500 }}>
             Humein pata hai local creator banna asaan nahi hai. Isliye humne banaya hai India ka pehla step-by-step growth path.
           </p>
@@ -141,6 +162,19 @@ export default function CommunityPulse({ mob }) {
         @keyframes spinBorder {
           from { transform: translate(-50%, -50%) rotate(0deg); }
           to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes flagWave {
+          0% { transform: translateX(-10%) skewX(5deg); }
+          50% { transform: translateX(10%) skewX(-5deg); }
+          100% { transform: translateX(-10%) skewX(5deg); }
+        }
+        .flag-wave-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+          background-size: 200% 100%;
+          animation: flagWave 3s ease-in-out infinite;
+          pointer-events: none;
         }
         .roadmap-card {
           transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
