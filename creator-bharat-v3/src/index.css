@@ -1,7 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html, body { 
+  overflow-x: hidden !important;
+  width: 100%;
+  position: relative;
+}
 body {
   margin: 0;
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -9,7 +13,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #fff;
   color: #111;
-  overflow-x: hidden;
   letter-spacing: -0.01em;
 }
 

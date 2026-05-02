@@ -6,14 +6,23 @@ import Footer from './home/Footer'; // IMPORTING THE NEW ELITE FOOTER
 
 export default function Layout({ children }) {
   const { st, dsp } = useApp();
+  const [mob, setMob] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const h = () => setMob(window.innerWidth < 768);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
       <Navbar />
-      <main style={{ flex: 1, position: 'relative', zIndex: 1, paddingTop: 80 }}>{children}</main>
-      <Footer mob={window.innerWidth < 768} />
+      <main style={{ flex: 1, position: 'relative', zIndex: 1, paddingTop: mob ? 64 : 80 }}>{children}</main>
+      <Footer mob={mob} />
+      {mob && <FloatingMobileNav mob={mob} />}
+      <MobileMenu open={st.ui.mobileMenu} />
       <ToastBar />
       <CompareBar />
-      <AIChatbot />
       {st.ui.authModal && <AuthModal />}
       {st.ui.demoModal && <DemoModal />}
     </div>
@@ -80,11 +89,28 @@ export function Navbar() {
           position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 6000;
         }
         .mobile-nav-sheet {
-          position: fixed; left: 12px; right: 12px; bottom: 12px; background: #fff; border-radius: 40px;
-          padding: 40px 24px; z-index: 6001; box-shadow: 0 -20px 60px rgba(0,0,0,0.2);
-          animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          position: fixed; left: 12px; right: 12px; bottom: 12px; background: rgba(255, 255, 255, 0.95); 
+          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(0,0,0,0.05); border-radius: 40px;
+          padding: 40px 24px; z-index: 6001; box-shadow: 0 -20px 60px rgba(0,0,0,0.15);
+          animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+        .mobile-menu-item {
+          padding: 16px 24px; border-radius: 20px; color: #111; font-weight: 800; font-size: 18px;
+          display: flex; alignItems: center; gap: 16px; transition: all 0.2s; cursor: pointer;
+        }
+        .mobile-menu-item:active { background: rgba(0,0,0,0.05); transform: scale(0.98); }
+        .hamburger-bar {
+          width: 24px; height: 2px; background: #111; border-radius: 10px; transition: all 0.3s;
+        }
+        .floating-nav-bar {
+          position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+          background: rgba(17, 17, 17, 0.9); backdrop-filter: blur(12px);
+          padding: 8px; border-radius: 100px; display: flex; gap: 4px; z-index: 5500;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+        }
+        @keyframes slideUp { from { transform: translateY(120%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
 
       <div style={{
@@ -106,7 +132,9 @@ export function Navbar() {
           overflow: 'hidden',
           pointerEvents: 'auto',
           boxShadow: scroll ? '0 20px 40px -10px rgba(0,0,0,0.1)' : '0 10px 30px -10px rgba(0,0,0,0.05)',
-          transition: 'all 0.5s ease'
+          transition: 'all 0.5s ease',
+          maxWidth: '100vw',
+          boxSizing: 'border-box'
         }}>
           {/* Animated Indian Flag Border */}
           <div style={{
@@ -127,11 +155,11 @@ export function Navbar() {
             backdropFilter: 'blur(30px)',
             WebkitBackdropFilter: 'blur(30px)',
             borderRadius: 100,
-            padding: mob ? '0 8px 0 20px' : '0 24px',
-            height: mob ? 60 : 76,
+            padding: mob ? '0 10px 0 16px' : '0 24px',
+            height: mob ? 52 : 76,
             display: 'flex',
             alignItems: 'center',
-            gap: 24
+            gap: mob ? 8 : 24
           }}>
             <Logo onClick={() => go('home')} sm={mob} />
 
@@ -170,7 +198,7 @@ export function Navbar() {
                     background: '#fff',
                     border: '1.5px solid rgba(0,0,0,0.04)',
                     borderRadius: 100,
-                    padding: '6px 16px 6px 6px',
+                    padding: mob ? '4px' : '6px 16px 6px 6px',
                     cursor: 'pointer',
                     boxShadow: '0 8px 16px rgba(0,0,0,0.03)'
                   }}
@@ -184,6 +212,16 @@ export function Navbar() {
                   <Btn lg onClick={() => go('apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 18px' : '10px 28px', fontSize: 12.5, background: '#111', color: '#fff', border: 'none' }}>
                     {mob ? 'Join' : 'Start My Journey'}
                   </Btn>
+                  {mob && (
+                    <button
+                      onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
+                      style={{ background: '#F3F4F6', border: 'none', width: 44, height: 44, borderRadius: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer' }}
+                    >
+                      <div className="hamburger-bar" style={{ transform: st.ui.mobileMenu ? 'rotate(45deg) translate(4px, 4px)' : 'none' }} />
+                      <div className="hamburger-bar" style={{ opacity: st.ui.mobileMenu ? 0 : 1 }} />
+                      <div className="hamburger-bar" style={{ transform: st.ui.mobileMenu ? 'rotate(-45deg) translate(4px, -4px)' : 'none' }} />
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -239,7 +277,7 @@ export function CompareBar() {
   );
 }
 
-export function AIChatbot() {
+export function AIChatbot({ mob }) {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState([{ role: 'assistant', content: 'Namaste! 🇮🇳 Main CreatorBharat ka AI assistant hoon.' }]);
   const [input, setInput] = useState('');
@@ -261,13 +299,13 @@ export function AIChatbot() {
 
   return (
     <>
-      <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 8500 }}>
-        <button onClick={() => setOpen(!open)} style={{ width: 64, height: 64, borderRadius: '50%', background: '#111', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
+      <div style={{ position: 'fixed', bottom: mob ? 140 : 32, right: mob ? 12 : 32, zIndex: 8500 }}>
+        <button onClick={() => setOpen(!open)} style={{ width: mob ? 42 : 64, height: mob ? 42 : 64, borderRadius: '50%', background: '#111', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 18 : 28 }}>
           {open ? '×' : '🤖'}
         </button>
       </div>
       {open && (
-        <div style={{ position: 'fixed', bottom: 112, right: 32, width: 380, height: 500, background: '#fff', borderRadius: 32, boxShadow: '0 30px 60px rgba(0,0,0,0.2)', zIndex: 8500, display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.05)' }}>
+        <div style={{ position: 'fixed', bottom: mob ? 160 : 112, right: mob ? 12 : 32, left: mob ? 12 : 'auto', width: mob ? 'auto' : 380, height: mob ? 450 : 500, background: '#fff', borderRadius: 32, boxShadow: '0 30px 60px rgba(0,0,0,0.2)', zIndex: 8500, display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.05)' }}>
           <div style={{ padding: '24px', background: '#111', color: '#fff' }}>
              <span style={{ fontWeight: 900 }}>BharatAI Assistant</span>
           </div>
@@ -323,5 +361,71 @@ export function AuthModal() {
         </div>
       )}
     </Modal>
+  );
+}
+
+export function FloatingMobileNav({ mob }) {
+  const { st, dsp } = useApp();
+  const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
+  
+  const navs = [
+    { id: 'home', l: 'Home', i: '🏠' },
+    { id: 'creators', l: 'Creators', i: '👥' },
+    { id: 'campaigns', l: 'Campaigns', i: '📢' },
+    { id: 'monetize', l: 'Monetize', i: '💰' }
+  ];
+
+  return (
+    <div className="floating-nav-bar">
+      {navs.map(n => (
+        <button
+          key={n.id}
+          onClick={() => go(n.id)}
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+            padding: mob ? '10px 12px' : '10px 16px', borderRadius: 100, border: 'none', cursor: 'pointer',
+            background: st.page === n.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+            color: st.page === n.id ? '#FF9431' : 'rgba(255,255,255,0.6)',
+            transition: 'all 0.3s'
+          }}
+        >
+          <span style={{ fontSize: mob ? 16 : 18 }}>{n.i}</span>
+          <span style={{ fontSize: mob ? 8 : 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{n.l}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function MobileMenu({ open }) {
+  const { st, dsp } = useApp();
+  if (!open) return null;
+
+  const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); dsp({ t: 'UI', v: { mobileMenu: false } }); };
+  const links = [['creators', 'Discover Creators', '👥'], ['campaigns', 'Active Campaigns', '📢'], ['monetize', 'Monetize Content', '💰'], ['blog', 'Creator Academy', '📖'], ['about', 'Our Mission', '🇮🇳']];
+
+  return (
+    <>
+      <div className="mobile-nav-overlay" onClick={() => dsp({ t: 'UI', v: { mobileMenu: false } })} style={{ animation: 'fadeIn 0.4s ease' }} />
+      <div className="mobile-nav-sheet">
+        <div style={{ width: 40, height: 4, background: '#EEE', borderRadius: 10, margin: '0 auto 32px' }} />
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {links.map(([p, l, i]) => (
+            <div key={p} className="mobile-menu-item" onClick={() => go(p)}>
+              <span style={{ fontSize: 24, background: '#F3F4F6', width: 48, height: 48, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i}</span>
+              <span style={{ flex: 1 }}>{l}</span>
+              <span style={{ color: '#CCC', fontSize: 14 }}>→</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 32, padding: '24px', background: '#111', borderRadius: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
+           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 700, textAlign: 'center' }}>Ready to start your journey?</p>
+           <Btn full lg onClick={() => { dsp({ t: 'UI', v: { authModal: true, mobileMenu: false } }); }}>Login to Dashboard</Btn>
+           <button onClick={() => go('apply')} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '14px', borderRadius: 20, fontWeight: 800, cursor: 'pointer' }}>Apply as Creator</button>
+        </div>
+      </div>
+    </>
   );
 }

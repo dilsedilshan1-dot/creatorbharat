@@ -88,7 +88,7 @@ export function Logo({ sm, light, onClick }) {
     <div onClick={onClick} className="logo-container" style={{ display: 'flex', alignItems: 'center', gap: sm ? 10 : 14, cursor: onClick ? 'pointer' : 'default', userSelect: 'none', position: 'relative' }}>
       <div style={{ position: 'relative', width: sz, height: sz, borderRadius: '50%', padding: 2, overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
         {/* Logo Spinning Border */}
-        <div style={{ position: 'absolute', top: '50%', left: '50%', width: '200%', height: '200%', background: 'conic-gradient(from 0deg, #FF9431, #fff, #128807, #fff, #FF9431)', animation: 'spinBorder 4s linear infinite', zIndex: 0 }} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', width: sm ? '150%' : '200%', height: sm ? '150%' : '200%', background: 'conic-gradient(from 0deg, #FF9431, #fff, #128807, #fff, #FF9431)', animation: 'spinBorder 4s linear infinite', zIndex: 0 }} />
         
         <div style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '33.33%', background: '#FF9431' }} />
@@ -100,7 +100,7 @@ export function Logo({ sm, light, onClick }) {
           <div style={{ position: 'absolute', top: '66.67%', left: 0, right: 0, height: '33.33%', background: '#128807' }} />
         </div>
       </div>
-      <span className="logo-text-animated" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: sm ? 22 : 28, fontWeight: 900, letterSpacing: '-0.04em', display: 'flex', alignItems: 'center' }}>
+      <span className="logo-text-animated" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: sm ? 19 : 28, fontWeight: 900, letterSpacing: '-0.04em', display: 'flex', alignItems: 'center' }}>
         CreatorBharat
       </span>
     </div>

@@ -17,7 +17,7 @@ export default function FeaturedCreators({ mob, creators, go, loading }) {
 
   return (
     <section style={{ padding: '0 0 60px 0', background: '#fff', position: 'relative', zIndex: 100 }}>
-      <div style={{ ...W(), maxWidth: 1100 }}>
+      <div style={{ ...W(), maxWidth: 1100, boxSizing: 'border-box' }}>
         
         {/* ULTRA-ELITE TALENT CAPSULE */}
         <div style={{ 
@@ -31,7 +31,9 @@ export default function FeaturedCreators({ mob, creators, go, loading }) {
           display: 'flex',
           alignItems: 'center',
           gap: mob ? 20 : 40,
-          overflow: 'hidden'
+          overflow: 'hidden',
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
 
            {/* HEADER WITH LIVE INDICATOR */}

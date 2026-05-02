@@ -110,7 +110,7 @@ export default function Hero({ mob, st, dsp, go }) {
   };
 
   return (
-    <section style={{ background: '#fff', minHeight: mob ? 'auto' : '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 120 : 160, paddingBottom: 40, position: 'relative', overflow: 'visible', textAlign: 'center' }}>
+    <section style={{ background: '#fff', minHeight: mob ? 'auto' : '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 24 : 80, paddingBottom: 40, position: 'relative', overflow: 'visible', textAlign: 'center' }}>
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '70vw', height: '70vw', background: 'radial-gradient(circle, rgba(255,148,49,0.1) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.6 }} />
         <div style={{ position: 'absolute', bottom: '0%', right: '-10%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.6 }} />
@@ -118,10 +118,10 @@ export default function Hero({ mob, st, dsp, go }) {
       
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none', maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)', opacity: 0.5 }} />
 
-      <div style={{ ...W(), position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+      <div style={{ ...W(), position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
         
         {/* Elite Creator Badge */}
-        <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '8px 16px' : '12px 32px', borderRadius: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 40, boxShadow: '0 4px 20px rgba(0,0,0,0.02)', position: 'relative' }}>
+        <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '8px 16px' : '12px 32px', borderRadius: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 40, boxShadow: '0 4px 20px rgba(0,0,0,0.02)', position: 'relative', maxWidth: '90vw' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ background: '#FF9431', color: '#fff', padding: '4px 10px', borderRadius: 100, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>New</div>
             <span style={{ fontSize: mob ? 11 : 13, fontWeight: 800, color: '#111', letterSpacing: '0.2px' }}>India's First Unified Creator Support & Identity System</span>
@@ -133,12 +133,12 @@ export default function Hero({ mob, st, dsp, go }) {
           </div>
         </div>
 
-        <h1 className="au d1" style={{ fontSize: mob ? 'clamp(36px,11vw,48px)' : 'clamp(76px,9vw,104px)', fontWeight: 900, color: '#111', lineHeight: 1.02, marginBottom: 32, letterSpacing: '-0.05em', maxWidth: 1200, wordBreak: 'keep-all' }}>
+        <h1 className="au d1" style={{ fontSize: mob ? 'clamp(28px,9vw,36px)' : 'clamp(76px,9vw,104px)', fontWeight: 900, color: '#111', lineHeight: mob ? 1.15 : 1.02, marginBottom: mob ? 20 : 32, letterSpacing: '-0.05em', maxWidth: '100%', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
           Your Digital <Typewriter words={['Identity', 'Portfolio', 'Empire', 'Legacy']} /> <br />
-          Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: 15 }}>Bharat.</span>
+          Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15 }}>Bharat.</span>
         </h1>
 
-        <p className="au d2" style={{ fontSize: mob ? 17 : 22, color: 'rgba(0,0,0,0.6)', lineHeight: 1.6, marginBottom: 48, fontWeight: 500, maxWidth: 720 }}>
+        <p className="au d2" style={{ fontSize: mob ? 15 : 22, color: 'rgba(0,0,0,0.6)', lineHeight: 1.6, marginBottom: mob ? 32 : 48, fontWeight: 500, maxWidth: 720 }}>
           The all-in-one platform where Tier 2 & Tier 3 creators get the support, identity, and growth they deserve. Your journey from local to national starts here.
         </p>
 
@@ -165,14 +165,15 @@ export default function Hero({ mob, st, dsp, go }) {
           marginBottom: 80,
           zIndex: 100,
           boxShadow: '0 40px 120px -20px rgba(0,0,0,0.12)',
+          boxSizing: 'border-box'
         }}>
           {/* THE MOVING LINE ANIMATION (EXACT NAVBAR MATCH) */}
           <div style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
-            width: '200%',
-            height: '500%',
+            width: mob ? '120%' : '200%',
+            height: mob ? '300%' : '500%',
             background: 'conic-gradient(from 0deg, #138808 0%, #FFFFFF 20%, #FF9933 40%, #FF9933 60%, #FFFFFF 80%, #138808 100%)',
             animation: 'spinBorder 5s linear infinite',
             transform: 'translate(-50%, -50%)',
@@ -185,22 +186,22 @@ export default function Hero({ mob, st, dsp, go }) {
             background: 'rgba(255,255,255,0.98)', 
             backdropFilter: 'blur(24px)', 
             borderRadius: mob ? 32 : 100, 
-            padding: mob ? 12 : 8, 
+            padding: mob ? 8 : 8, 
             display: 'flex', 
             flexDirection: mob ? 'column' : 'row', 
             alignItems: mob ? 'stretch' : 'center',
-            gap: 0, 
+            gap: mob ? 8 : 0, 
             position: 'relative', 
             zIndex: 1,
             minHeight: mob ? 'auto' : 84
           }}>
-            <div style={{ flex: 1.2, position: 'relative', padding: mob ? '16px 20px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
+            <div style={{ flex: 1.2, position: 'relative', padding: mob ? '12px 16px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
               <label style={{ fontSize: 9, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Who are you looking for?</label>
               <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 12 }}>
                 <input value={st.cf.q} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: 18, outline: 'none', fontWeight: 700, color: '#111' }} />
               </div>
             </div>
-            <div style={{ flex: 0.8, padding: mob ? '16px 20px' : '0 40px', textAlign: 'left', width: '100%' }}>
+            <div style={{ flex: 0.8, padding: mob ? '12px 16px' : '0 40px', textAlign: 'left', width: '100%' }}>
               <label style={{ fontSize: 9, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Location</label>
               <div style={{ fontSize: 17, fontWeight: 700, color: '#111' }}>{st.cf.state || 'All over India'}</div>
             </div>
@@ -211,7 +212,7 @@ export default function Hero({ mob, st, dsp, go }) {
         </div>
 
         {/* CREATOR SUPPORT SYSTEM GRID */}
-        <div className="au d4" style={{ width: '100%', maxWidth: 1200, display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 24 }}>
+        <div className="au d4" style={{ width: '100%', maxWidth: 1200, display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 24, padding: mob ? '0 16px' : 0, boxSizing: 'border-box' }}>
            {[
              { t: 'Digital Identity', h: 'Pro Portfolio', d: 'Aapki verified identity jo brands ko impress karegi. Ek hi link mein saara kaam.', i: '👤', bg: '#FDF7F2' },
              { t: 'Learning Hub', h: 'Insights & Articles', d: 'Naya seekho aur grow karo. Industry experts ke articles aur deep analytics.', i: '📖', bg: '#F0FDF4' },
@@ -223,7 +224,7 @@ export default function Hero({ mob, st, dsp, go }) {
              <div key={i} className="card-animated-border" style={{ position: 'relative', borderRadius: 34, padding: 2, overflow: 'hidden', transition: 'all 0.3s', height: '100%' }}>
                 {/* THE MOVING BORDER (ALWAYS VISIBLE & FULL PERIMETER) */}
                 <div className="border-line" style={{
-                  position: 'absolute', top: '50%', left: '50%', width: '300%', height: '300%',
+                  position: 'absolute', top: '50%', left: '50%', width: mob ? '120%' : '200%', height: mob ? '120%' : '200%',
                   background: 'conic-gradient(from 0deg, transparent, #138808, #FFFFFF, #FF9933, transparent 50%, #138808, #FFFFFF, #FF9933, transparent)',
                   animation: 'spinBorder 5s linear infinite',
                   transform: 'translate(-50%, -50%)',
