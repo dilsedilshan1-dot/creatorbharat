@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { T, W, ALL_STATES } from '../theme';
+import { T, W, ALL_STATES, apiCall } from '../theme';
 import { Btn, SH } from '../components/Primitives';
 import { CreatorCard } from '../components/Cards';
 
@@ -36,6 +36,32 @@ export function Typewriter({ words, interval = 2000 }) {
 }
 
 export function HeroSection({ mob, st, dsp, go }) {
+  const [sugs, setSugs] = useState([]);
+  const [showSug, setShowSug] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    if (!st.cf.q || st.cf.q.length < 2) {
+      setSugs([]);
+      setShowSug(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setIsSearching(true);
+      apiCall(`/creators?q=${encodeURIComponent(st.cf.q)}&limit=4`)
+        .then(d => {
+          setSugs(d.creators || []);
+          setShowSug(true);
+          setIsSearching(false);
+        })
+        .catch(() => {
+          setSugs([]);
+          setIsSearching(false);
+        });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [st.cf.q]);
+
   return (
     <section style={{ background: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 160 : 200, paddingBottom: mob ? 80 : 120, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
       {/* PREMIUM GRADIENT MESH BACKGROUND */}
@@ -121,14 +147,30 @@ export function HeroSection({ mob, st, dsp, go }) {
           <div style={{ flex: 1, position: 'relative', padding: mob ? '16px 20px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
             <label style={{ fontSize: 9, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Who are you looking for?</label>
             <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 12 }}>
-              <span style={{ fontSize: 20 }}>🔍</span>
+              <span style={{ fontSize: 20 }}>{isSearching ? <div className="spin" style={{width: 20, height: 20, borderRadius: '50%', border: '2px solid rgba(0,0,0,0.1)', borderTopColor: '#FF9431'}} /> : '🔍'}</span>
               <input 
                 value={st.cf.q} 
                 onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} 
+                onFocus={() => { if(sugs.length > 0) setShowSug(true); }}
+                onBlur={() => setTimeout(() => setShowSug(false), 200)}
                 placeholder="Name, niche or city..." 
                 style={{ width: '100%', border: 'none', background: 'none', fontSize: 18, outline: 'none', fontWeight: 700, color: '#111', letterSpacing: '-0.01em' }} 
               />
             </div>
+            {/* Real-time suggestions dropdown */}
+            {showSug && sugs.length > 0 && (
+              <div className="si" style={{ position: 'absolute', top: '100%', left: 0, width: mob ? '100%' : 'calc(100% + 20px)', background: '#fff', borderRadius: 20, boxShadow: '0 20px 40px rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.05)', zIndex: 100, padding: 8, marginTop: 8, textAlign: 'left' }}>
+                {sugs.map(c => (
+                  <div key={c.id} onClick={() => go('creator-profile', { creator: c })} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 12, cursor: 'pointer', transition: 'all 0.2s' }} className="sug-item">
+                    <img src={c.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&q=80'} style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} alt={c.name} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 15, fontWeight: 800, color: '#111' }}>{c.name}</div>
+                      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)', fontWeight: 600 }}>{c.niche || 'Creator'} • {c.city || 'India'}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* State Section */}
