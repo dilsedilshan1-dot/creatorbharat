@@ -54,18 +54,30 @@ export default function HomePage() {
               <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>🚀 Claim Your Link Free</span>
               <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
             </Btn>
-            <Btn lg variant="ghost" full={mob} style={{ padding: '20px 40px', fontSize: 17, background: 'rgba(0,0,0,0.03)', color: '#111', borderRadius: 100, fontWeight: 700, border: '1.5px solid rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)', justifyContent: 'center' }}>
+            <Btn lg variant="ghost" full={mob} onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} style={{ padding: '20px 40px', fontSize: 17, background: 'rgba(0,0,0,0.03)', color: '#111', borderRadius: 100, fontWeight: 700, border: '1.5px solid rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)', justifyContent: 'center', position: 'relative' }}>
+              <span style={{ position: 'absolute', top: 12, left: 12, width: 8, height: 8, background: '#EF4444', borderRadius: '50%', animation: 'pulse 1.5s infinite' }} />
               👁️ View Live Demo
             </Btn>
           </div>
 
+          {/* Floating Badges Removed */}
+
           <style>{`
             @keyframes shimmer {
               0% { left: -100%; }
-              50%, 100% { left: 200%; }
+              100% { left: 100%; }
+            }
+            @keyframes pulse {
+              0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+              70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+              100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            }
+            @keyframes float {
+              0% { transform: translateY(0px); }
+              50% { transform: translateY(-20px); }
+              100% { transform: translateY(0px); }
             }
             @keyframes blink {
-              0%, 100% { opacity: 1; }
               50% { opacity: 0; }
             }
           `}</style>
@@ -174,92 +186,92 @@ export default function HomePage() {
       <section style={{ padding: mob ? '100px 20px' : '160px 20px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '10%', right: '-10%', width: '40vw', height: '40vw', background: 'radial-gradient(circle, rgba(255,148,49,0.05) 0%, transparent 70%)', filter: 'blur(100px)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '10%', left: '-10%', width: '40vw', height: '40vw', background: 'radial-gradient(circle, rgba(18,136,7,0.05) 0%, transparent 70%)', filter: 'blur(100px)', pointerEvents: 'none' }} />
-        
+
         <div style={W()}>
           <div style={{ maxWidth: 800, marginBottom: 100 }}>
-             <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 42 : 72, fontWeight: 900, color: '#111', lineHeight: 1, letterSpacing: '-0.04em', marginBottom: 24 }}>Built for Bharat's <br/> <span style={{ background: T.gd, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creative Revolution.</span></h2>
-             <p style={{ fontSize: 22, color: T.t3, lineHeight: 1.6, fontWeight: 500 }}>We've replaced the messy WhatsApp groups and basic link-in-bios with a professional ecosystem that actually converts.</p>
+            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 42 : 72, fontWeight: 900, color: '#111', lineHeight: 1, letterSpacing: '-0.04em', marginBottom: 24 }}>Built for Bharat's <br /> <span style={{ background: T.gd, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creative Revolution.</span></h2>
+            <p style={{ fontSize: 22, color: T.t3, lineHeight: 1.6, fontWeight: 500 }}>We've replaced the messy WhatsApp groups and basic link-in-bios with a professional ecosystem that actually converts.</p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(12, 1fr)', gap: 40 }}>
-             
-             {/* FEATURE 1: THE SMART PORTFOLIO */}
-             <div className="au" style={{ gridColumn: mob ? '1' : '1 / 7', background: '#FAFAFA', borderRadius: 48, padding: mob ? '40px' : '64px', border: '1px solid rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <div style={{ marginBottom: 48 }}>
-                   <div style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', marginBottom: 16 }}>01. Professionalism</div>
-                   <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 900, color: '#111', marginBottom: 16 }}>Smart Media Kits</h3>
-                   <p style={{ fontSize: 17, color: T.t2, lineHeight: 1.6 }}>Automatic data syncing from all social platforms. No manual updates, ever.</p>
-                </div>
-                <div style={{ position: 'relative', flex: 1, minHeight: 300, background: '#fff', borderRadius: 32, boxShadow: '0 20px 60px rgba(0,0,0,0.08)', padding: 24, overflow: 'hidden' }}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-                      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" style={{ width: 48, height: 48, borderRadius: '50%' }} />
-                      <div>
-                         <div style={{ fontWeight: 800, fontSize: 16 }}>Priya Kapoor</div>
-                         <div style={{ fontSize: 12, color: T.t4 }}>Lifestyle Creator • Delhi</div>
-                      </div>
-                   </div>
-                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                      <div style={{ background: '#F8FAFC', padding: 16, borderRadius: 16 }}>
-                         <div style={{ fontSize: 22, fontWeight: 900 }}>1.2M</div>
-                         <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.5 }}>IMPRESSIONS</div>
-                      </div>
-                      <div style={{ background: '#F8FAFC', padding: 16, borderRadius: 16 }}>
-                         <div style={{ fontSize: 22, fontWeight: 900, color: '#10B981' }}>7.4%</div>
-                         <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.5 }}>ENGAGEMENT</div>
-                      </div>
-                   </div>
-                   <div style={{ marginTop: 20, height: 120, background: 'url(https://images.unsplash.com/photo-1511316761724-b1bbef4c7502?w=400) center/cover', borderRadius: 16 }} />
-                </div>
-             </div>
 
-             {/* FEATURE 2: DIRECT DEALS */}
-             <div className="au d1" style={{ gridColumn: mob ? '1' : '7 / 13', background: '#111', borderRadius: 48, padding: mob ? '40px' : '64px', color: '#fff', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
-                <div style={{ position: 'relative', zIndex: 10 }}>
-                   <div style={{ fontSize: 13, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', marginBottom: 16 }}>02. Monetization</div>
-                   <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 16 }}>Direct Brand Deals</h3>
-                   <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>Receive campaign requests directly in your dashboard. Zero commission.</p>
+            {/* FEATURE 1: THE SMART PORTFOLIO */}
+            <div className="au" style={{ gridColumn: mob ? '1' : '1 / 7', background: '#FAFAFA', borderRadius: 48, padding: mob ? '40px' : '64px', border: '1px solid rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <div style={{ marginBottom: 48 }}>
+                <div style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', marginBottom: 16 }}>01. Professionalism</div>
+                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 900, color: '#111', marginBottom: 16 }}>Smart Media Kits</h3>
+                <p style={{ fontSize: 17, color: T.t2, lineHeight: 1.6 }}>Automatic data syncing from all social platforms. No manual updates, ever.</p>
+              </div>
+              <div style={{ position: 'relative', flex: 1, minHeight: 300, background: '#fff', borderRadius: 32, boxShadow: '0 20px 60px rgba(0,0,0,0.08)', padding: 24, overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" style={{ width: 48, height: 48, borderRadius: '50%' }} />
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 16 }}>Priya Kapoor</div>
+                    <div style={{ fontSize: 12, color: T.t4 }}>Lifestyle Creator • Delhi</div>
+                  </div>
                 </div>
-                
-                {/* Visual Deal Notification */}
-                <div style={{ marginTop: 60, position: 'relative' }}>
-                   {[
-                     { b: 'Zomato', p: '₹25,000', i: '🍔' },
-                     { b: 'Nykaa', p: '₹45,000', i: '💄' }
-                   ].map((d, i) => (
-                     <div key={i} className="au" style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(20px)', borderRadius: 24, padding: '20px 24px', border: '1px solid rgba(255,255,255,0.1)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16, transform: i === 1 ? 'translateX(40px)' : 'none' }}>
-                        <div style={{ fontSize: 24 }}>{d.i}</div>
-                        <div style={{ flex: 1 }}>
-                           <div style={{ fontSize: 16, fontWeight: 800 }}>{d.b} Collaboration</div>
-                           <div style={{ fontSize: 12, opacity: 0.6 }}>New Campaign Offer</div>
-                        </div>
-                        <div style={{ fontWeight: 900, color: '#FF9431' }}>{d.p}</div>
-                     </div>
-                   ))}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div style={{ background: '#F8FAFC', padding: 16, borderRadius: 16 }}>
+                    <div style={{ fontSize: 22, fontWeight: 900 }}>1.2M</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.5 }}>IMPRESSIONS</div>
+                  </div>
+                  <div style={{ background: '#F8FAFC', padding: 16, borderRadius: 16 }}>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: '#10B981' }}>7.4%</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.5 }}>ENGAGEMENT</div>
+                  </div>
                 </div>
-             </div>
+                <div style={{ marginTop: 20, height: 120, background: 'url(https://images.unsplash.com/photo-1511316761724-b1bbef4c7502?w=400) center/cover', borderRadius: 16 }} />
+              </div>
+            </div>
 
-             {/* FEATURE 3: ANALYTICS (WIDE) */}
-             <div className="au d2" style={{ gridColumn: '1 / -1', background: '#FAFAFA', borderRadius: 48, padding: mob ? '40px' : '64px', border: '1px solid rgba(0,0,0,0.04)', display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 60, alignItems: 'center' }}>
-                <div style={{ flex: 1 }}>
-                   <div style={{ fontSize: 13, fontWeight: 900, color: '#7C3AED', textTransform: 'uppercase', marginBottom: 16 }}>03. Growth</div>
-                   <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 900, color: '#111', marginBottom: 16 }}>Deep Growth Analytics</h3>
-                   <p style={{ fontSize: 17, color: T.t2, lineHeight: 1.6 }}>Track every metric that matters. From audience demographics to content performance, everything is under your control.</p>
-                   <Btn lg style={{ marginTop: 32, borderRadius: 100, padding: '16px 32px', background: '#111', color: '#fff', border: 'none' }}>Analyze My Reach</Btn>
+            {/* FEATURE 2: DIRECT DEALS */}
+            <div className="au d1" style={{ gridColumn: mob ? '1' : '7 / 13', background: '#111', borderRadius: 48, padding: mob ? '40px' : '64px', color: '#fff', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+              <div style={{ position: 'relative', zIndex: 10 }}>
+                <div style={{ fontSize: 13, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', marginBottom: 16 }}>02. Monetization</div>
+                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 16 }}>Direct Brand Deals</h3>
+                <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>Receive campaign requests directly in your dashboard. Zero commission.</p>
+              </div>
+
+              {/* Visual Deal Notification */}
+              <div style={{ marginTop: 60, position: 'relative' }}>
+                {[
+                  { b: 'Zomato', p: '₹25,000', i: '🍔' },
+                  { b: 'Nykaa', p: '₹45,000', i: '💄' }
+                ].map((d, i) => (
+                  <div key={i} className="au" style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(20px)', borderRadius: 24, padding: '20px 24px', border: '1px solid rgba(255,255,255,0.1)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16, transform: i === 1 ? 'translateX(40px)' : 'none' }}>
+                    <div style={{ fontSize: 24 }}>{d.i}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 16, fontWeight: 800 }}>{d.b} Collaboration</div>
+                      <div style={{ fontSize: 12, opacity: 0.6 }}>New Campaign Offer</div>
+                    </div>
+                    <div style={{ fontWeight: 900, color: '#FF9431' }}>{d.p}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FEATURE 3: ANALYTICS (WIDE) */}
+            <div className="au d2" style={{ gridColumn: '1 / -1', background: '#FAFAFA', borderRadius: 48, padding: mob ? '40px' : '64px', border: '1px solid rgba(0,0,0,0.04)', display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 60, alignItems: 'center' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 900, color: '#7C3AED', textTransform: 'uppercase', marginBottom: 16 }}>03. Growth</div>
+                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 900, color: '#111', marginBottom: 16 }}>Deep Growth Analytics</h3>
+                <p style={{ fontSize: 17, color: T.t2, lineHeight: 1.6 }}>Track every metric that matters. From audience demographics to content performance, everything is under your control.</p>
+                <Btn lg style={{ marginTop: 32, borderRadius: 100, padding: '16px 32px', background: '#111', color: '#fff', border: 'none' }}>Analyze My Reach</Btn>
+              </div>
+              <div style={{ flex: 1.5, background: '#fff', borderRadius: 32, padding: 32, boxShadow: '0 20px 40px rgba(0,0,0,0.05)', position: 'relative', width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: 200, gap: 12 }}>
+                  {[40, 70, 45, 90, 65, 100, 80, 50, 95, 60, 110, 85].map((h, i) => (
+                    <div key={i} style={{ flex: 1, height: h + '%', background: i === 10 ? '#FF9431' : 'rgba(0,0,0,0.05)', borderRadius: '8px 8px 4px 4px', position: 'relative' }}>
+                      {i === 10 && <div style={{ position: 'absolute', top: -30, left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', padding: '4px 8px', borderRadius: 6, fontSize: 10, fontWeight: 900 }}>+142%</div>}
+                    </div>
+                  ))}
                 </div>
-                <div style={{ flex: 1.5, background: '#fff', borderRadius: 32, padding: 32, boxShadow: '0 20px 40px rgba(0,0,0,0.05)', position: 'relative', width: '100%' }}>
-                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: 200, gap: 12 }}>
-                      {[40, 70, 45, 90, 65, 100, 80, 50, 95, 60, 110, 85].map((h, i) => (
-                        <div key={i} style={{ flex: 1, height: h + '%', background: i === 10 ? '#FF9431' : 'rgba(0,0,0,0.05)', borderRadius: '8px 8px 4px 4px', position: 'relative' }}>
-                           {i === 10 && <div style={{ position: 'absolute', top: -30, left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', padding: '4px 8px', borderRadius: 6, fontSize: 10, fontWeight: 900 }}>+142%</div>}
-                        </div>
-                      ))}
-                   </div>
-                   <div style={{ marginTop: 24, display: 'flex', gap: 24, justifyContent: 'center' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: T.t4 }}><span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF9431' }} /> Impressions</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: T.t4 }}><span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(0,0,0,0.05)' }} /> Reach</div>
-                   </div>
+                <div style={{ marginTop: 24, display: 'flex', gap: 24, justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: T.t4 }}><span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF9431' }} /> Impressions</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: T.t4 }}><span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(0,0,0,0.05)' }} /> Reach</div>
                 </div>
-             </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -267,10 +279,10 @@ export default function HomePage() {
       {/* 3. THE VERIFICATION ENGINE (TRUST) */}
       <section style={{ padding: mob ? '100px 20px' : '140px 20px', background: '#0A0A0A', textAlign: 'center', color: '#fff' }}>
         <div style={W(800)}>
-           <div style={{ fontSize: 64, marginBottom: 32 }}>🛡️</div>
-           <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 36 : 56, fontWeight: 900, marginBottom: 24 }}>The Badge of Authenticity</h2>
-           <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 48 }}>Our AI-powered engine audits millions of data points to ensure your influence is real. Get verified and unlock premium brand partnerships.</p>
-           <Btn lg style={{ borderRadius: 100, padding: '20px 48px', background: '#fff', color: '#111', fontWeight: 900, border: 'none' }}>Get Your Score →</Btn>
+          <div style={{ fontSize: 64, marginBottom: 32 }}>🛡️</div>
+          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 36 : 56, fontWeight: 900, marginBottom: 24 }}>The Badge of Authenticity</h2>
+          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 48 }}>Our AI-powered engine audits millions of data points to ensure your influence is real. Get verified and unlock premium brand partnerships.</p>
+          <Btn lg style={{ borderRadius: 100, padding: '20px 48px', background: '#fff', color: '#111', fontWeight: 900, border: 'none' }}>Get Your Score →</Btn>
         </div>
       </section>
 
@@ -278,8 +290,8 @@ export default function HomePage() {
       <section style={{ padding: mob ? '100px 20px' : '140px 20px', background: '#fff' }}>
         <div style={W()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 64, flexWrap: 'wrap', gap: 24 }}>
-             <SH eyebrow="Elite Discovery" title="Featured Talent" sub="Meet the creators who are defining the new age of Bharat." mb={0} />
-             <Btn variant="outline" onClick={() => go('creators')}>View All Creators →</Btn>
+            <SH eyebrow="Elite Discovery" title="Featured Talent" sub="Meet the creators who are defining the new age of Bharat." mb={0} />
+            <Btn variant="outline" onClick={() => go('creators')}>View All Creators →</Btn>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 32 }}>
             {creators.slice(0, 6).map(c => <CreatorCard key={c.id} creator={c} onView={() => go('creator-profile', { creator: c })} />)}
@@ -290,49 +302,49 @@ export default function HomePage() {
       {/* 5. TESTIMONIALS: VOICES OF BHARAT */}
       <section style={{ padding: mob ? '100px 20px' : '160px 20px', background: '#fff', overflow: 'hidden' }}>
         <div style={W()}>
-           <SH eyebrow="Community" title="Success Stories" sub="Real results from creators across Jaipur, Mumbai & beyond." center />
-           
-           <div style={{ display: 'flex', gap: 32, overflowX: 'auto', padding: '20px 0', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {[
-                { name: 'Arjun Mehta', niche: 'Tech & Gadgets', text: 'CreatorBharat helped me close my first ₹1L deal with a major tech brand. The verified badge actually works!', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80' },
-                { name: 'Sana Khan', niche: 'Fashion & Beauty', text: "I've tried many link-in-bios, but this is the first one that actually feels professional and attracts brands.", img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80' },
-                { name: 'Vikram Singh', niche: 'Travel & Vlogs', text: 'The analytics are insane. I finally know exactly what my reach is worth. No more guessing rates!', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80' }
-              ].map((t, i) => (
-                <div key={i} style={{ minWidth: mob ? 300 : 400, background: '#F9FAFB', borderRadius: 32, padding: 40, border: '1px solid rgba(0,0,0,0.05)' }}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-                      <img src={t.img} style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover' }} />
-                      <div>
-                         <div style={{ fontWeight: 800, fontSize: 18 }}>{t.name}</div>
-                         <div style={{ fontSize: 13, color: '#FF9431', fontWeight: 700 }}>{t.niche}</div>
-                      </div>
-                   </div>
-                   <p style={{ fontSize: 16, color: T.t2, lineHeight: 1.6, fontStyle: 'italic' }}>"{t.text}"</p>
+          <SH eyebrow="Community" title="Success Stories" sub="Real results from creators across Jaipur, Mumbai & beyond." center />
+
+          <div style={{ display: 'flex', gap: 32, overflowX: 'auto', padding: '20px 0', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {[
+              { name: 'Arjun Mehta', niche: 'Tech & Gadgets', text: 'CreatorBharat helped me close my first ₹1L deal with a major tech brand. The verified badge actually works!', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80' },
+              { name: 'Sana Khan', niche: 'Fashion & Beauty', text: "I've tried many link-in-bios, but this is the first one that actually feels professional and attracts brands.", img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80' },
+              { name: 'Vikram Singh', niche: 'Travel & Vlogs', text: 'The analytics are insane. I finally know exactly what my reach is worth. No more guessing rates!', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80' }
+            ].map((t, i) => (
+              <div key={i} style={{ minWidth: mob ? 300 : 400, background: '#F9FAFB', borderRadius: 32, padding: 40, border: '1px solid rgba(0,0,0,0.05)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+                  <img src={t.img} style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover' }} />
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 18 }}>{t.name}</div>
+                    <div style={{ fontSize: 13, color: '#FF9431', fontWeight: 700 }}>{t.niche}</div>
+                  </div>
                 </div>
-              ))}
-           </div>
+                <p style={{ fontSize: 16, color: T.t2, lineHeight: 1.6, fontStyle: 'italic' }}>"{t.text}"</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* 6. FAQ: EVERYTHING YOU NEED TO KNOW */}
       <section style={{ padding: mob ? '100px 20px' : '160px 20px', background: '#FAFAFA' }}>
         <div style={W(800)}>
-           <SH eyebrow="Information" title="Frequently Asked Questions" sub="Got doubts? We've got answers for you." center />
-           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 60 }}>
-              {[
-                { q: "Is CreatorBharat free for creators?", a: "Yes, our core features including the Smart Media Kit and Brand Discovery are free for all verified creators." },
-                { q: "How do I get the Verified Badge?", a: "Once you connect your socials, our AI audits your engagement and authenticity. If you pass our quality score, you get the badge automatically." },
-                { q: "Do you take commission from brand deals?", a: "No, we believe in a transparent ecosystem. You negotiate and receive payments directly from brands. Zero commission." },
-                { q: "Can brands see my private contact info?", a: "Only verified brands with a professional account can send you inquiry requests. Your data is always secure." }
-              ].map((f, i) => (
-                <details key={i} style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(0,0,0,0.05)', padding: '24px', cursor: 'pointer' }}>
-                   <summary style={{ fontWeight: 800, fontSize: 18, color: '#111', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      {f.q}
-                      <span style={{ fontSize: 20, color: '#FF9431' }}>+</span>
-                   </summary>
-                   <p style={{ marginTop: 16, fontSize: 16, color: T.t2, lineHeight: 1.6 }}>{f.a}</p>
-                </details>
-              ))}
-           </div>
+          <SH eyebrow="Information" title="Frequently Asked Questions" sub="Got doubts? We've got answers for you." center />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 60 }}>
+            {[
+              { q: "Is CreatorBharat free for creators?", a: "Yes, our core features including the Smart Media Kit and Brand Discovery are free for all verified creators." },
+              { q: "How do I get the Verified Badge?", a: "Once you connect your socials, our AI audits your engagement and authenticity. If you pass our quality score, you get the badge automatically." },
+              { q: "Do you take commission from brand deals?", a: "No, we believe in a transparent ecosystem. You negotiate and receive payments directly from brands. Zero commission." },
+              { q: "Can brands see my private contact info?", a: "Only verified brands with a professional account can send you inquiry requests. Your data is always secure." }
+            ].map((f, i) => (
+              <details key={i} style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(0,0,0,0.05)', padding: '24px', cursor: 'pointer' }}>
+                <summary style={{ fontWeight: 800, fontSize: 18, color: '#111', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {f.q}
+                  <span style={{ fontSize: 20, color: '#FF9431' }}>+</span>
+                </summary>
+                <p style={{ marginTop: 16, fontSize: 16, color: T.t2, lineHeight: 1.6 }}>{f.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -340,12 +352,12 @@ export default function HomePage() {
       <section style={{ padding: mob ? '80px 20px' : '140px 20px', background: '#111', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(255,148,49,0.15) 0%, transparent 70%)', zIndex: 0 }} />
         <div style={{ ...W(800), position: 'relative', zIndex: 1, textAlign: 'center' }}>
-           <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 40 : 64, fontWeight: 900, color: '#fff', marginBottom: 24, lineHeight: 1.1 }}>Ab Rukna Nahi Hai.</h2>
-           <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.7)', marginBottom: 48 }}>Join 50,000+ creators building Bharat's next-gen digital economy.</p>
-           <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 16, justifyContent: 'center' }}>
-              <Btn lg style={{ padding: '20px 48px', fontSize: 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none' }} onClick={() => go('apply')}>Launch Your Portfolio Free</Btn>
-              <Btn lg variant="outline" style={{ padding: '20px 48px', fontSize: 18, color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 100 }} onClick={() => go('creators')}>Explore Creators</Btn>
-           </div>
+          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 40 : 64, fontWeight: 900, color: '#fff', marginBottom: 24, lineHeight: 1.1 }}>Ab Rukna Nahi Hai.</h2>
+          <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.7)', marginBottom: 48 }}>Join 50,000+ creators building Bharat's next-gen digital economy.</p>
+          <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 16, justifyContent: 'center' }}>
+            <Btn lg style={{ padding: '20px 48px', fontSize: 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none' }} onClick={() => go('apply')}>Launch Your Portfolio Free</Btn>
+            <Btn lg variant="outline" style={{ padding: '20px 48px', fontSize: 18, color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 100 }} onClick={() => go('creators')}>Explore Creators</Btn>
+          </div>
         </div>
       </section>
     </div>
