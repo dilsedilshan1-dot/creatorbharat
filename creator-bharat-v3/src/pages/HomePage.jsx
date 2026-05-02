@@ -30,12 +30,21 @@ export default function HomePage() {
   return (
     <div style={{ background: '#fff' }}>
       {/* HERO SECTION */}
-      <section style={{ background: '#FAFAFA', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 140 : 180, paddingBottom: mob ? 80 : 120, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
-        <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: '100vw', height: '70vh', background: 'radial-gradient(ellipse at top, rgba(255, 148, 49, 0.12), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none', maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)' }} />
+      <section style={{ background: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 160 : 200, paddingBottom: mob ? 80 : 120, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+        {/* PREMIUM GRADIENT MESH BACKGROUND */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '70vw', height: '70vw', background: 'radial-gradient(circle, rgba(255,148,49,0.1) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.6 }} />
+          <div style={{ position: 'absolute', bottom: '0%', right: '-10%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.6 }} />
+          <div style={{ position: 'absolute', top: '20%', right: '20%', width: '30vw', height: '30vw', background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, transparent 80%)', filter: 'blur(40px)', zIndex: 1 }} />
+        </div>
+        
+        {/* GRID OVERLAY */}
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none', maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)', opacity: 0.5 }} />
 
         <div style={{ ...W(), position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '6px 20px 6px 10px', borderRadius: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 32, boxShadow: '0 10px 40px -10px rgba(0,0,0,0.12)', position: 'relative' }}>
+          
+          {/* GLASSMORPHIC TRUST BADGE - LARGER ON DESKTOP */}
+          <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '6px 16px' : '10px 28px', borderRadius: 100, background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.8)', marginBottom: 40, boxShadow: '0 10px 40px -10px rgba(0,0,0,0.08)', position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div style={{ display: 'flex' }}>
                 {[
@@ -44,27 +53,27 @@ export default function HomePage() {
                   'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80',
                   'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&q=80'
                 ].map((img, i) => (
-                  <img key={i} src={img} className="av-h" style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid #fff', marginLeft: i === 0 ? 0 : -10, objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', transition: 'all 0.3s' }} alt="User" />
+                  <img key={i} src={img} className="av-h" style={{ width: mob ? 30 : 36, height: mob ? 30 : 36, borderRadius: '50%', border: '2px solid #fff', marginLeft: i === 0 ? 0 : -12, objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', transition: 'all 0.3s' }} alt="User" />
                 ))}
               </div>
-              <div style={{ marginLeft: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.2 }}>
-                <div style={{ display: 'flex', gap: 2, marginBottom: 2, alignItems: 'center' }}>
-                  {[1, 2, 3, 4, 5].map(s => <span key={s} style={{ color: '#FF9431', fontSize: 10 }}>★</span>)}
-                  <span style={{ fontSize: 9, fontWeight: 900, color: '#10B981', marginLeft: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Top Rated</span>
+              <div style={{ marginLeft: 16, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.2 }}>
+                <div style={{ display: 'flex', gap: 2, marginBottom: 1, alignItems: 'center' }}>
+                  {[1, 2, 3, 4, 5].map(s => <span key={s} style={{ color: '#FF9431', fontSize: mob ? 10 : 12 }}>★</span>)}
+                  <span style={{ fontSize: mob ? 9 : 10, fontWeight: 900, color: '#10B981', marginLeft: 6, textTransform: 'uppercase', letterSpacing: '1px' }}>Verified Elite</span>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 800, color: '#111' }}>Trusted by 50,000+ Creators</span>
+                <span style={{ fontSize: mob ? 13 : 15, fontWeight: 800, color: '#111', letterSpacing: '-0.01em' }}>Trusted by 50,000+ Creators</span>
               </div>
             </div>
-            <div style={{ width: 1, height: 16, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{ background: '#10B981', width: 6, height: 6, borderRadius: '50%', animation: 'pulse-green 1.5s infinite' }} />
-              <span style={{ fontSize: 10, fontWeight: 900, color: '#10B981', textTransform: 'uppercase' }}>Live</span>
+            <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.08)', margin: '0 12px' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ background: '#10B981', width: 8, height: 8, borderRadius: '50%', animation: 'pulse-green 1.5s infinite' }} />
+              <span style={{ fontSize: mob ? 10 : 11, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Now</span>
             </div>
           </div>
 
-          <h1 className="au d1" style={{ fontSize: mob ? 'clamp(44px,12vw,56px)' : 'clamp(64px,8vw,88px)', fontWeight: 900, color: '#111', lineHeight: 1.1, marginBottom: 24, letterSpacing: '-0.04em', maxWidth: 1000 }}>
-            Your Digital <Typewriter words={['Identity', 'Portfolio', 'Brand', 'Growth']} /> <br />
-            Built in Minutes.
+          <h1 className="au d1" style={{ fontSize: mob ? 'clamp(36px,11vw,48px)' : 'clamp(76px,9vw,104px)', fontWeight: 900, color: '#111', lineHeight: 1.02, marginBottom: 32, letterSpacing: '-0.05em', maxWidth: 1200, wordBreak: 'keep-all' }}>
+            Your Digital <Typewriter words={['Identity', 'Portfolio', 'Empire', 'Legacy']} /> <br />
+            Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: 15 }}>Bharat.</span>
           </h1>
 
           <p className="au d2" style={{ fontSize: mob ? 17 : 22, color: 'rgba(0,0,0,0.6)', lineHeight: 1.6, marginBottom: 48, fontWeight: 500, maxWidth: 720 }}>
@@ -100,6 +109,9 @@ export default function HomePage() {
               100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
             }
             .av-h:hover { transform: translateY(-4px) scale(1.1); z-index: 10; }
+            .tag-h:hover { background: #111 !important; color: #fff !important; border-color: #111 !important; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+            .lightning-icon { display: inline-block; }
+            button:hover .lightning-icon { transform: scale(1.3) rotate(15deg); }
             @keyframes float {
               0% { transform: translateY(0px); }
               50% { transform: translateY(-20px); }
@@ -110,23 +122,76 @@ export default function HomePage() {
             }
           `}</style>
 
-          <div className="au d3" style={{ width: '100%', maxWidth: 1200, background: '#fff', borderRadius: mob ? 24 : 100, padding: mob ? 8 : 8, display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 8, boxShadow: '0 20px 50px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', marginBottom: mob ? 60 : 100 }}>
-            <div style={{ flex: 1, position: 'relative', borderRight: mob ? 'none' : '1px solid #F3F4F6', borderBottom: mob ? '1px solid #F3F4F6' : 'none' }}>
-              <span style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', fontSize: 18, opacity: .5 }}>🔍</span>
-              <input value={st.cf.q} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name or Niche..." style={{ width: '100%', padding: mob ? '14px 20px 14px 52px' : '18px 20px 18px 52px', border: 'none', background: 'none', fontSize: 16, outline: 'none', fontWeight: 500 }} />
+          <div className="au d3" style={{ 
+            width: '100%', 
+            maxWidth: 1200, 
+            background: 'rgba(255,255,255,0.85)', 
+            backdropFilter: 'blur(24px)', 
+            WebkitBackdropFilter: 'blur(24px)', 
+            borderRadius: mob ? 32 : 100, 
+            padding: mob ? 12 : 8, 
+            display: 'flex', 
+            flexDirection: mob ? 'column' : 'row', 
+            alignItems: mob ? 'stretch' : 'center',
+            gap: 0, 
+            boxShadow: '0 40px 120px -20px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.5)', 
+            border: '1px solid rgba(0,0,0,0.05)', 
+            marginBottom: mob ? 40 : 32, 
+            position: 'relative', 
+            zIndex: 10,
+            minHeight: mob ? 'auto' : 84
+          }}>
+            {/* Input Section */}
+            <div style={{ flex: 1, position: 'relative', padding: mob ? '16px 20px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
+              <label style={{ fontSize: 9, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Who are you looking for?</label>
+              <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 12 }}>
+                <span style={{ fontSize: 20 }}>🔍</span>
+                <input 
+                  value={st.cf.q} 
+                  onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} 
+                  placeholder="Name, niche or city..." 
+                  style={{ width: '100%', border: 'none', background: 'none', fontSize: 18, outline: 'none', fontWeight: 700, color: '#111', letterSpacing: '-0.01em' }} 
+                />
+              </div>
             </div>
-            <div style={{ width: mob ? '100%' : 200, position: 'relative', borderRight: mob ? 'none' : '1px solid #F3F4F6', borderBottom: mob ? '1px solid #F3F4F6' : 'none' }}>
-              <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontSize: 18, opacity: .5 }}>📍</span>
-              <select value={st.cf.state} onChange={e => dsp({ t: 'CF', v: { state: e.target.value } })} style={{ width: '100%', padding: mob ? '14px 36px 14px 44px' : '18px 36px 18px 44px', border: 'none', background: 'none', fontSize: 15, outline: 'none', appearance: 'none', cursor: 'pointer', fontWeight: 500, color: '#111' }}>
-                <option value="">All States</option>
-                {ALL_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-              <span style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', fontSize: 10, opacity: .4, pointerEvents: 'none' }}>▼</span>
+
+            {/* State Section */}
+            <div style={{ flex: 1, position: 'relative', padding: mob ? '16px 20px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <label style={{ fontSize: 9, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Location</label>
+              <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 12, position: 'relative' }}>
+                <span style={{ fontSize: 20 }}>📍</span>
+                <select 
+                  value={st.cf.state} 
+                  onChange={e => dsp({ t: 'CF', v: { state: e.target.value } })} 
+                  style={{ width: '100%', border: 'none', background: 'none', fontSize: 17, outline: 'none', appearance: 'none', cursor: 'pointer', fontWeight: 700, color: '#111', paddingRight: 32 }}
+                >
+                  <option value="">All over India</option>
+                  {ALL_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <span style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', fontSize: 12, opacity: 0.4, pointerEvents: 'none' }}>▼</span>
+              </div>
             </div>
-            <Btn lg full={mob} onClick={() => go('creators')} style={{ borderRadius: 100, padding: mob ? '14px 40px' : '16px 40px', fontSize: 16, background: '#111', color: '#fff', border: 'none', minWidth: 140 }}>Search</Btn>
+
+            {/* Search Button */}
+            <div style={{ padding: 4, marginLeft: mob ? 0 : 'auto' }}>
+              <Btn lg full={mob} onClick={() => go('creators')} style={{ borderRadius: 100, padding: mob ? '18px' : '18px 48px', fontSize: 18, background: '#111', color: '#fff', border: 'none', minWidth: mob ? '100%' : 160, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', boxShadow: '0 15px 30px rgba(0,0,0,0.2)' }}>
+                <span style={{ fontWeight: 900 }}>Search</span>
+                <span style={{ fontSize: 20, transition: 'transform 0.3s' }} className="lightning-icon">⚡</span>
+              </Btn>
+            </div>
           </div>
 
-          <div className="au d4" style={{ width: '100%', maxWidth: 1000, position: 'relative', display: 'flex', justifyContent: 'center', perspective: 1500, minHeight: 600 }}>
+          {/* Trending Searches - Now scrollable on mobile */}
+          <div className="au d3" style={{ display: 'flex', alignItems: 'center', gap: 12, overflowX: mob ? 'auto' : 'visible', whiteSpace: 'nowrap', padding: mob ? '0 20px' : 0, width: mob ? '100vw' : 'auto', justifyContent: mob ? 'flex-start' : 'center', marginBottom: 100, scrollbarWidth: 'none' }}>
+            {!mob && <span style={{ fontSize: 12, fontWeight: 900, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '1px' }}>Trending:</span>}
+            {['Fashion', 'Tech', 'Travel', 'Lifestyle', 'Gaming', 'Food'].map(n => (
+              <button key={n} onClick={() => dsp({ t: 'CF', v: { q: n } })} style={{ padding: '10px 22px', borderRadius: 100, background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.05)', fontSize: 13, fontWeight: 700, color: 'rgba(0,0,0,0.5)', cursor: 'pointer', transition: 'all 0.3s', flexShrink: 0 }} className="tag-h">
+                {n}
+              </button>
+            ))}
+          </div>
+
+          <div className="au d4" style={{ width: '100%', maxWidth: 1000, position: 'relative', display: 'flex', justifyContent: 'center', perspective: 1500, minHeight: mob ? 750 : 600 }}>
             <div style={{ position: 'relative', transform: 'rotateY(-10deg) rotateX(5deg)', transformStyle: 'preserve-3d' }}>
               <div style={{ width: 320, height: 660, background: '#fff', borderRadius: 48, border: '12px solid #F3F4F6', boxShadow: '0 40px 100px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(0,0,0,0.05)', position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 5 }}>
                 <div style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', width: 100, height: 26, background: '#F3F4F6', borderRadius: 20, zIndex: 10 }} />
