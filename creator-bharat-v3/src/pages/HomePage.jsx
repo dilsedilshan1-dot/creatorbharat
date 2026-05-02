@@ -35,9 +35,31 @@ export default function HomePage() {
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none', maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)' }} />
 
         <div style={{ ...W(), position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 16px', borderRadius: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 32, boxShadow: '0 10px 30px -10px rgba(0,0,0,0.1)' }}>
-            <div style={{ background: '#10B981', color: '#fff', width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 900 }}>✓</div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>Trusted by 50,000+ Creators</span>
+          <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '6px 20px 6px 10px', borderRadius: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 32, boxShadow: '0 10px 40px -10px rgba(0,0,0,0.12)', position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: 'flex' }}>
+                {[
+                  'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80',
+                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
+                  'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80',
+                  'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&q=80'
+                ].map((img, i) => (
+                  <img key={i} src={img} className="av-h" style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid #fff', marginLeft: i === 0 ? 0 : -10, objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', transition: 'all 0.3s' }} alt="User" />
+                ))}
+              </div>
+              <div style={{ marginLeft: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.2 }}>
+                <div style={{ display: 'flex', gap: 2, marginBottom: 2, alignItems: 'center' }}>
+                  {[1, 2, 3, 4, 5].map(s => <span key={s} style={{ color: '#FF9431', fontSize: 10 }}>★</span>)}
+                  <span style={{ fontSize: 9, fontWeight: 900, color: '#10B981', marginLeft: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Top Rated</span>
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 800, color: '#111' }}>Trusted by 50,000+ Creators</span>
+              </div>
+            </div>
+            <div style={{ width: 1, height: 16, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ background: '#10B981', width: 6, height: 6, borderRadius: '50%', animation: 'pulse-green 1.5s infinite' }} />
+              <span style={{ fontSize: 10, fontWeight: 900, color: '#10B981', textTransform: 'uppercase' }}>Live</span>
+            </div>
           </div>
 
           <h1 className="au d1" style={{ fontSize: mob ? 'clamp(44px,12vw,56px)' : 'clamp(64px,8vw,88px)', fontWeight: 900, color: '#111', lineHeight: 1.1, marginBottom: 24, letterSpacing: '-0.04em', maxWidth: 1000 }}>
@@ -72,6 +94,12 @@ export default function HomePage() {
               70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
               100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
             }
+            @keyframes pulse-green {
+              0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+              70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+              100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            }
+            .av-h:hover { transform: translateY(-4px) scale(1.1); z-index: 10; }
             @keyframes float {
               0% { transform: translateY(0px); }
               50% { transform: translateY(-20px); }
@@ -82,7 +110,7 @@ export default function HomePage() {
             }
           `}</style>
 
-          <div className="au d3" style={{ width: '100%', maxWidth: 800, background: '#fff', borderRadius: mob ? 24 : 100, padding: mob ? 8 : 8, display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 8, boxShadow: '0 20px 50px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', marginBottom: mob ? 60 : 100 }}>
+          <div className="au d3" style={{ width: '100%', maxWidth: 1200, background: '#fff', borderRadius: mob ? 24 : 100, padding: mob ? 8 : 8, display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 8, boxShadow: '0 20px 50px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', marginBottom: mob ? 60 : 100 }}>
             <div style={{ flex: 1, position: 'relative', borderRight: mob ? 'none' : '1px solid #F3F4F6', borderBottom: mob ? '1px solid #F3F4F6' : 'none' }}>
               <span style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', fontSize: 18, opacity: .5 }}>🔍</span>
               <input value={st.cf.q} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name or Niche..." style={{ width: '100%', padding: mob ? '14px 20px 14px 52px' : '18px 20px 18px 52px', border: 'none', background: 'none', fontSize: 16, outline: 'none', fontWeight: 500 }} />
