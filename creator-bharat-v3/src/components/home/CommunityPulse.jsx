@@ -93,7 +93,7 @@ export default function CommunityPulse({ mob }) {
               borderRadius: mob ? 24 : 0
             }}>
               {/* STEP INFO */}
-              <div style={{ flex: 1.2 }}>
+              <div style={{ flex: mob ? 1.2 : 1 }}>
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: 10,
                   marginBottom: mob ? 8 : 20,
@@ -106,9 +106,9 @@ export default function CommunityPulse({ mob }) {
                 {!mob && <p style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, maxWidth: 500, margin: i % 2 === 0 ? '0 0 0 auto' : '0 auto 0 0' }}>{s.d}</p>}
               </div>
 
-              {/* STEP VISUAL ICON ON MOBILE */}
-              <div style={{ flex: 0.3, display: 'flex', justifyContent: 'center' }}>
-                 <div style={{ width: mob ? 50 : 100, height: mob ? 50 : 100, borderRadius: 16, background: s.color + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 24 : 48 }}>
+              {/* STEP VISUAL ICON ON MOBILE / DESKTOP TIMELINE NODE */}
+              <div style={{ flex: mob ? 0.3 : '0 0 auto', width: mob ? 'auto' : 80, display: 'flex', justifyContent: 'center', zIndex: 2 }}>
+                 <div style={{ width: mob ? 50 : 80, height: mob ? 50 : 80, borderRadius: mob ? 16 : '50%', background: mob ? s.color + '10' : '#fff', border: mob ? 'none' : `4px solid ${s.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 24 : 32, boxShadow: mob ? 'none' : '0 10px 20px rgba(0,0,0,0.1)' }}>
                    {s.i}
                  </div>
               </div>

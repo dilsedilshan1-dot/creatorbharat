@@ -3,7 +3,7 @@ import { useApp } from '../../context';
 import { Btn, Logo } from '../Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, Target, BookOpen, Heart, ArrowRight, Twitter, Linkedin, Youtube, Mail, MapPin } from 'lucide-react';
+import { X, Users, Megaphone, Target, BookOpen, Heart, ArrowRight } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -47,13 +47,13 @@ export default function MobileMenu({ open }) {
             transition={{ type: 'spring', damping: 28, stiffness: 220 }}
             style={{ 
               position: 'fixed', right: 0, top: 0, bottom: 0, 
-              width: '85%', maxWidth: 320, 
+              width: '80%', maxWidth: 320, // HALF PAGE WIDTH
               background: '#fff', 
               zIndex: 9600,
               padding: '24px',
               display: 'flex', flexDirection: 'column',
               boxShadow: '-10px 0 50px rgba(0,0,0,0.1)',
-              borderRadius: '32px 0 0 32px' 
+              borderRadius: '32px 0 0 32px' // MODERN CURVED DRAWER
             }}
           >
             {/* BRAND HEADER */}
@@ -68,7 +68,7 @@ export default function MobileMenu({ open }) {
             </div>
 
             {/* SLEEK MENU LIST */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
               {links.map((n, i) => {
                 const Icon = n.i;
                 return (
@@ -81,50 +81,31 @@ export default function MobileMenu({ open }) {
                     style={{ 
                       padding: '16px 20px', borderRadius: 16, 
                       background: st.page === n.id ? 'rgba(255,148,49,0.08)' : 'transparent',
-                      display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer'
+                      display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
+                      transition: 'all 0.2s'
                     }}
                   >
                     <Icon size={18} color={st.page === n.id ? '#FF9431' : 'rgba(0,0,0,0.4)'} />
-                    <span style={{ fontWeight: 800, fontSize: 15, color: st.page === n.id ? '#111' : 'rgba(0,0,0,0.6)', flex: 1 }}>{n.l}</span>
+                    <span style={{ 
+                      fontWeight: 800, fontSize: 15, 
+                      color: st.page === n.id ? '#111' : 'rgba(0,0,0,0.6)',
+                      flex: 1 
+                    }}>{n.l}</span>
+                    {st.page === n.id && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431' }} />}
                   </motion.div>
                 );
               })}
             </div>
 
-            {/* SOCIALS & INFO SECTION */}
-            <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: 24 }}>
-               <p style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>Connect With Us</p>
-               
-               <div style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
-                  {[
-                    { i: Twitter, c: '#1DA1F2' },
-                    { i: Linkedin, c: '#0077B5' },
-                    { i: Youtube, c: '#FF0000' }
-                  ].map((s, i) => {
-                    const SIcon = s.i;
-                    return (
-                      <div key={i} style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0,0,0,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                        <SIcon size={18} color="rgba(0,0,0,0.4)" />
-                      </div>
-                    );
-                  })}
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0,0,0,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                    <span style={{ fontSize: 18 }}>📸</span> {/* EMOJI FOR INSTA TO BE SAFE */}
-                  </div>
-               </div>
-
-               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                     <Mail size={14} color="#FF9431" />
-                     <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(0,0,0,0.6)' }}>hello@creatorbharat.com</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                     <MapPin size={14} color="#FF9431" />
-                     <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(0,0,0,0.6)' }}>Made in Jaipur, Bharat 🇮🇳</span>
-                  </div>
-               </div>
-
-               <Btn full lg onClick={() => { dsp({ t: 'UI', v: { authModal: true, mobileMenu: false } }); }}>Login to Portal</Btn>
+            {/* ACTION FOOTER */}
+            <div style={{ 
+              marginTop: 'auto', paddingTop: 24, 
+              borderTop: '1px solid rgba(0,0,0,0.05)',
+              display: 'flex', flexDirection: 'column', gap: 12 
+            }}>
+              <p style={{ fontSize: 11, fontWeight: 900, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center', marginBottom: 4 }}>Account</p>
+              <Btn full lg onClick={() => { dsp({ t: 'UI', v: { authModal: true, mobileMenu: false } }); }}>Login to Portal</Btn>
+              <p style={{ fontSize: 10, color: 'rgba(0,0,0,0.4)', textAlign: 'center', fontWeight: 700 }}>Made with ❤️ in Bharat</p>
             </div>
           </motion.div>
         </>

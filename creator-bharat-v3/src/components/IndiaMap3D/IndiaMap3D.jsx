@@ -98,6 +98,46 @@ export default function IndiaMap3D({ mob }) {
             </motion.div>
           )}
 
+          {/* Rajasthan Custom Message (Desktop Only) */}
+          {!mob && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+              style={{
+                position: 'absolute',
+                top: '30%',
+                left: '25%',
+                zIndex: 30,
+                pointerEvents: 'none'
+              }}
+            >
+              {/* Message Box */}
+              <div style={{
+                position: 'absolute',
+                top: '-80px',
+                left: '-320px',
+                width: '300px',
+                background: '#ffffff',
+                padding: '16px',
+                borderRadius: '12px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                border: '2px solid #FF9933',
+                transform: 'rotateX(-25deg) rotateZ(5deg)'
+              }}>
+                <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#111', lineHeight: 1.5, fontFamily: 'Inter, sans-serif' }}>
+                  "Har chhote creator ko ek nayi pehchaan dilana Creator Bharat ka mission hai. Hum har local talent ko <span style={{color: '#FF9933', fontWeight: 900}}>host karenge</span>."
+                </p>
+              </div>
+
+              {/* Arrow Line */}
+              <svg width="300" height="200" style={{ position: 'absolute', top: '-10px', left: '-150px', overflow: 'visible' }}>
+                <path d="M -150 -10 Q -50 20 0 0" fill="transparent" stroke="#FF9933" strokeWidth="3" strokeDasharray="6 4" />
+                <polygon points="-8,-6 2,0 -4,8" fill="#FF9933" />
+              </svg>
+            </motion.div>
+          )}
+
           {/* Right Annotation (Talent Mission) */}
           {!mob && (
             <motion.div 
