@@ -133,7 +133,17 @@ function IdentityScreen() {
                 <div style={{ fontSize: 5, opacity: 0.5 }}>ENGAGE</div>
              </div>
           </div>
-          <div style={{ marginTop: 12, height: 40, background: '#111', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 9, fontWeight: 800 }}>Connect Now</div>
+          <div style={{ marginTop: 12, height: 32, background: '#111', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 9, fontWeight: 800 }}>Connect Now</div>
+          <p style={{ fontSize: 7, color: 'rgba(0,0,0,0.6)', marginTop: 10, lineHeight: 1.3, textAlign: 'left' }}>
+             Capturing Bharat's authentic style. 🇮🇳 Fashion, Travel, and Daily Lifestyle.
+          </p>
+          <div style={{ marginTop: 14 }}>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4 }}>
+                {[1,2,3,4,5,6].map(i => (
+                  <div key={i} style={{ aspectRatio: '1', background: '#eee', borderRadius: 4, backgroundImage: `url(https://picsum.photos/100/100?random=${i})`, backgroundSize: 'cover' }} />
+                ))}
+             </div>
+          </div>
        </div>
     </motion.div>
   );
