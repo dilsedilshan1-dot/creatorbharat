@@ -90,26 +90,12 @@ export default function DemoModal({ open }) {
                {step === 4 && <VisionScreen />}
             </PhoneMockup>
 
-            {/* STEP CONTROLS WITH PROGRESS LINE */}
-            <div style={{ display: 'flex', gap: 6, marginTop: 24, width: '100%' }}>
-               {[1,2,3,4].map(i => (
-                 <div 
-                   key={i} 
-                   onClick={() => { setStep(i); setProg(0); }} 
-                   style={{ 
-                     flex: 1, height: 3, borderRadius: 10, background: 'rgba(0,0,0,0.05)', 
-                     cursor: 'pointer', position: 'relative', overflow: 'hidden' 
-                   }}
-                 >
-                    {step === i && (
-                      <motion.div 
-                        style={{ position: 'absolute', inset: 0, background: '#FF9431', width: `${prog}%` }} 
-                      />
-                    )}
-                    {step > i && <div style={{ position: 'absolute', inset: 0, background: '#FF9431' }} />}
-                 </div>
-               ))}
-            </div>
+            {/* STEP CONTROLS (DESKTOP) */}
+            {!mob && (
+              <div style={{ display: 'flex', gap: 6, marginTop: 24, width: '100%' }}>
+                <StepIndicators step={step} setStep={setStep} setProg={setProg} prog={prog} />
+              </div>
+            )}
           </div>
 
           {/* RIGHT: VISION COPY */}
@@ -139,6 +125,13 @@ export default function DemoModal({ open }) {
                 <Btn lg style={{ width: '100%', background: '#111', color: '#fff', borderRadius: 100, fontWeight: 900, padding: mob ? '14px' : '16px' }} onClick={() => dsp({ t: 'GO', p: 'apply' })}>Join the Revolution ⚡</Btn>
              </div>
 
+             {/* STEP CONTROLS (MOBILE) */}
+             {mob && (
+               <div style={{ display: 'flex', gap: 6, marginTop: 32, width: '100%' }}>
+                 <StepIndicators step={step} setStep={setStep} setProg={setProg} prog={prog} />
+               </div>
+             )}
+
              {!mob && (
                <div style={{ marginTop: 40, padding: 20, background: '#F8FAFC', borderRadius: 20, border: '1px solid rgba(0,0,0,0.05)' }}>
                   <p style={{ fontSize: 10, color: 'rgba(0,0,0,0.4)', fontWeight: 800, textTransform: 'uppercase', marginBottom: 8 }}>Building Bharat together</p>
@@ -152,6 +145,26 @@ export default function DemoModal({ open }) {
       </motion.div>
     </AnimatePresence>
   );
+}
+
+function StepIndicators({ step, setStep, setProg, prog }) {
+  return [1,2,3,4].map(i => (
+    <div 
+      key={i} 
+      onClick={() => { setStep(i); setProg(0); }} 
+      style={{ 
+        flex: 1, height: 3, borderRadius: 10, background: 'rgba(0,0,0,0.05)', 
+        cursor: 'pointer', position: 'relative', overflow: 'hidden' 
+      }}
+    >
+       {step === i && (
+         <motion.div 
+           style={{ position: 'absolute', inset: 0, background: '#FF9431', width: `${prog}%` }} 
+         />
+       )}
+       {step > i && <div style={{ position: 'absolute', inset: 0, background: '#FF9431' }} />}
+    </div>
+  ));
 }
 
 function PhoneMockup({ children, mob }) {
