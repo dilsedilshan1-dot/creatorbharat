@@ -72,12 +72,12 @@ export default function DemoModal({ open }) {
                 <h3 style={{ fontSize: 19, fontWeight: 900, color: '#111', marginBottom: 12 }}>
                    {step === 1 && "Vision: Your Brand Identity"}
                    {step === 2 && "Vision: Trusted Recognition"}
-                   {step === 3 && "Vision: Financial Freedom"}
+                   {step === 3 && "Vision: Spotlight & Community"}
                 </h3>
                 <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', lineHeight: 1.5, fontWeight: 600 }}>
                    {step === 1 && "A professional portfolio that turns your followers into your digital estate. You own your data, always."}
                    {step === 2 && "Get verified by BharatAI. We prove your authenticity to the world so you get the respect you deserve."}
-                   {step === 3 && "Direct access to brands. No agency middle-men, no hidden cuts. You keep every rupee you earn."}
+                   {step === 3 && "Get featured on our National Podcast, access elite learning resources, and join a verified network of pro creators."}
                 </p>
              </div>
 
@@ -166,28 +166,33 @@ function TrustScreen() {
 function GrowthScreen() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', padding: 16 }}>
-       <div style={{ fontSize: 10, fontWeight: 900, marginBottom: 12 }}>Direct Deals</div>
-       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {[
-            { b: 'Adidas', amt: '₹45,000', s: 'Paid' },
-            { b: 'Samsung', amt: '₹1,20,000', s: 'Paid' },
-            { b: 'Unilever', amt: '₹35,000', s: 'Pending' }
-          ].map((d, i) => (
-            <div key={i} style={{ padding: 10, background: '#F8FAFC', borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-               <div>
-                  <div style={{ fontSize: 9, fontWeight: 900 }}>{d.b}</div>
-                  <div style={{ fontSize: 7, color: 'rgba(0,0,0,0.4)' }}>Campaign Deal</div>
-               </div>
-               <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 9, fontWeight: 900, color: '#10B981' }}>{d.amt}</div>
-                  <div style={{ fontSize: 6, fontWeight: 900, color: d.s === 'Paid' ? '#10B981' : '#FF9431' }}>{d.s}</div>
-               </div>
-            </div>
-          ))}
+       <div style={{ fontSize: 10, fontWeight: 900, marginBottom: 12 }}>Growth & Community</div>
+       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ padding: 12, background: '#F0F9FF', borderRadius: 12, border: '1px solid #0EA5E9', display: 'flex', alignItems: 'center', gap: 10 }}>
+             <span style={{ fontSize: 16 }}>🎙️</span>
+             <div>
+                <div style={{ fontSize: 9, fontWeight: 900, color: '#0369A1' }}>National Spotlight</div>
+                <div style={{ fontSize: 7, color: 'rgba(3,105,161,0.6)' }}>Feature on our Podcast</div>
+             </div>
+          </div>
+          <div style={{ padding: 12, background: '#FDF2F8', borderRadius: 12, border: '1px solid #DB2777', display: 'flex', alignItems: 'center', gap: 10 }}>
+             <span style={{ fontSize: 16 }}>📖</span>
+             <div>
+                <div style={{ fontSize: 9, fontWeight: 900, color: '#9D174D' }}>Learning Hub</div>
+                <div style={{ fontSize: 7, color: 'rgba(157,23,77,0.6)' }}>Exclusive Growth Articles</div>
+             </div>
+          </div>
+          <div style={{ padding: 12, background: '#F5F3FF', borderRadius: 12, border: '1px solid #7C3AED', display: 'flex', alignItems: 'center', gap: 10 }}>
+             <span style={{ fontSize: 16 }}>👥</span>
+             <div>
+                <div style={{ fontSize: 9, fontWeight: 900, color: '#5B21B6' }}>Elite Network</div>
+                <div style={{ fontSize: 7, color: 'rgba(91,33,182,0.6)' }}>Verified Creator Community</div>
+             </div>
+          </div>
        </div>
-       <div style={{ marginTop: 16, padding: 12, background: '#111', borderRadius: 12, color: '#fff', textAlign: 'center' }}>
-          <div style={{ fontSize: 12, fontWeight: 900 }}>₹0.00</div>
-          <div style={{ fontSize: 6, opacity: 0.6 }}>TOTAL COMMISSION CHARGED</div>
+       <div style={{ marginTop: 20, padding: 12, background: '#111', borderRadius: 12, color: '#fff', textAlign: 'center' }}>
+          <div style={{ fontSize: 9, fontWeight: 900 }}>Support for Tier 2 & 3</div>
+          <div style={{ fontSize: 6, opacity: 0.6, marginTop: 4 }}>DEDICATED LOCAL ASSISTANCE</div>
        </div>
     </motion.div>
   );
