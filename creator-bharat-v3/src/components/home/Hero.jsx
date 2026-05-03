@@ -12,12 +12,12 @@ export function Typewriter({ words, interval = 1000 }) {
 
   useEffect(() => {
     const word = words[idx % words.length];
-    // EXTREME TURBO SPEEDS
-    const speed = mob ? (del ? 5 : 15) : (del ? 20 : 40); 
+    // BALANCED SPEEDS FOR BETTER READABILITY
+    const speed = mob ? (del ? 30 : 60) : (del ? 20 : 40); 
     
     const timeout = setTimeout(() => {
       if (!del && sub === word) {
-        setTimeout(() => setDel(true), mob ? 500 : 1200); // SUPER SHORT PAUSE
+        setTimeout(() => setDel(true), mob ? 1500 : 1200); // LONGER PAUSE
       } else if (del && sub === '') {
         setDel(false);
         setIdx(i => i + 1);
