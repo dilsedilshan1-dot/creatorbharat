@@ -11,10 +11,10 @@ export function Typewriter({ words, interval = 2000 }) {
 
   useEffect(() => {
     const word = words[idx % words.length];
-    const speed = del ? 50 : 100;
+    const speed = del ? 30 : 60; // FASTER SPEEDS
     const timeout = setTimeout(() => {
       if (!del && sub === word) {
-        setTimeout(() => setDel(true), interval);
+        setTimeout(() => setDel(true), 1500); // SHORTER PAUSE
       } else if (del && sub === '') {
         setDel(false);
         setIdx(i => i + 1);
@@ -23,7 +23,7 @@ export function Typewriter({ words, interval = 2000 }) {
       }
     }, speed);
     return () => clearTimeout(timeout);
-  }, [sub, del, idx, words, interval]);
+  }, [sub, del, idx, words, 1500]);
 
   return (
     <span style={{ position: 'relative', display: 'inline-block' }}>
