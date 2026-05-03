@@ -67,14 +67,14 @@ export default function CommunityPulse({ mob }) {
         </div>
 
         {/* Vertical Journey Section */}
-        <div style={{ 
-          position: 'relative', 
-          display: 'flex', 
-          flexDirection: 'column', 
+        <div style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
           gap: mob ? 60 : 100,
           position: 'relative'
         }}>
-          
+
           {!mob && <div style={{
             position: 'absolute',
             left: '50%',

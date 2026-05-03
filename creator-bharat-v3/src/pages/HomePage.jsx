@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useApp } from '../context';
 import { apiCall } from '../utils/api';
 import { LS } from '../utils/helpers';
@@ -9,8 +10,21 @@ import CommunityPulse from '../components/home/CommunityPulse';
 import PlatformShowcase from '../components/home/PlatformShowcase';
 import FeaturedCreators from '../components/home/FeaturedCreators';
 import Testimonials from '../components/home/Testimonials';
+import Manifesto from '../components/home/Manifesto';
 import Faq from '../components/home/Faq';
 import Cta from '../components/home/Cta';
+
+const RevealSection = ({ children, mob }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 50, scale: 0.98 }}
+    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+    style={{ position: 'relative', width: '100%' }}
+  >
+    {children}
+  </motion.div>
+);
 
 export default function HomePage() {
   const { st, dsp } = useApp();
@@ -46,15 +60,28 @@ export default function HomePage() {
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
+  const sections = [
+    { id: 'hero', comp: <Hero mob={mob} st={st} dsp={dsp} go={go} /> },
+    { id: 'creators', comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} /> },
+    { id: 'roadmap', comp: <CommunityPulse mob={mob} /> },
+    { id: 'showcase', comp: <PlatformShowcase mob={mob} /> },
+    { id: 'manifesto', comp: <Manifesto mob={mob} /> },
+    { id: 'blueprint', comp: <Testimonials mob={mob} /> },
+    { id: 'faq', comp: <Faq mob={mob} /> },
+    { id: 'cta', comp: <Cta mob={mob} go={go} /> }
+  ];
+
   return (
-    <div style={{ background: '#fff' }}>
-      <Hero mob={mob} st={st} dsp={dsp} go={go} />
-      <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} />
-      <CommunityPulse mob={mob} />
-      <PlatformShowcase mob={mob} />
-      <Testimonials mob={mob} />
-      <Faq mob={mob} />
-      <Cta mob={mob} go={go} />
+    <div style={{ background: '#fff', overflowX: 'hidden' }}>
+      {sections.map((s, i) => (
+        <div key={s.id} id={s.id}>
+          <RevealSection mob={mob}>
+            {s.comp}
+          </RevealSection>
+        </div>
+      ))}
+      
+      {/* Subtle Floating Navigation Dots for Desktop Removed */}
     </div>
   );
 }
