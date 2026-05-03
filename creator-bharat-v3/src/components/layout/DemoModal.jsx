@@ -7,9 +7,13 @@ export default function DemoModal({ open }) {
   const { dsp } = useApp();
   const [step, setStep] = useState(1);
   const [prog, setProg] = useState(0);
+  const [mob, setMob] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    if (!open) return;
+    const h = () => setMob(window.innerWidth < 768);
+    window.addEventListener('resize', h);
+    if (!open) return () => window.removeEventListener('resize', h);
+    
     const interval = setInterval(() => {
       setProg(p => {
         if (p >= 100) {
@@ -19,7 +23,11 @@ export default function DemoModal({ open }) {
         return p + 0.4;
       });
     }, 20);
-    return () => clearInterval(interval);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', h);
+    };
   }, [open, step]);
 
   if (!open) return null;
@@ -31,9 +39,10 @@ export default function DemoModal({ open }) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         style={{ 
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', 
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', 
           backdropFilter: 'blur(12px)', zIndex: 9999,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+          display: 'flex', alignItems: 'center', justifyContent: 'center', 
+          padding: mob ? 0 : 20 // NO PADDING ON MOBILE FOR FULLSCREEN FEEL
         }}
         onClick={() => dsp({ t: 'UI', v: { demoModal: false } })}
       >
@@ -42,23 +51,30 @@ export default function DemoModal({ open }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           style={{ 
-            width: '100%', maxWidth: 1000, background: '#fff', borderRadius: 40, 
+            width: '100%', maxWidth: 1000, background: '#fff', 
+            borderRadius: mob ? 0 : 40, // FULLSCREEN ON MOBILE
             overflow: 'hidden', position: 'relative', boxShadow: '0 40px 120px rgba(0,0,0,0.5)',
-            display: 'flex', flexDirection: window.innerWidth < 768 ? 'column' : 'row', 
-            height: window.innerWidth < 768 ? 'auto' : 580
+            display: 'flex', flexDirection: mob ? 'column' : 'row', 
+            height: mob ? '100%' : 580,
+            maxHeight: mob ? '100vh' : '90vh'
           }}
           onClick={e => e.stopPropagation()}
         >
           {/* CLOSE BUTTON */}
           <button 
             onClick={() => dsp({ t: 'UI', v: { demoModal: false } })}
-            style={{ position: 'absolute', top: 20, right: 20, width: 36, height: 36, borderRadius: '50%', background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 300, color: '#111' }}
+            style={{ position: 'absolute', top: mob ? 16 : 20, right: mob ? 16 : 20, width: 36, height: 36, borderRadius: '50%', background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 300, color: '#111' }}
           >
             ×
           </button>
 
           {/* LEFT: PHONE SHOWCASE */}
-          <div style={{ flex: 1.1, background: '#F8FAFC', padding: 24, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ 
+            flex: mob ? 'none' : 1.1, 
+            height: mob ? '55%' : 'auto', // GIVE PHONE MORE SPACE ON MOBILE
+            background: '#F8FAFC', padding: mob ? '40px 20px 20px' : 32, 
+            position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center' 
+          }}>
             <div style={{ width: '100%', textAlign: 'left', marginBottom: 20 }}>
                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 12px', background: 'rgba(255,148,49,0.1)', color: '#FF9431', borderRadius: 100, fontSize: 9, fontWeight: 900, textTransform: 'uppercase', marginBottom: 12 }}>
                  <span style={{ width: 6, height: 6, background: '#FF9431', borderRadius: '50%', animation: 'pulse 1.5s infinite' }} /> Bharat's Creator Ecosystem
@@ -97,15 +113,21 @@ export default function DemoModal({ open }) {
           </div>
 
           {/* RIGHT: VISION COPY */}
-          <div style={{ flex: 0.9, padding: 40, display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#fff', borderLeft: '1px solid rgba(0,0,0,0.05)' }}>
-             <div style={{ marginBottom: 32 }}>
-                <h3 style={{ fontSize: 19, fontWeight: 900, color: '#111', marginBottom: 12 }}>
+          <div style={{ 
+            flex: mob ? 1 : 0.9, 
+            padding: mob ? '24px 32px' : 40, 
+            display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#fff', 
+            borderLeft: mob ? 'none' : '1px solid rgba(0,0,0,0.05)',
+            borderTop: mob ? '1px solid rgba(0,0,0,0.05)' : 'none'
+          }}>
+             <div style={{ marginBottom: mob ? 20 : 32 }}>
+                <h3 style={{ fontSize: mob ? 17 : 19, fontWeight: 900, color: '#111', marginBottom: 10 }}>
                    {step === 1 && "Identity: Own Your Digital Estate"}
                    {step === 2 && "Trust: The Gold Standard"}
                    {step === 3 && "Impact: National Spotlight"}
                    {step === 4 && "Vision: Empowering 100M Creators"}
                 </h3>
-                <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', lineHeight: 1.5, fontWeight: 600 }}>
+                <p style={{ fontSize: mob ? 13 : 14, color: 'rgba(0,0,0,0.5)', lineHeight: 1.4, fontWeight: 600 }}>
                    {step === 1 && "A professional portfolio that turns your followers into your digital estate. You own your data, always."}
                    {step === 2 && "Get verified by BharatAI. We prove your authenticity to the world so you get the respect you deserve."}
                    {step === 3 && "Get featured on our National Podcast, access elite learning resources, and join a verified network."}
@@ -114,15 +136,17 @@ export default function DemoModal({ open }) {
              </div>
 
              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <Btn lg style={{ width: '100%', background: '#111', color: '#fff', borderRadius: 100, fontWeight: 900, padding: '16px' }} onClick={() => dsp({ t: 'GO', p: 'apply' })}>Join the Revolution ⚡</Btn>
+                <Btn lg style={{ width: '100%', background: '#111', color: '#fff', borderRadius: 100, fontWeight: 900, padding: mob ? '14px' : '16px' }} onClick={() => dsp({ t: 'GO', p: 'apply' })}>Join the Revolution ⚡</Btn>
              </div>
 
-             <div style={{ marginTop: 40, padding: 20, background: '#F8FAFC', borderRadius: 20, border: '1px solid rgba(0,0,0,0.05)' }}>
-                <p style={{ fontSize: 10, color: 'rgba(0,0,0,0.4)', fontWeight: 800, textTransform: 'uppercase', marginBottom: 8 }}>Building Bharat together</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                   <span style={{ fontSize: 12, fontWeight: 800, color: '#111' }}>The OS for the next billion creators.</span>
-                </div>
-             </div>
+             {!mob && (
+               <div style={{ marginTop: 40, padding: 20, background: '#F8FAFC', borderRadius: 20, border: '1px solid rgba(0,0,0,0.05)' }}>
+                  <p style={{ fontSize: 10, color: 'rgba(0,0,0,0.4)', fontWeight: 800, textTransform: 'uppercase', marginBottom: 8 }}>Building Bharat together</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                     <span style={{ fontSize: 12, fontWeight: 800, color: '#111' }}>The OS for the next billion creators.</span>
+                  </div>
+               </div>
+             )}
           </div>
         </motion.div>
       </motion.div>
