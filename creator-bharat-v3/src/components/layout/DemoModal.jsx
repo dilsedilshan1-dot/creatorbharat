@@ -238,15 +238,23 @@ function CommunityScreen() {
 function VisionScreen() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, textAlign: 'center', background: '#fff' }}>
-       <div style={{ marginBottom: 20 }}>
-          <Logo sm />
+       {/* CENTERED LOGO ICON */}
+       <div style={{ position: 'relative', width: 54, height: 54, borderRadius: '50%', padding: 2, overflow: 'hidden', boxShadow: '0 10px 20px rgba(0,0,0,0.1)', marginBottom: 12 }}>
+          <div style={{ position: 'absolute', top: '50%', left: '50%', width: '200%', height: '200%', background: 'conic-gradient(from 0deg, #FF9431, #fff, #128807, #fff, #FF9431)', animation: 'spinBorder 4s linear infinite', zIndex: 0 }} />
+          <div style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '33.33%', background: '#FF9431' }} />
+            <div style={{ position: 'absolute', top: '33.33%', left: 0, right: 0, height: '33.34%', background: '#FFFFFF' }} />
+            <div style={{ position: 'absolute', top: '66.67%', left: 0, right: 0, height: '33.33%', background: '#128807' }} />
+          </div>
        </div>
-       <h4 style={{ fontSize: 15, fontWeight: 900, color: '#111', marginBottom: 12 }}>Our Vision</h4>
+       <div style={{ fontSize: 18, fontWeight: 900, color: '#111', marginBottom: 16 }}>CreatorBharat</div>
+
+       <h4 style={{ fontSize: 13, fontWeight: 800, color: 'rgba(0,0,0,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Our Mission</h4>
        <p style={{ fontSize: 10, color: 'rgba(0,0,0,0.6)', lineHeight: 1.6, fontWeight: 600 }}>
           To build a Bharat where every local talent becomes a global brand. 🇮🇳
        </p>
-       <div style={{ marginTop: 32, width: '100%', height: 2, background: 'linear-gradient(90deg, #FF9431, #DC2626)', borderRadius: 10 }} />
-       <div style={{ marginTop: 16, fontSize: 9, fontWeight: 900, color: '#111', textTransform: 'uppercase', letterSpacing: '0.05em' }}>100M+ Creators • 1 Mission</div>
+       <div style={{ marginTop: 24, width: '100%', height: 2, background: 'linear-gradient(90deg, #FF9431, #DC2626)', borderRadius: 10 }} />
+       <div style={{ marginTop: 12, fontSize: 8, fontWeight: 900, color: '#111', textTransform: 'uppercase' }}>100M+ Creators • 1 Mission</div>
     </motion.div>
   );
 }
