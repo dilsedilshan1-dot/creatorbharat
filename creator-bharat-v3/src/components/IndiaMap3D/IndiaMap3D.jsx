@@ -85,22 +85,23 @@ export default function IndiaMap3D({ mob }) {
           <div className={styles.flagLine} />
         </div>
 
-        <div className={styles.svgWrap}>
-          {/* Left Annotation (Rajasthan/Bhilwara) */}
-          {!mob && (
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              className={styles.annotationLeft}
-            >
-              <div className={styles.annoText}>
-                Hum Rajasthan ke <span className={styles.annoHighlight}>Bhilwara</span> se pure India ke creators ko list karenge.
-              </div>
-              <div className={styles.annoLineLeft} />
-            </motion.div>
+        <div className={styles.svgWrap} style={{ height: mob ? '320px' : '640px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {mob ? (
+            <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/India_Map_with_States_and_UTs.svg/600px-India_Map_with_States_and_UTs.svg.png" 
+                style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.1))', opacity: 0.9 }}
+                alt="India Hub"
+              />
+              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle, transparent 20%, #fff 100%)', pointerEvents: 'none' }} />
+              {/* Pulse dots for mobile hub */}
+              <div style={{ position: 'absolute', top: '30%', left: '35%', width: 8, height: 8, borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 15px #FF9431', animation: 'pulse-dot 2s infinite' }} />
+              <div style={{ position: 'absolute', top: '55%', left: '45%', width: 8, height: 8, borderRadius: '50%', background: '#138808', boxShadow: '0 0 15px #138808', animation: 'pulse-dot 2.5s infinite' }} />
+              <div style={{ position: 'absolute', top: '75%', left: '50%', width: 8, height: 8, borderRadius: '50%', background: '#2563eb', boxShadow: '0 0 15px #2563eb', animation: 'pulse-dot 1.8s infinite' }} />
+            </div>
+          ) : (
+            <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} />
           )}
-
-          <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} />
           
           {selectedState && (
             <motion.div 

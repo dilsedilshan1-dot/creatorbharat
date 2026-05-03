@@ -73,11 +73,12 @@ export default function HomePage() {
     { id: 'creators', comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} /> },
     { id: 'impact', comp: <ImpactStats mob={mob} /> },
     { id: 'map', comp: <IndiaMap3D mob={mob} /> },
-
-
     { id: 'roadmap', comp: <CommunityPulse mob={mob} /> },
-    { id: 'showcase', comp: <PlatformShowcase mob={mob} /> },
-    { id: 'manifesto', comp: <Manifesto mob={mob} /> },
+    // PlatformShowcase and Manifesto are hidden on mobile to reduce page length
+    ...(!mob ? [
+      { id: 'showcase', comp: <PlatformShowcase mob={mob} /> },
+      { id: 'manifesto', comp: <Manifesto mob={mob} /> },
+    ] : []),
     { id: 'blueprint', comp: <Testimonials mob={mob} /> },
     { id: 'faq', comp: <Faq mob={mob} /> },
     { id: 'cta', comp: <Cta mob={mob} go={go} /> }
