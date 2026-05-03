@@ -8,7 +8,6 @@ import ToastBar from './layout/ToastBar';
 import CompareBar from './layout/CompareBar';
 import AuthModal from './layout/AuthModal';
 import DemoModal from './layout/DemoModal';
-import AIChatbot from './layout/AIChatbot';
 
 export default function Layout({ children }) {
   const { st, dsp } = useApp();
@@ -128,7 +127,6 @@ export default function Layout({ children }) {
 
       {st.ui.authModal && <AuthModal />}
       {st.ui.demoModal && <DemoModal open={st.ui.demoModal} />}
-      <AIChatbot mob={mob} />
     </div>
   );
 }
