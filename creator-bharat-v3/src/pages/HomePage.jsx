@@ -18,12 +18,12 @@ import IndiaMap3D from '../components/home/IndiaMap3D';
 import Faq from '../components/home/Faq';
 import Cta from '../components/home/Cta';
 
-const RevealSection = ({ children, mob }) => (
+const RevealSection = ({ children, mob, delay = 0 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 50, scale: 0.98 }}
-    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay }}
     style={{ position: 'relative', width: '100%' }}
   >
     {children}
@@ -83,7 +83,7 @@ export default function HomePage() {
     <div style={{ background: '#fff', overflowX: 'hidden' }}>
       {sections.map((s, i) => (
         <div key={s.id} id={s.id}>
-          <RevealSection mob={mob}>
+          <RevealSection mob={mob} delay={i * 0.1}>
             {s.comp}
           </RevealSection>
         </div>

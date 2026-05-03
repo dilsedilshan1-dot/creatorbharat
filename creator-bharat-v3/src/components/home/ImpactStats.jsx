@@ -1,5 +1,26 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, useSpring, useTransform, animate } from 'framer-motion';
+
+function Counter({ value }) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const target = parseInt(value.replace(/[^0-9]/g, ''));
+  const suffix = value.replace(/[0-9,]/g, '');
+
+  useEffect(() => {
+    const controls = animate(0, target, {
+      duration: 2,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (latest) => setDisplayValue(Math.floor(latest)),
+    });
+    return () => controls.stop();
+  }, [target]);
+
+  return (
+    <span>
+      {displayValue.toLocaleString()}{suffix}
+    </span>
+  );
+}
 
 export default function ImpactStats({ mob }) {
   const stats = [
@@ -64,7 +85,7 @@ export default function ImpactStats({ mob }) {
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: s.c }} />
               
               <div style={{ fontSize: mob ? 32 : 48, fontWeight: 900, color: '#111', marginBottom: 8, letterSpacing: '-0.02em' }}>
-                {s.v}
+                <Counter value={s.v} />
               </div>
               <div style={{ fontSize: 14, fontWeight: 900, color: s.c, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12 }}>
                 {s.l}

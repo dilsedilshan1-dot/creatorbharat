@@ -59,8 +59,11 @@ export default function IndiaMap3D({ mob }) {
   };
 
   return (
-    <section 
+    <motion.section 
       onMouseMove={handleMouseMove}
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8 }}
       style={{ 
         height: mob ? '450px' : '500px', 
         width: '100%', 
@@ -70,7 +73,7 @@ export default function IndiaMap3D({ mob }) {
         position: 'relative',
         display: 'flex',
         fontFamily: 'Inter, sans-serif',
-        borderRadius: mob ? 24 : 32, // Added rounding for mobile too
+        borderRadius: mob ? 24 : 32, 
         margin: mob ? '10px' : '20px auto', 
         maxWidth: mob ? 'calc(100% - 20px)' : '1200px', 
         border: `1px solid ${isNight ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
@@ -78,12 +81,19 @@ export default function IndiaMap3D({ mob }) {
       }}
     >
       {/* Background Neon Grid */}
-      <div style={{ 
-        position: 'absolute', inset: 0, 
-        backgroundImage: `linear-gradient(${isNight ? 'rgba(99, 102, 241, 0.05)' : 'rgba(0,0,0,0.02)'} 1px, transparent 1px), linear-gradient(90deg, ${isNight ? 'rgba(99, 102, 241, 0.05)' : 'rgba(0,0,0,0.02)'} 1px, transparent 1px)`,
-        backgroundSize: mob ? '30px 30px' : '40px 40px',
-        pointerEvents: 'none'
-      }} />
+      <motion.div 
+        animate={{ 
+          opacity: [0.3, 0.6, 0.3],
+          scale: [1, 1.05, 1]
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        style={{ 
+          position: 'absolute', inset: 0, 
+          backgroundImage: `linear-gradient(${isNight ? 'rgba(99, 102, 241, 0.05)' : 'rgba(0,0,0,0.02)'} 1px, transparent 1px), linear-gradient(90deg, ${isNight ? 'rgba(99, 102, 241, 0.05)' : 'rgba(0,0,0,0.02)'} 1px, transparent 1px)`,
+          backgroundSize: mob ? '30px 30px' : '40px 40px',
+          pointerEvents: 'none'
+        }} 
+      />
 
       {/* Floating UI Elements - More centered/balanced for mobile */}
       <div style={{ 
@@ -302,7 +312,7 @@ export default function IndiaMap3D({ mob }) {
           </div>
         </div>
       )}
-    </section>
+    </motion.section>
   );
 }
 

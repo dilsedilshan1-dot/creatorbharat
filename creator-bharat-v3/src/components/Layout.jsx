@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Lenis from '@studio-freight/lenis';
 import { useApp } from '../context';
 import Footer from './home/Footer';
 import Navbar from './layout/Navbar';
@@ -12,9 +13,31 @@ export default function Layout({ children }) {
   const [mob, setMob] = useState(window.innerWidth < 768);
 
   useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
     const h = () => setMob(window.innerWidth < 768);
     window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    return () => {
+      window.removeEventListener('resize', h);
+      lenis.destroy();
+    };
   }, []);
 
   return (
