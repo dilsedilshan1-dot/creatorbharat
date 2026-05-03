@@ -11,6 +11,7 @@ import PlatformShowcase from '../components/home/PlatformShowcase';
 import FeaturedCreators from '../components/home/FeaturedCreators';
 import Testimonials from '../components/home/Testimonials';
 import Manifesto from '../components/home/Manifesto';
+import ImpactStats from '../components/home/ImpactStats';
 import Faq from '../components/home/Faq';
 import Cta from '../components/home/Cta';
 
@@ -63,6 +64,7 @@ export default function HomePage() {
   const sections = [
     { id: 'hero', comp: <Hero mob={mob} st={st} dsp={dsp} go={go} /> },
     { id: 'creators', comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} /> },
+    { id: 'impact', comp: <ImpactStats mob={mob} /> },
     { id: 'roadmap', comp: <CommunityPulse mob={mob} /> },
     { id: 'showcase', comp: <PlatformShowcase mob={mob} /> },
     { id: 'manifesto', comp: <Manifesto mob={mob} /> },
