@@ -12,23 +12,27 @@ import FeaturedCreators from '../components/home/FeaturedCreators';
 import Testimonials from '../components/home/Testimonials';
 import Manifesto from '../components/home/Manifesto';
 import ImpactStats from '../components/home/ImpactStats';
-import IndiaMap3D from '../components/home/IndiaMap3D';
+import IndiaMap3D from '../components/IndiaMap3D/IndiaMap3D';
 
 
 import Faq from '../components/home/Faq';
 import Cta from '../components/home/Cta';
 
-const RevealSection = ({ children, mob, delay = 0 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay }}
-    style={{ position: 'relative', width: '100%' }}
-  >
-    {children}
-  </motion.div>
-);
+const RevealSection = ({ children, mob, delay = 0 }) => {
+  if (mob) return <div style={{ position: 'relative', width: '100%' }}>{children}</div>;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay }}
+      style={{ position: 'relative', width: '100%' }}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 export default function HomePage() {
   const { st, dsp } = useApp();

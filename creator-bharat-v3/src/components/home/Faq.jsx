@@ -4,7 +4,7 @@ import { W } from '../../utils/helpers';
 
 export default function Faq({ mob }) {
   return (
-    <section style={{ padding: mob ? '40px 20px' : '20px 20px 80px 20px', background: '#fff' }}>
+    <section style={{ padding: mob ? '20px' : '20px 20px 80px 20px', background: '#fff' }}>
       <div style={W()}>
         
         {/* REVOLUTIONARY HEADING SECTION */}

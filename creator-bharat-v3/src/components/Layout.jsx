@@ -13,30 +13,36 @@ export default function Layout({ children }) {
   const [mob, setMob] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
-      infinite: false,
-    });
+    const isMobile = window.innerWidth < 768;
+    let lenis = null;
 
-    function raf(time) {
-      lenis.raf(time);
+    if (!isMobile) {
+      lenis = new Lenis({
+        duration: 0.8,
+        easing: (t) => 1 - Math.pow(1 - t, 4),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1.1,
+        smoothTouch: false,
+        touchMultiplier: 1.5,
+        infinite: false,
+      });
+
+      function raf(time) {
+        if (lenis) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+      }
       requestAnimationFrame(raf);
     }
-
-    requestAnimationFrame(raf);
 
     const h = () => setMob(window.innerWidth < 768);
     window.addEventListener('resize', h);
     return () => {
       window.removeEventListener('resize', h);
-      lenis.destroy();
+      if (lenis) lenis.destroy();
     };
   }, []);
 
