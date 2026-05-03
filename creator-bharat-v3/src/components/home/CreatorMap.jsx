@@ -1,133 +1,147 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin } from 'lucide-react';
+import { TrendingUp, Users, Zap, MapPin } from 'lucide-react';
+
+const TIER_COLORS = {
+  1: { dot: '#1e3a8a', light: 'rgba(30, 58, 138, 0.1)', glow: 'rgba(30, 58, 138, 0.4)' },
+  2: { dot: '#2563eb', light: 'rgba(37, 99, 235, 0.1)', glow: 'rgba(37, 99, 235, 0.4)' },
+  3: { dot: '#60a5fa', light: 'rgba(96, 165, 250, 0.1)', glow: 'rgba(96, 165, 250, 0.4)' },
+};
+
+const CITIES = [
+  { name: 'Delhi', state: 'Delhi NCR', tier: 1, x: 34.5, y: 25.5 },
+  { name: 'Mumbai', state: 'Maharashtra', tier: 1, x: 23.5, y: 56.5 },
+  { name: 'Bangalore', state: 'Karnataka', tier: 1, x: 34.5, y: 77.5 },
+  { name: 'Hyderabad', state: 'Telangana', tier: 1, x: 40.5, y: 62.5 },
+  { name: 'Chennai', state: 'Tamil Nadu', tier: 1, x: 44.5, y: 78.5 },
+  { name: 'Kolkata', state: 'West Bengal', tier: 1, x: 67.5, y: 46.5 },
+  { name: 'Jaipur', state: 'Rajasthan', tier: 2, x: 28.5, y: 32.5 },
+  { name: 'Ahmedabad', state: 'Gujarat', tier: 2, x: 20.5, y: 44.5 },
+  { name: 'Pune', state: 'Maharashtra', tier: 2, x: 26.5, y: 59.5 },
+];
 
 export default function CreatorMap({ mob }) {
-  const [showPopup, setShowPopup] = useState(false);
-  const [selectedHub, setSelectedHub] = useState(null);
-
-  const hubs = [
-    { id: 'north', n: 'North Bharat', x: '35%', y: '22%', color: '#000', msg: 'The energy of North Bharat is rising. From Delhi to Jaipur, we are uncovering the next big storytellers.' },
-    { id: 'west', n: 'West Bharat', x: '20%', y: '55%', color: '#000', msg: 'The economic engine of India. Your creativity in Mumbai and Gujarat is shaping the digital future.' },
-    { id: 'south', n: 'South Bharat', x: '35%', y: '82%', color: '#000', msg: 'Innovation meets tradition. We are celebrating the diverse and powerful voices from the southern coast.' },
-    { id: 'east', n: 'East Bharat', x: '82%', y: '42%', color: '#000', msg: 'The soul of Indian art. From the tea gardens to the bay, your stories deserve a national stage.' },
-    { id: 'central', n: 'Central Bharat', x: '45%', y: '50%', color: '#000', msg: 'The heart of the nation. Connecting local talent from the heartland to global opportunities.' },
-  ];
-
-  const handleDotClick = (hub) => {
-    setSelectedHub(hub);
-    setShowPopup(true);
-  };
+  const [hoveredCity, setHoveredCity] = useState(null);
 
   return (
-    <section style={{ padding: mob ? '60px 20px' : '100px 20px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
-      
-      <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
+    <section id="map-section-verify" style={{ 
+      padding: mob ? '60px 20px' : '100px 40px', 
+      background: '#fff', 
+      minHeight: '800px', // Forced height for visibility
+      position: 'relative',
+      zIndex: 100
+    }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         
-        <div style={{ marginBottom: 50 }}>
-           <h2 style={{ fontSize: mob ? 28 : 48, fontWeight: 900, color: '#000', fontFamily: "'Fraunces', serif" }}>
-             Building the <span style={{ textDecoration: 'underline' }}>Creator Map of Bharat.</span>
-           </h2>
+        <div style={{ textAlign: 'center', marginBottom: 60 }}>
+          <h2 style={{ fontSize: mob ? 32 : 48, fontWeight: 900, color: '#000', fontFamily: "'Fraunces', serif" }}>
+            The <span style={{ color: '#2563eb' }}>Pan-Bharat</span> Network.
+          </h2>
+          <p style={{ color: 'rgba(0,0,0,0.5)', marginTop: 16, fontWeight: 600 }}>Explore our presence across the nation.</p>
         </div>
 
-        {/* Dotted Map with Boundaries Container */}
-        <div style={{ position: 'relative', width: '100%', height: mob ? 500 : 850, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: mob ? 'column' : 'row', 
+          gap: 40,
+          background: '#f8fafc',
+          borderRadius: 40,
+          padding: mob ? '20px' : '60px',
+          border: '2px solid #e2e8f0', // Visible border
+          alignItems: 'center'
+        }}>
           
-          {/* Layer 1: The Dotted Fill (Masked) */}
-          <div style={{ 
-            position: 'absolute', inset: 0, 
-            maskImage: 'url("https://upload.wikimedia.org/wikipedia/commons/e/e0/India_Map_with_States_and_UTs.svg")',
-            maskSize: 'contain', maskPosition: 'center', maskRepeat: 'no-repeat',
-            WebkitMaskImage: 'url("https://upload.wikimedia.org/wikipedia/commons/e/e0/India_Map_with_States_and_UTs.svg")',
-            WebkitMaskSize: 'contain', WebkitMaskPosition: 'center', WebkitMaskRepeat: 'no-repeat',
-            background: 'radial-gradient(circle, #000 1.2px, transparent 1.2px)',
-            backgroundSize: '8px 8px',
-            opacity: 0.7, zIndex: 1
-          }} />
+          {/* Map Container */}
+          <div style={{ flex: 1.5, position: 'relative', width: '100%', height: mob ? 450 : 750 }}>
+            
+            {/* Using a PNG fallback to avoid SVG rendering issues */}
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/India_Map_with_States_and_UTs.svg/800px-India_Map_with_States_and_UTs.svg.png" 
+              alt="India Map"
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'contain',
+                display: 'block',
+                borderRadius: 20
+              }}
+              onLoad={() => console.log('Map Loaded')}
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/800x1000?text=India+Map+Not+Loaded';
+              }}
+            />
 
-          {/* Layer 2: Clear State Boundaries (Overlaid) */}
-          <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
-             <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/e/e0/India_Map_with_States_and_UTs.svg" 
-                alt="India Boundaries"
+            {/* City Markers */}
+            {CITIES.map((city) => (
+              <div 
+                key={city.name}
+                onMouseEnter={() => setHoveredCity(city)}
+                onMouseLeave={() => setHoveredCity(null)}
                 style={{ 
-                  width: '100%', height: '100%', objectFit: 'contain', 
-                  opacity: 0.8, filter: 'grayscale(1) contrast(10) brightness(0)' 
+                  position: 'absolute', 
+                  left: `${city.x}%`, 
+                  top: `${city.y}%`,
+                  width: 24, height: 24,
+                  transform: 'translate(-50%, -50%)',
+                  cursor: 'pointer',
+                  zIndex: 10
                 }}
-             />
+              >
+                {city.tier === 1 && (
+                  <motion.div 
+                    animate={{ scale: [1, 2.2, 1], opacity: [0.4, 0, 0.4] }}
+                    transition={{ repeat: Infinity, duration: 3 }}
+                    style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: TIER_COLORS[city.tier].light }}
+                  />
+                )}
+                <div style={{ 
+                  width: 10, height: 10, 
+                  borderRadius: '50%', 
+                  background: TIER_COLORS[city.tier].dot,
+                  border: '2px solid #fff',
+                  margin: '7px'
+                }} />
+              </div>
+            ))}
+
+            {/* Tooltip */}
+            <AnimatePresence>
+              {hoveredCity && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  style={{
+                    position: 'absolute', left: `${hoveredCity.x}%`, top: `${hoveredCity.y - 8}%`,
+                    transform: 'translateX(-50%)', width: 180, background: '#fff',
+                    padding: '12px', borderRadius: '16px', boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
+                    zIndex: 100, border: '1px solid #f1f5f9', pointerEvents: 'none'
+                  }}
+                >
+                  <div style={{ fontWeight: 900, fontSize: 16 }}>{hoveredCity.name}</div>
+                  <div style={{ fontSize: 11, color: '#2563eb', fontWeight: 800 }}>{hoveredCity.state}</div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Layer 3: Interactive Hotspots */}
-          {hubs.map((h) => (
-            <motion.div 
-              key={h.id}
-              whileHover={{ scale: 1.4 }}
-              onClick={() => handleDotClick(h)}
-              style={{ 
-                position: 'absolute', left: h.x, top: h.y, 
-                width: 20, height: 20, background: '#000', borderRadius: '50%', 
-                cursor: 'pointer', zIndex: 30, border: '4px solid #fff',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
-              }}
-            >
-              <div style={{ position: 'absolute', inset: -10, borderRadius: '50%', border: '2px solid #000', opacity: 0.2, animation: 'ping 2s infinite' }} />
-            </motion.div>
-          ))}
+          {/* Stats */}
+          <div style={{ flex: 0.7, width: '100%' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
+               <div style={{ padding: '24px', background: '#111', color: '#fff', borderRadius: '24px' }}>
+                  <div style={{ fontSize: 24, fontWeight: 900 }}>8.5M+</div>
+                  <div style={{ fontSize: 12, opacity: 0.5 }}>Creators Mapped</div>
+               </div>
+               <div style={{ padding: '24px', background: 'rgba(37, 99, 235, 0.05)', color: '#2563eb', borderRadius: '24px', border: '1px solid rgba(37, 99, 235, 0.1)' }}>
+                  <div style={{ fontSize: 24, fontWeight: 900 }}>45+</div>
+                  <div style={{ fontSize: 12, opacity: 0.7 }}>Major Cities</div>
+               </div>
+            </div>
+            <button style={{ width: '100%', marginTop: 24, padding: '20px', background: '#000', color: '#fff', borderRadius: '100px', border: 'none', fontSize: 16, fontWeight: 900 }}>
+              Join Now <Zap size={18} fill="#fff" style={{ marginLeft: 8 }} />
+            </button>
+          </div>
+
         </div>
       </div>
-
-      {/* Pop-up Message Modal */}
-      <AnimatePresence>
-        {showPopup && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ 
-              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 20
-            }}
-            onClick={() => setShowPopup(false)}
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 30, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }} exit={{ scale: 0.9, y: 30, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: '#fff', padding: mob ? '32px 24px' : '64px', borderRadius: 48,
-                maxWidth: 550, width: '100%', position: 'relative', textAlign: 'center'
-              }}
-            >
-              <button 
-                onClick={() => setShowPopup(false)}
-                style={{ position: 'absolute', top: 24, right: 24, background: 'rgba(0,0,0,0.05)', border: 'none', width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-              >
-                <X size={20} color="#000" />
-              </button>
-
-              <div style={{ width: 64, height: 64, background: 'rgba(0,0,0,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 32px' }}>
-                <MapPin size={32} color="#000" />
-              </div>
-
-              <h2 style={{ fontSize: mob ? 28 : 40, fontWeight: 900, marginBottom: 20, lineHeight: 1.1, color: '#000', fontFamily: "'Fraunces', serif" }}>
-                Connect with <br /> {selectedHub?.n}.
-              </h2>
-
-              <p style={{ fontSize: 18, color: 'rgba(0,0,0,0.6)', fontWeight: 600, lineHeight: 1.6, marginBottom: 40 }}>
-                "{selectedHub?.msg}"
-              </p>
-
-              <button style={{ width: '100%', padding: '20px', background: '#000', color: '#fff', borderRadius: 100, border: 'none', fontSize: 16, fontWeight: 900, cursor: 'pointer' }}>
-                Explore Local Creators
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <style>{`
-        @keyframes ping {
-          0% { transform: scale(1); opacity: 0.6; }
-          100% { transform: scale(3.5); opacity: 0; }
-        }
-      `}</style>
     </section>
   );
 }
