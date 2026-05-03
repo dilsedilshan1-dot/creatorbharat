@@ -66,97 +66,68 @@ export default function CommunityPulse({ mob }) {
           </p>
         </div>
 
-        {/* Vertical Journey Section */}
+        {/* Vertical Journey Section: MORE COMPACT ON MOBILE */}
         <div style={{
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          gap: mob ? 60 : 100,
+          gap: mob ? 24 : 100, // TIGHTER GAP ON MOBILE
           position: 'relative'
         }}>
-
           {!mob && <div style={{
-            position: 'absolute',
-            left: '50%',
-            top: 0,
-            bottom: 0,
-            width: 2,
+            position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2,
             background: 'linear-gradient(to bottom, #FF9431, #138808, #FF9431)',
-            transform: 'translateX(-50%)',
-            opacity: 0.2
+            transform: 'translateX(-50%)', opacity: 0.2
           }} />}
 
           {steps.map((s, i) => (
             <div key={i} style={{
               display: 'flex',
-              flexDirection: mob ? 'column' : (i % 2 === 0 ? 'row' : 'row-reverse'),
+              flexDirection: mob ? 'row' : (i % 2 === 0 ? 'row' : 'row-reverse'), // SIDE BY SIDE ON MOBILE TOO
               alignItems: 'center',
-              gap: mob ? 32 : 80,
-              textAlign: mob ? 'center' : (i % 2 === 0 ? 'right' : 'left'),
+              gap: mob ? 16 : 80,
+              textAlign: mob ? 'left' : (i % 2 === 0 ? 'right' : 'left'),
               position: 'relative',
               width: '100%',
+              background: mob ? 'rgba(0,0,0,0.02)' : 'transparent',
+              padding: mob ? '20px' : 0,
+              borderRadius: mob ? 24 : 0
             }}>
-
               {/* STEP INFO */}
-              <div style={{ flex: 1, width: '100%' }}>
+              <div style={{ flex: 1.2 }}>
                 <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  marginBottom: 20,
+                  display: 'inline-flex', alignItems: 'center', gap: 10,
+                  marginBottom: mob ? 8 : 20,
                   flexDirection: (mob || i % 2 !== 0) ? 'row' : 'row-reverse'
                 }}>
-                  <div style={{ fontSize: 48, fontWeight: 900, color: 'rgba(0,0,0,0.05)' }}>{s.n}</div>
-                  <div style={{ padding: '6px 16px', borderRadius: 100, background: s.color + '15', color: s.color, fontSize: 12, fontWeight: 900, textTransform: 'uppercase' }}>{s.tag}</div>
+                  <div style={{ fontSize: mob ? 24 : 48, fontWeight: 900, color: 'rgba(0,0,0,0.05)' }}>{s.n}</div>
+                  <div style={{ padding: '4px 12px', borderRadius: 100, background: s.color + '15', color: s.color, fontSize: mob ? 9 : 12, fontWeight: 900, textTransform: 'uppercase' }}>{s.tag}</div>
                 </div>
-                <h3 style={{ fontSize: mob ? 24 : 42, fontWeight: 900, color: '#111', marginBottom: 16 }}>{s.h}</h3>
-                <p style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, maxWidth: 500, margin: mob ? '0 auto' : (i % 2 === 0 ? '0 0 0 auto' : '0 auto 0 0') }}>{s.d}</p>
+                <h3 style={{ fontSize: mob ? 16 : 42, fontWeight: 900, color: '#111', marginBottom: mob ? 4 : 16 }}>{s.h}</h3>
+                {!mob && <p style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, maxWidth: 500, margin: i % 2 === 0 ? '0 0 0 auto' : '0 auto 0 0' }}>{s.d}</p>}
               </div>
 
-              {/* STEP VISUAL CARD */}
-              <div style={{ flex: 1, width: '100%' }}>
-                <div className="roadmap-card" style={{
-                  position: 'relative',
-                  padding: 2,
-                  borderRadius: 42,
-                  overflow: 'hidden',
-                  background: 'rgba(0,0,0,0.05)',
-                  boxShadow: '0 40px 80px -20px rgba(0,0,0,0.1)'
-                }}>
-                  <div className="card-border" style={{
-                    position: 'absolute', top: '50%', left: '50%', width: '200%', height: '300%',
-                    background: `conic-gradient(from 0deg, transparent, ${s.color}, transparent 50%)`,
-                    animation: 'spinBorder 4s linear infinite',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 0
-                  }} />
+              {/* STEP VISUAL ICON ON MOBILE */}
+              <div style={{ flex: 0.3, display: 'flex', justifyContent: 'center' }}>
+                 <div style={{ width: mob ? 50 : 100, height: mob ? 50 : 100, borderRadius: 16, background: s.color + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 24 : 48 }}>
+                   {s.i}
+                 </div>
+              </div>
 
-                  <div style={{ position: 'relative', zIndex: 1, background: '#fff', borderRadius: 40, padding: mob ? 40 : 60, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
-                    <div style={{ width: mob ? 80 : 100, height: mob ? 80 : 100, borderRadius: 32, background: s.color + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 36 : 48 }}>
-                      {s.i}
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <p style={{ fontSize: 12, fontWeight: 800, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Impact Area</p>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: '#111' }}>The {s.tag} Hub</div>
+              {!mob && (
+                <div style={{ flex: 1, width: '100%' }}>
+                  <div className="roadmap-card" style={{ position: 'relative', padding: 2, borderRadius: 42, overflow: 'hidden', background: 'rgba(0,0,0,0.05)', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.1)' }}>
+                    <div className="card-border" style={{ position: 'absolute', top: '50%', left: '50%', width: '200%', height: '300%', background: `conic-gradient(from 0deg, transparent, ${s.color}, transparent 50%)`, animation: 'spinBorder 4s linear infinite', transform: 'translate(-50%, -50%)', zIndex: 0 }} />
+                    <div style={{ position: 'relative', zIndex: 1, background: '#fff', borderRadius: 40, padding: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+                      <div style={{ width: 100, height: 100, borderRadius: 32, background: s.color + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>{s.i}</div>
+                      <div style={{ textAlign: 'center' }}>
+                        <p style={{ fontSize: 12, fontWeight: 800, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Impact Area</p>
+                        <div style={{ fontSize: 18, fontWeight: 900, color: '#111' }}>The {s.tag} Hub</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {!mob && <div style={{
-                position: 'absolute',
-                left: '50%',
-                top: '50%',
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: '#fff',
-                border: `4px solid ${s.color}`,
-                transform: 'translate(-50%, -50%)',
-                zIndex: 2,
-                boxShadow: `0 0 20px ${s.color}40`
-              }} />}
-
+              )}
             </div>
           ))}
         </div>

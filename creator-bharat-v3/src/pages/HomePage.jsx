@@ -86,14 +86,12 @@ export default function HomePage() {
   return (
     <div style={{ background: '#fff', overflowX: 'hidden' }}>
       {sections.map((s, i) => (
-        <div key={s.id} id={s.id}>
+        <div key={s.id} id={s.id} style={{ marginBottom: mob ? (s.id === 'hero' ? 0 : 20) : 0 }}>
           <RevealSection mob={mob} delay={i * 0.1}>
             {s.comp}
           </RevealSection>
         </div>
       ))}
-      
-      {/* Subtle Floating Navigation Dots for Desktop Removed */}
     </div>
   );
 }

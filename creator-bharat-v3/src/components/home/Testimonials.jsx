@@ -99,15 +99,24 @@ export default function Testimonials({ mob }) {
           </div>
         </div>
 
-        {/* STEPS GRID */}
+        {/* STEPS GRID: CAROUSEL ON MOBILE */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)',
-          gap: 32,
+          display: 'flex',
+          flexDirection: mob ? 'row' : 'row', // ALWAYS ROW
+          flexWrap: mob ? 'nowrap' : 'wrap', // NO WRAP ON MOBILE
+          overflowX: mob ? 'auto' : 'visible', // SCROLL ON MOBILE
+          gap: mob ? 20 : 32,
+          paddingBottom: mob ? 24 : 0,
+          scrollSnapType: mob ? 'x mandatory' : 'none',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
+          justifyContent: mob ? 'flex-start' : 'center'
         }}>
           {steps.map((s, i) => (
             <div key={activeTab + i} className="how-card au" style={{
-              padding: mob ? '40px 32px' : '52px 40px',
+              flex: mob ? '0 0 280px' : '1 1 300px', // FIXED WIDTH ON MOBILE
+              maxWidth: mob ? '280px' : '380px',
+              padding: mob ? '32px 24px' : '52px 40px',
               background: '#fff',
               borderRadius: 32,
               border: '1.5px solid rgba(0,0,0,0.1)',
@@ -115,26 +124,27 @@ export default function Testimonials({ mob }) {
               position: 'relative',
               transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
               animation: 'slideUp 0.6s ease forwards',
+              scrollSnapAlign: 'center',
             }}>
               <div style={{
-                position: 'absolute', top: 32, right: 32, fontSize: 48, fontWeight: 900,
+                position: 'absolute', top: 24, right: 24, fontSize: 32, fontWeight: 900,
                 color: 'rgba(0,0,0,0.03)', fontFamily: 'serif', fontStyle: 'italic'
               }}>
                 0{i + 1}
               </div>
 
               <div style={{
-                width: 64, height: 64, borderRadius: 20, background: s.color + '15',
+                width: 54, height: 54, borderRadius: 16, background: s.color + '15',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 32, marginBottom: 32
+                fontSize: 28, marginBottom: 24
               }}>
                 {s.icon}
               </div>
 
-              <h3 style={{ fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 16 }}>{s.title}</h3>
-              <p style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.7, fontWeight: 600 }}>{s.sub}</p>
+              <h3 style={{ fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 12 }}>{s.title}</h3>
+              <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, fontWeight: 600 }}>{s.sub}</p>
 
-              <div style={{ width: 40, height: 4, background: s.color, marginTop: 32, borderRadius: 10 }} />
+              <div style={{ width: 32, height: 4, background: s.color, marginTop: 24, borderRadius: 10 }} />
             </div>
           ))}
         </div>

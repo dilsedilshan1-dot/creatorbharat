@@ -61,8 +61,8 @@ export default function ImpactStats({ mob }) {
 
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: mob ? '1fr' : 'repeat(4, 1fr)', 
-          gap: 24 
+          gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', 
+          gap: mob ? 12 : 24 
         }}>
           {stats.map((s, i) => (
             <motion.div
@@ -72,9 +72,9 @@ export default function ImpactStats({ mob }) {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
               style={{
-                padding: '40px 24px',
+                padding: mob ? '24px 12px' : '40px 24px',
                 background: '#fff',
-                borderRadius: 32,
+                borderRadius: mob ? 24 : 32,
                 border: '1.5px solid rgba(0,0,0,0.06)',
                 boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
                 textAlign: 'center',
@@ -84,10 +84,10 @@ export default function ImpactStats({ mob }) {
             >
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: s.c }} />
               
-              <div style={{ fontSize: mob ? 32 : 48, fontWeight: 900, color: '#111', marginBottom: 8, letterSpacing: '-0.02em' }}>
+              <div style={{ fontSize: mob ? 22 : 48, fontWeight: 900, color: '#111', marginBottom: 4, letterSpacing: '-0.02em' }}>
                 <Counter value={s.v} />
               </div>
-              <div style={{ fontSize: 14, fontWeight: 900, color: s.c, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12 }}>
+              <div style={{ fontSize: mob ? 9 : 14, fontWeight: 900, color: s.c, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>
                 {s.l}
               </div>
               <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.4)', fontWeight: 600 }}>
