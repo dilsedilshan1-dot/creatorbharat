@@ -6,6 +6,7 @@ import { sendEmail } from '../utils/mailer.js';
 import { getSettings, invalidateSettingsCache } from '../utils/settings.js';
 import { createNotification } from './notifications.js';
 import { checkAndAwardAchievements } from '../utils/achievementAwarder.js';
+import { AdminController } from '../controllers/adminController.js';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
@@ -15,6 +16,12 @@ const router = express.Router();
 // Apply auth middleware and requireRole ADMIN to all routes inside this router
 router.use(authMiddleware);
 router.use(requireRole(['ADMIN']));
+
+// GET /api/admin/audit-logs — Paginated forensic audit trail
+router.get('/audit-logs', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'FINANCE']), AdminController.getAuditLogs);
+
+// POST /api/admin/kyc/review/:creatorId — Moderates creator KYC status
+router.post('/kyc/review/:creatorId', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'MODERATOR']), AdminController.reviewKyc);
 
 // GET /api/admin/verifications — fetch pending verification requests
 router.get('/verifications', async (req, res) => {
