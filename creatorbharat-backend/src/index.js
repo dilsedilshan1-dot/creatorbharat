@@ -41,6 +41,7 @@ import missionsRouter from './routes/missions.js';
 import ambassadorRouter from './routes/ambassador.js';
 import savedRouter from './routes/saved.js';
 import teamRouter from './routes/team.js';
+import { BrandController } from './controllers/brandController.js';
 import { runOnboardingDrip } from './drip/onboardingDrip.js';
 
 const originalNodeEnv = process.env.NODE_ENV;
@@ -248,34 +249,7 @@ app.get('/api/settings/public', async (req, res) => {
 });
 
 // GET /api/brands/:id — public route to fetch brand profile details
-app.get('/api/brands/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const brand = await prisma.brand.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        companyName: true,
-        logo: true,
-        website: true,
-        verified: true
-      }
-    });
-    if (!brand) {
-      return res.status(404).json({ error: 'Brand profile not found.' });
-    }
-    res.json({
-      id: brand.id,
-      name: brand.companyName,
-      photo: brand.logo,
-      website: brand.website,
-      verified: brand.verified
-    });
-  } catch (err) {
-    console.error('[GET /api/brands/:id] Error:', err.message);
-    res.status(500).json({ error: 'Failed to retrieve brand profile.' });
-  }
-});
+app.get('/api/brands/:id', BrandController.getBrandById);
 
 // GET /api/pages/:pageName — public route to fetch page configuration
 app.get('/api/pages/:pageName', async (req, res) => {
