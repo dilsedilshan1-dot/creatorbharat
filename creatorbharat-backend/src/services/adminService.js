@@ -1,6 +1,10 @@
 // 🛡️ CreatorBharat SaaS Admin Service
 import prisma from '../prisma.js';
 import { OutboxService } from './outboxService.js';
+import { OutboxMonitor } from '../observability/outboxMonitor.js';
+import { StorageMonitor } from '../observability/storageMonitor.js';
+import { FinancialMonitor } from '../observability/financialMonitor.js';
+import { metrics } from '../observability/metrics.js';
 
 export class AdminService {
   /**
@@ -230,10 +234,19 @@ export class AdminService {
     }
 
     const memory = process.memoryUsage();
+    const [outboxDiag, storageDiag, financialDiag] = await Promise.all([
+      OutboxMonitor.getOutboxDiagnostics().catch(() => ({ status: 'UNKNOWN' })),
+      StorageMonitor.getStorageDiagnostics().catch(() => ({ status: 'UNKNOWN' })),
+      FinancialMonitor.getFinancialDiagnostics().catch(() => ({ status: 'UNKNOWN' }))
+    ]);
 
     return {
-      status: 'ONLINE',
+      status: dbStatus === 'HEALTHY' ? 'ONLINE' : 'DEGRADED',
       database: dbStatus,
+      outbox: outboxDiag,
+      storage: storageDiag,
+      financial: financialDiag,
+      metrics: metrics.getMetricsSummary(),
       nodeVersion: process.version,
       uptimeSeconds: Math.floor(process.uptime()),
       memory: {

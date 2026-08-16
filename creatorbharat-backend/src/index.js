@@ -41,6 +41,10 @@ import missionsRouter from './routes/missions.js';
 import ambassadorRouter from './routes/ambassador.js';
 import savedRouter from './routes/saved.js';
 import teamRouter from './routes/team.js';
+import healthRouter from './routes/health.js';
+import { requestIdMiddleware } from './middleware/requestId.js';
+import { requestLoggerMiddleware } from './middleware/requestLogger.js';
+import { errorHandlerMiddleware } from './middleware/errorHandler.js';
 import { BrandController } from './controllers/brandController.js';
 import { runOnboardingDrip } from './drip/onboardingDrip.js';
 
@@ -118,6 +122,10 @@ const io = new Server(server, {
   cors: corsOptions
 });
 
+// Observability & Request Correlation
+app.use(requestIdMiddleware);
+app.use(requestLoggerMiddleware);
+
 // Response compression, Security and CORS middleware
 app.use(compression());
 app.use(helmet());
@@ -154,6 +162,9 @@ app.use((req, res, next) => {
 
 app.use('/uploads', express.static('public/uploads'));
 
+// Health & Probes
+app.use('/health', healthRouter);
+
 // Strict Rate Limiter for Authentication & OTP requests to prevent spams
 const authLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -175,7 +186,7 @@ const browseLimiter = rateLimit({
 app.use('/api/auth/', authLimiter);
 app.use('/api/', browseLimiter);
 
-// Base Health Check endpoint
+// Base Health Check endpoint (backward compatibility)
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -1997,17 +2008,62 @@ io.on('connection', (socket) => {
 // ─── Sentry Error Handler (must be after all routes) ─────────────────────────
 Sentry.setupExpressErrorHandler(app);
 
-// Global 500 error handler
-app.use((err, req, res, next) => {
-  console.error('[Unhandled Error]:', err.message);
-  res.status(500).json({ error: 'An unexpected server error occurred. Our team has been notified.' });
-});
+// Centralized Error Normalization Handler
+app.use(errorHandlerMiddleware);
 
-// Start Server
+// Start Server & Lifecycle Management
 const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
 if (!isTestEnv) {
   server.listen(PORT, () => {
     logger.info(`CreatorBharat SaaS API Server running on port ${PORT}`, { port: PORT });
+  });
+
+  // ─── Graceful Shutdown & Process Health ────────────────────────────────────
+  let isShuttingDown = false;
+  async function gracefulShutdown(signal) {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+    logger.info(`[Process] Received ${signal}. Initiating graceful shutdown...`, { signal });
+
+    const shutdownTimeout = setTimeout(() => {
+      logger.error('[Process] Graceful shutdown timed out (10s). Forcing exit.', null, { signal });
+      process.exit(1);
+    }, 10000);
+
+    try {
+      await new Promise((resolve) => {
+        server.close(() => {
+          logger.info('[Process] HTTP listener closed.');
+          resolve();
+        });
+      });
+
+      await prisma.$disconnect();
+      logger.info('[Process] Database connection cleanly closed.');
+
+      clearTimeout(shutdownTimeout);
+      logger.info('[Process] Graceful shutdown completed cleanly.');
+      process.exit(0);
+    } catch (err) {
+      logger.error('[Process] Error during graceful shutdown:', err);
+      clearTimeout(shutdownTimeout);
+      process.exit(1);
+    }
+  }
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  process.on('uncaughtException', (err) => {
+    logger.error(`[FATAL] Uncaught Exception: ${err.message}`, err, { event: 'UNCAUGHT_EXCEPTION' });
+    if (process.env.NODE_ENV === 'production') {
+      gracefulShutdown('uncaughtException');
+    }
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    const message = reason instanceof Error ? reason.message : String(reason);
+    logger.error(`[FATAL] Unhandled Promise Rejection: ${message}`, reason instanceof Error ? reason : null, { event: 'UNHANDLED_REJECTION' });
   });
 
   // ─── Onboarding Email Drip — Auto Cron (every 6 hours) ───────────────────
