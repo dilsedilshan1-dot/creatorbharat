@@ -11,22 +11,23 @@ generator client {
 }
 
 model User {
-  id                 String   @id @default(cuid())
-  email              String   @unique
-  phone              String?  @unique
-  password           String
-  role               Role     @default(CREATOR)
-  isSuspended        Boolean  @default(false)
-  twoFactorSecret    String?  // Encrypted TOTP secret
-  twoFactorEnabled   Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id               String   @id @default(cuid())
+  email            String   @unique
+  phone            String?  @unique
+  password         String
+  role             Role     @default(CREATOR)
+  isSuspended      Boolean  @default(false)
+  twoFactorSecret  String? // Encrypted TOTP secret
+  twoFactorEnabled Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  creator        Creator?
-  brand          Brand?
-  savedItems     SavedItem[]
-  teamProfile    TeamMember?
-  refreshTokens  RefreshToken[]
+  creator       Creator?
+  brand         Brand?
+  savedItems    SavedItem[]
+  teamProfile   TeamMember?
+  refreshTokens RefreshToken[]
+  wallet        Wallet?
 }
 
 enum Role {
@@ -36,50 +37,51 @@ enum Role {
 }
 
 model Creator {
-  id             String        @id @default(cuid())
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String        @unique
-  handle         String        @unique
-  name           String
-  bio            String?
-  photo          String?
-  coverImage     String?
-  city           String?
-  state          String?
-  niche          String[]
-  platform       String[]
-  followers      Int           @default(0)
-  engagementRate Float         @default(0.0)
-  rateMin        Int           @default(0)
-  rateMax        Int           @default(0)
-  isVerified     Boolean       @default(false)
-  isPro          Boolean       @default(false)
-  isProfileActive Boolean      @default(false)
-  score          Int           @default(70)
-  aadhaarUrl     String?
-  panUrl         String?
-  status         String        @default("DRAFT")
-  fullStory      Json?
-  socialLinks    Json?
-  milestones     Json?
-  services       Json?
-  packages       Json?
-  localHubs      Json?
-  regionalDialects String[]
-  localVoice     String?
-  contactPhone   String?
-  contactEmail   String?
-  contactTelegram String?
-  contactMethod  String        @default("whatsapp")
+  id                  String   @id @default(cuid())
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String   @unique
+  handle              String   @unique
+  name                String
+  bio                 String?
+  photo               String?
+  coverImage          String?
+  city                String?
+  state               String?
+  niche               String[]
+  platform            String[]
+  followers           Int      @default(0)
+  engagementRate      Float    @default(0.0)
+  rateMin             Int      @default(0)
+  rateMax             Int      @default(0)
+  isVerified          Boolean  @default(false)
+  isPro               Boolean  @default(false)
+  isProfileActive     Boolean  @default(false)
+  score               Int      @default(70)
+  aadhaarUrl          String?
+  panUrl              String?
+  status              String   @default("DRAFT")
+  fullStory           Json?
+  socialLinks         Json?
+  milestones          Json?
+  services            Json?
+  packages            Json?
+  localHubs           Json?
+  regionalDialects    String[]
+  localVoice          String?
+  contactPhone        String?
+  contactEmail        String?
+  contactTelegram     String?
+  contactMethod       String   @default("whatsapp")
   contactAvailability String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   applications       Application[]
   reviews            Review[]
   payments           Payment[]
   podcasts           Podcast[]
   walletTransactions WalletTransaction[]
+  wallet             Wallet?
   gallery            CreatorGallery[]
   gigs               CampaignGig[]
   achievements       Achievement[]
@@ -107,9 +109,9 @@ model Brand {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  campaigns   Campaign[]
-  reviews     Review[]
-  payments    Payment[]
+  campaigns Campaign[]
+  reviews   Review[]
+  payments  Payment[]
 }
 
 model Campaign {
@@ -134,15 +136,15 @@ model Campaign {
 }
 
 model Application {
-  id          String   @id @default(cuid())
-  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId  String
-  creator     Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  creatorId   String
-  pitch       String?
-  status      String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId String
+  creator    Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId  String
+  pitch      String?
+  status     String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@unique([campaignId, creatorId])
 }
@@ -173,37 +175,37 @@ model Message {
 }
 
 model Blog {
-  id            String    @id @default(cuid())
-  slug          String    @unique
-  title         String
-  excerpt       String?
-  body          String
-  category      String
-  author        String
-  image         String?
-  tags          String[]
-  featured      Boolean   @default(false)
-  published     Boolean   @default(false)
-  views         Int       @default(0)
-  likes         Int       @default(0)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  comments      Comment[]
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  title     String
+  excerpt   String?
+  body      String
+  category  String
+  author    String
+  image     String?
+  tags      String[]
+  featured  Boolean   @default(false)
+  published Boolean   @default(false)
+  views     Int       @default(0)
+  likes     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  comments  Comment[]
 }
 
 model Comment {
-  id        String    @id @default(cuid())
-  blog      Blog      @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
   blogId    String
   name      String
   email     String?
   text      String
-  likes     Int       @default(0)
+  likes     Int      @default(0)
   parentId  String?
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
-  parent    Comment?  @relation("Replies", fields: [parentId], references: [id])
-  replies   Comment[] @relation("Replies")
+  parent  Comment?  @relation("Replies", fields: [parentId], references: [id])
+  replies Comment[] @relation("Replies")
 }
 
 model Payment {
@@ -289,19 +291,50 @@ model GalleryItem {
   updatedAt   DateTime @updatedAt
 }
 
+model Wallet {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creatorId    String?  @unique
+  creator      Creator? @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  balancePaise BigInt   @default(0) // Available balance in Paise (1 INR = 100 Paise)
+  lockedPaise  BigInt   @default(0) // Escrow or pending withdrawal funds
+  currency     String   @default("INR")
+  version      Int      @default(1) // Optimistic concurrency lock version
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  transactions WalletTransaction[]
+
+  @@index([userId])
+  @@index([creatorId])
+}
+
 model WalletTransaction {
-  id              String            @id @default(cuid())
-  creatorId       String
-  creator         Creator           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  amount          Int               // Positive for earnings, negative for withdrawals
-  type            TransactionType
-  status          TransactionStatus @default(PENDING)
-  description     String
-  referenceId     String?           @unique
-  createdAt       DateTime          @default(now())
+  id                String            @id @default(cuid())
+  walletId          String?
+  wallet            Wallet?           @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  creatorId         String
+  creator           Creator           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  amount            Int // Legacy amount in INR Rupees (positive for earnings, negative for withdrawals)
+  amountPaise       BigInt? // Canonical amount in Paise (1 INR = 100 Paise)
+  balanceAfterPaise BigInt? // Running balance snapshot in Paise after this transaction
+  type              TransactionType
+  status            TransactionStatus @default(PENDING)
+  description       String
+  referenceId       String?           @unique // Business reference identifier
+  referenceType     String? // 'CAMPAIGN_ESCROW', 'MILESTONE_PROOF', 'REFERRAL', 'BANK_WITHDRAWAL'
+  idempotencyKey    String?
+  metadata          Json?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime?         @updatedAt
 
   @@index([creatorId])
-  @@index([createdAt])
+  @@index([walletId, createdAt])
+  @@index([creatorId, createdAt])
+  @@index([status, createdAt])
+  @@index([referenceType, referenceId])
+  @@index([idempotencyKey])
 }
 
 enum TransactionType {
@@ -356,15 +389,15 @@ model CreatorGallery {
 }
 
 model CampaignGig {
-  id          String         @id @default(cuid())
-  campaignId  String
-  campaign    Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  creatorId   String
-  creator     Creator        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  status      String         @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
-  milestones  GigMilestone[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id         String         @id @default(cuid())
+  campaignId String
+  campaign   Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  creatorId  String
+  creator    Creator        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  status     String         @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+  milestones GigMilestone[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 }
 
 model GigMilestone {
@@ -398,43 +431,43 @@ model Notification {
 
 // ⚙️ Dynamic Platform Settings (stored in DB, managed from admin panel)
 model SystemSetting {
-  id    String @id @default("singleton")
+  id String @id @default("singleton")
 
   // General
-  siteName       String @default("CreatorBharat")
-  supportEmail   String @default("support@creatorbharat.com")
-  frontendUrl    String @default("http://localhost:5173")
-  logoUrl        String @default("")
-  footerEmail    String @default("hello@creatorbharat.com")
+  siteName     String @default("CreatorBharat")
+  supportEmail String @default("support@creatorbharat.com")
+  frontendUrl  String @default("http://localhost:5173")
+  logoUrl      String @default("")
+  footerEmail  String @default("hello@creatorbharat.com")
 
   // Pricing (in INR, stored as Rupees)
-  proMembershipPrice   Int @default(49)
-  campaignBoostPrice   Int @default(99)
-  featuredSlotPrice    Int @default(199)
-  platformFee          Int @default(10) // percentage
+  proMembershipPrice Int @default(49)
+  campaignBoostPrice Int @default(99)
+  featuredSlotPrice  Int @default(199)
+  platformFee        Int @default(10) // percentage
 
   // Feature Toggles
-  enableAIAssistant   Boolean @default(true)
-  enableEscrowSystem  Boolean @default(true)
-  maintenanceMode     Boolean @default(false)
-  enableEmail         Boolean @default(true)
-  enableSMS           Boolean @default(true)
+  enableAIAssistant  Boolean @default(true)
+  enableEscrowSystem Boolean @default(true)
+  maintenanceMode    Boolean @default(false)
+  enableEmail        Boolean @default(true)
+  enableSMS          Boolean @default(true)
 
   // Razorpay
-  razorpayKeyId   String @default("")
-  razorpaySecret  String @default("")
-  razorpayMode    String @default("test") // test | live
+  razorpayKeyId  String @default("")
+  razorpaySecret String @default("")
+  razorpayMode   String @default("test") // test | live
 
   // Email (Resend)
   resendApiKey String @default("")
   emailFrom    String @default("CreatorBharat <onboarding@creatorbharat.com>")
 
   // SMS
-  smsProvider    String @default("fast2sms") // fast2sms | twilio
-  fast2smsKey    String @default("")
-  twilioSid      String @default("")
-  twilioToken    String @default("")
-  twilioPhone    String @default("")
+  smsProvider String @default("fast2sms") // fast2sms | twilio
+  fast2smsKey String @default("")
+  twilioSid   String @default("")
+  twilioToken String @default("")
+  twilioPhone String @default("")
 
   updatedAt DateTime @updatedAt
 }
@@ -443,7 +476,7 @@ model Achievement {
   id          String   @id @default(cuid())
   creatorId   String
   creator     Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  type        String   // PLAY_BUTTON_10K, PLAY_BUTTON_50K, PLAY_BUTTON_100K, etc.
+  type        String // PLAY_BUTTON_10K, PLAY_BUTTON_50K, PLAY_BUTTON_100K, etc.
   title       String
   description String?
   unlockedAt  DateTime @default(now())
@@ -459,10 +492,10 @@ model Event {
   date            DateTime
   location        String
   venue           String?
-  type            String   // SUMMIT, WORKSHOP, MEETUP, ONLINE
+  type            String // SUMMIT, WORKSHOP, MEETUP, ONLINE
   coverImage      String?
   registrationUrl String?
-  eligibility     String?  // e.g. CB Score minimum
+  eligibility     String? // e.g. CB Score minimum
   isFeatured      Boolean  @default(false)
   published       Boolean  @default(false)
   createdAt       DateTime @default(now())
@@ -471,7 +504,7 @@ model Event {
 
 model Referral {
   id           String   @id @default(cuid())
-  referrerId   String   // Creator id who referred
+  referrerId   String // Creator id who referred
   referrer     Creator  @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
   referredId   String   @unique // Referred Creator id
   referred     Creator  @relation("ReferredRelation", fields: [referredId], references: [id], onDelete: Cascade)
@@ -486,8 +519,8 @@ model Mission {
   id           String              @id @default(cuid())
   title        String
   description  String
-  type         String              // REFER, POST_SOCIAL, COMPLETE_PROFILE, APPLY_CAMPAIGN
-  reward       String              // "₹199 cashback", etc.
+  type         String // REFER, POST_SOCIAL, COMPLETE_PROFILE, APPLY_CAMPAIGN
+  reward       String // "₹199 cashback", etc.
   rewardAmount Int                 @default(0)
   steps        Json?
   active       Boolean             @default(true)
@@ -497,14 +530,14 @@ model Mission {
 }
 
 model MissionCompletion {
-  id          String   @id @default(cuid())
-  missionId   String
-  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
-  creatorId   String
-  creator     Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  proofUrl    String?
-  status      String   @default("PENDING") // PENDING, VERIFIED, REWARDED
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  missionId String
+  mission   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  creatorId String
+  creator   Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  proofUrl  String?
+  status    String   @default("PENDING") // PENDING, VERIFIED, REWARDED
+  createdAt DateTime @default(now())
 
   @@index([missionId])
   @@index([creatorId])
@@ -549,12 +582,12 @@ model AmbassadorApplication {
 }
 
 model SavedItem {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  targetId   String   // The ID of the saved creator or saved campaign
-  itemType   String   // "CREATOR" or "CAMPAIGN"
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetId  String // The ID of the saved creator or saved campaign
+  itemType  String // "CREATOR" or "CAMPAIGN"
+  createdAt DateTime @default(now())
 
   @@unique([userId, targetId, itemType])
   @@index([userId])
@@ -564,7 +597,7 @@ model TeamMember {
   id        String   @id @default(cuid())
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role      String   // "SUPERADMIN", "MODERATOR", "SUPPORT", "FINANCE"
+  role      String // "SUPERADMIN", "MODERATOR", "SUPPORT", "FINANCE"
   status    String   @default("ACTIVE") // "ACTIVE", "REVOKED"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -573,7 +606,7 @@ model TeamMember {
 model InviteToken {
   id        String   @id @default(cuid())
   email     String   @unique
-  role      String   // "SUPERADMIN", "MODERATOR", "SUPPORT", "FINANCE"
+  role      String // "SUPERADMIN", "MODERATOR", "SUPPORT", "FINANCE"
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
