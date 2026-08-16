@@ -623,3 +623,91 @@ model RefreshToken {
 
   @@index([userId])
 }
+
+// 🛡️ Immutable Security & Forensic Audit Trail
+model AuditLog {
+  id            String   @id @default(cuid())
+  actorId       String?
+  actorEmail    String?
+  actorRole     String? // 'SUPERADMIN' | 'MANAGER' | 'MODERATOR' | 'FINANCE' | 'SUPPORT' | 'SYSTEM'
+  action        String // e.g. 'PAYMENT_ESCROW_RELEASE', 'USER_SUSPEND', 'KYC_APPROVE'
+  category      String // 'AUTH' | 'FINANCIAL' | 'RBAC' | 'USER_MANAGEMENT' | 'SYSTEM_CONFIG' | 'DATA_EXPORT'
+  targetType    String? // 'USER' | 'CREATOR' | 'BRAND' | 'CAMPAIGN' | 'PAYMENT' | 'SETTINGS' | 'SYSTEM'
+  targetId      String? // Primary key of affected entity
+  timestamp     DateTime @default(now())
+  previousValue Json? // Pre-mutation snapshot (sanitized)
+  newValue      Json? // Post-mutation snapshot (sanitized)
+  ipAddress     String?
+  userAgent     String?
+  status        String   @default("SUCCESS") // 'SUCCESS' | 'FAILURE' | 'BLOCKED'
+  metadata      Json? // Extra contextual payload
+  createdAt     DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
+  @@index([category, createdAt])
+  @@index([targetType, targetId, createdAt])
+  @@index([status, createdAt])
+}
+
+// 📁 Unified Media Asset & Document Store
+model MediaAsset {
+  id              String          @id @default(cuid())
+  ownerId         String? // userId / creatorId / brandId
+  ownerType       String? // 'USER' | 'CREATOR' | 'BRAND' | 'SYSTEM'
+  resourceType    String // 'IMAGE' | 'VIDEO' | 'DOCUMENT' | 'AVATAR' | 'COVER' | 'KYC_AADHAAR' | 'KYC_PAN' | 'DELIVERABLE'
+  storageProvider String          @default("LOCAL") // 'LOCAL' | 'CLOUDINARY' | 'S3'
+  storageKey      String // Local relative path (e.g. 'uploads/img-123.jpg') or Cloudinary public path
+  publicId        String? // Cloudinary public ID if applicable
+  url             String // Delivery URL or CDN URL
+  mimeType        String?
+  sizeBytes       BigInt?
+  checksum        String? // SHA-256 hash for integrity & deduplication
+  visibility      MediaVisibility @default(PUBLIC)
+  status          String          @default("ACTIVE") // 'ACTIVE' | 'ARCHIVED' | 'PENDING_SCAN'
+  metadata        Json? // Dimensions, duration, original filename
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime? // Soft-delete timestamp
+
+  @@index([ownerId, ownerType])
+  @@index([resourceType, visibility])
+  @@index([storageProvider, storageKey])
+  @@index([status, createdAt])
+}
+
+enum MediaVisibility {
+  PUBLIC
+  PRIVATE
+  OWNER_ONLY
+  ADMIN_ONLY
+}
+
+// 📬 Transactional Outbox Event Queue
+model OutboxEvent {
+  id             String       @id @default(cuid())
+  eventType      String // 'PAYMENT_SUCCEEDED', 'KYC_SUBMITTED', 'ESCROW_RELEASED', 'WELCOME_EMAIL', etc.
+  aggregateType  String // 'Payment', 'Creator', 'GigMilestone', 'Wallet', 'User'
+  aggregateId    String // Primary key of target entity
+  idempotencyKey String?      @unique // Unique event deduplication key
+  payload        Json // Sanitized domain event payload
+  status         OutboxStatus @default(PENDING)
+  attempts       Int          @default(0)
+  availableAt    DateTime     @default(now()) // Next processing timestamp (backoff)
+  processedAt    DateTime? // Completion timestamp
+  lastError      String? // Failure stack/message
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([status, availableAt])
+  @@index([status, createdAt])
+  @@index([eventType, createdAt])
+  @@index([aggregateType, aggregateId])
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  PROCESSED
+  FAILED
+}
