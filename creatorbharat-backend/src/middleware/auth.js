@@ -77,3 +77,20 @@ export const requireTeamRoles = (allowedRoles) => {
   };
 };
 
+// Safe helper to extract and verify auth identity without rejecting anonymous requests
+export const extractAuthUser = (req) => {
+  const authHeader = req.headers?.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+  const token = authHeader.split(' ')[1];
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) return null;
+  try {
+    const decoded = jwt.verify(token, jwtSecret);
+    const userId = decoded.userId || decoded.id;
+    return { ...decoded, userId, id: userId };
+  } catch {
+    return null;
+  }
+};
+
+

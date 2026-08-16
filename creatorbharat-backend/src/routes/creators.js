@@ -1,9 +1,20 @@
 // 🇮🇳 CreatorBharat SaaS Creators Router
 import express from 'express';
 import prisma from '../prisma.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, extractAuthUser } from '../middleware/auth.js';
 
 const router = express.Router();
+
+function sanitizeCreatorKYC(creator, requestingUser = null) {
+  if (!creator) return null;
+  const isOwner = requestingUser && (requestingUser.userId === creator.userId || requestingUser.id === creator.userId);
+  const isAdmin = requestingUser && requestingUser.role === 'ADMIN';
+  if (isOwner || isAdmin) {
+    return creator;
+  }
+  const { aadhaarUrl, panUrl, ...sanitized } = creator;
+  return sanitized;
+}
 
 async function getCreatorRankDetails(creator) {
   if (!creator) return 'Bronze';
@@ -100,7 +111,7 @@ router.get('/', async (req, res) => {
 
     const creatorsWithRanks = await Promise.all(creators.map(async (c) => {
       const rank = await getCreatorRankDetails(c);
-      return { ...c, rank };
+      return sanitizeCreatorKYC({ ...c, rank });
     }));
 
     res.json({
@@ -143,6 +154,7 @@ router.get('/activation/status', authMiddleware, async (req, res) => {
 router.get('/:idOrHandle', async (req, res) => {
   try {
     const { idOrHandle } = req.params;
+    const authUser = extractAuthUser(req);
 
     const creator = await prisma.creator.findFirst({
       where: {
@@ -170,28 +182,15 @@ router.get('/:idOrHandle', async (req, res) => {
     }
 
     if (creator.status !== 'APPROVED' || !creator.isProfileActive) {
-      try {
-        if (req.headers.authorization) {
-          const token = req.headers.authorization.split(' ')[1];
-          const jwt = await import('jsonwebtoken');
-          const jwtSecret = process.env.JWT_SECRET;
-          if (jwtSecret) {
-            const decoded = jwt.default.verify(token, jwtSecret);
-            const tokenUserId = decoded.userId || decoded.id;
-            if (tokenUserId === creator.userId || decoded.role === 'ADMIN') {
-              const rank = await getCreatorRankDetails(creator);
-              return res.json({ ...creator, rank, isPreview: true });
-            }
-          }
-        }
-      } catch (jwtErr) {
-        // failed decode, fall through to restrict
+      if (authUser && (authUser.userId === creator.userId || authUser.id === creator.userId || authUser.role === 'ADMIN')) {
+        const rank = await getCreatorRankDetails(creator);
+        return res.json(sanitizeCreatorKYC({ ...creator, rank, isPreview: true }, authUser));
       }
       return res.status(403).json({ error: 'Profile is not live. Admin approval and active subscription required.' });
     }
 
     const rank = await getCreatorRankDetails(creator);
-    res.json({ ...creator, rank });
+    res.json(sanitizeCreatorKYC({ ...creator, rank }, authUser));
   } catch (err) {
     console.error('[GET /api/creators/:idOrHandle] Error:', err.message);
     res.status(500).json({ error: 'Failed to fetch creator profile.' });

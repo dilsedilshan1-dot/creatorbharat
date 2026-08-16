@@ -10,6 +10,10 @@ router.use(authMiddleware);
 // GET /api/messages/conversations — fetch user chat histories grouped by conversation partner
 router.get('/conversations', async (req, res) => {
   try {
+    if (req.user.role !== 'BRAND' && req.user.role !== 'CREATOR') {
+      return res.status(403).json({ error: 'Messaging is available for registered creators and brands only.' });
+    }
+
     const isBrand = req.user.role === 'BRAND';
     let brandId = '';
     let creatorId = '';
@@ -155,6 +159,10 @@ router.get('/conversations', async (req, res) => {
 // GET /api/messages/history/:otherId — fetch history with specific creator or brand
 router.get('/history/:otherId', async (req, res) => {
   try {
+    if (req.user.role !== 'BRAND' && req.user.role !== 'CREATOR') {
+      return res.status(403).json({ error: 'Access restricted to creators and brands.' });
+    }
+
     const { otherId } = req.params;
     const isBrand = req.user.role === 'BRAND';
     let brandId = '';
@@ -207,6 +215,10 @@ router.get('/history/:otherId', async (req, res) => {
 // POST /api/messages/read/:otherId — mark messages from other participant as read
 router.post('/read/:otherId', async (req, res) => {
   try {
+    if (req.user.role !== 'BRAND' && req.user.role !== 'CREATOR') {
+      return res.status(403).json({ error: 'Access restricted to creators and brands.' });
+    }
+
     const { otherId } = req.params;
     const isBrand = req.user.role === 'BRAND';
     let brandId = '';

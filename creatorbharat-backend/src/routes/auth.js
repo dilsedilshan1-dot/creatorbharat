@@ -778,6 +778,9 @@ router.post('/reset-password', async (req, res) => {
     await prisma.user.update({ where: { id: record.userId }, data: { password: hashedPassword } });
     await prisma.passwordReset.delete({ where: { token } }).catch(() => {});
 
+    // Invalidate all existing sessions / refresh tokens for this user
+    await prisma.refreshToken.deleteMany({ where: { userId: record.userId } }).catch(() => {});
+
     // Send security alert email after successful password reset
     const updatedUser = await prisma.user.findUnique({
       where: { id: record.userId },

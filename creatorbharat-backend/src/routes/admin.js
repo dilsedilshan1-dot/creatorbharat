@@ -340,7 +340,7 @@ router.get('/stats', async (req, res) => {
 });
 
 // POST /api/admin/verify/:creatorId — approve user profile verification
-router.post('/verify/:creatorId', async (req, res) => {
+router.post('/verify/:creatorId', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'MODERATOR']), async (req, res) => {
   try {
     const { creatorId } = req.params;
 
@@ -723,7 +723,7 @@ router.delete('/reviews/:id', async (req, res) => {
 });
 
 // POST /api/admin/verify/reject/:creatorId — reject creator verification and clear document uploads
-router.post('/verify/reject/:creatorId', async (req, res) => {
+router.post('/verify/reject/:creatorId', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'MODERATOR']), async (req, res) => {
   try {
     const { creatorId } = req.params;
     const { reason } = req.body;
@@ -938,7 +938,7 @@ router.get('/creators/:id/transactions', async (req, res) => {
 });
 
 // POST /api/admin/creators/:id/score — manually adjust creator score
-router.post('/creators/:id/score', async (req, res) => {
+router.post('/creators/:id/score', requireTeamRoles(['SUPERADMIN', 'MANAGER']), async (req, res) => {
   try {
     const { id } = req.params;
     const { score, reason } = req.body;
@@ -1259,7 +1259,7 @@ router.get('/settings', async (req, res) => {
 });
 
 // POST /api/admin/settings
-router.post('/settings', async (req, res) => {
+router.post('/settings', requireTeamRoles(['SUPERADMIN', 'MANAGER']), async (req, res) => {
   try {
     const {
       siteName, supportEmail, frontendUrl, logoUrl, footerEmail,
@@ -1316,7 +1316,7 @@ router.post('/settings', async (req, res) => {
 // --- Creator CRUD Upgrades ---
 
 // POST /api/admin/creators
-router.post('/creators', async (req, res) => {
+router.post('/creators', requireTeamRoles(['SUPERADMIN', 'MANAGER']), async (req, res) => {
   try {
     const { email, password, name, handle, phone, city, state, niche, platform, followers, rateMin, rateMax } = req.body;
     if (!email || !password || !name || !handle) {
@@ -1375,7 +1375,7 @@ router.post('/creators', async (req, res) => {
 });
 
 // DELETE /api/admin/creators/:id
-router.delete('/creators/:id', async (req, res) => {
+router.delete('/creators/:id', requireTeamRoles(['SUPERADMIN', 'MANAGER']), async (req, res) => {
   try {
     const { id } = req.params;
     const creator = await prisma.creator.findUnique({ where: { id } });
@@ -1392,7 +1392,7 @@ router.delete('/creators/:id', async (req, res) => {
 // --- Brand CRUD Upgrades ---
 
 // POST /api/admin/brands
-router.post('/brands', async (req, res) => {
+router.post('/brands', requireTeamRoles(['SUPERADMIN', 'MANAGER']), async (req, res) => {
   try {
     const { email, password, companyName, industry, website, phone } = req.body;
     if (!email || !password || !companyName) {
@@ -1439,7 +1439,7 @@ router.post('/brands', async (req, res) => {
 });
 
 // DELETE /api/admin/brands/:id
-router.delete('/brands/:id', async (req, res) => {
+router.delete('/brands/:id', requireTeamRoles(['SUPERADMIN', 'MANAGER']), async (req, res) => {
   try {
     const { id } = req.params;
     const brand = await prisma.brand.findUnique({ where: { id } });
@@ -1456,7 +1456,7 @@ router.delete('/brands/:id', async (req, res) => {
 // --- Campaign Creation ---
 
 // POST /api/admin/campaigns
-router.post('/campaigns', async (req, res) => {
+router.post('/campaigns', requireTeamRoles(['SUPERADMIN', 'MANAGER']), async (req, res) => {
   try {
     const { brandId, title, description, budget, platform, niche, status } = req.body;
     if (!brandId || !title || !description) {
@@ -1731,7 +1731,7 @@ router.post('/missions/completions/:id/status', async (req, res) => {
 });
 
 // POST /api/admin/notifications/send — Dispatch a custom notification
-router.post('/notifications/send', async (req, res) => {
+router.post('/notifications/send', requireTeamRoles(['SUPERADMIN', 'MANAGER']), async (req, res) => {
   try {
     const { targetGroup, userId, title, body, type, link } = req.body;
     if (!title || !body) {
@@ -1807,7 +1807,7 @@ function toCSV(rows) {
 }
 
 // GET /api/admin/export/creators — download all creators as CSV
-router.get('/export/creators', async (req, res) => {
+router.get('/export/creators', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'FINANCE']), async (req, res) => {
   try {
     const creators = await prisma.creator.findMany({
       include: { user: { select: { email: true, createdAt: true, isSuspended: true, phone: true } } },
@@ -1839,7 +1839,7 @@ router.get('/export/creators', async (req, res) => {
 });
 
 // GET /api/admin/export/brands — download all brands as CSV
-router.get('/export/brands', async (req, res) => {
+router.get('/export/brands', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'FINANCE']), async (req, res) => {
   try {
     const brands = await prisma.brand.findMany({
       include: {
@@ -1870,7 +1870,7 @@ router.get('/export/brands', async (req, res) => {
 });
 
 // GET /api/admin/export/campaigns — download all campaigns as CSV
-router.get('/export/campaigns', async (req, res) => {
+router.get('/export/campaigns', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'FINANCE']), async (req, res) => {
   try {
     const campaigns = await prisma.campaign.findMany({
       include: {
@@ -1902,7 +1902,7 @@ router.get('/export/campaigns', async (req, res) => {
 });
 
 // GET /api/admin/export/payments — download all payments as CSV
-router.get('/export/payments', async (req, res) => {
+router.get('/export/payments', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'FINANCE']), async (req, res) => {
   try {
     const payments = await prisma.payment.findMany({
       include: {
@@ -1934,7 +1934,7 @@ router.get('/export/payments', async (req, res) => {
 });
 
 // GET /api/admin/export/newsletters — download email subscriber list as CSV
-router.get('/export/newsletters', async (req, res) => {
+router.get('/export/newsletters', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'FINANCE']), async (req, res) => {
   try {
     const subs = await prisma.newsletter.findMany({ orderBy: { createdAt: 'desc' } });
     const rows = subs.map(s => ({
@@ -1957,7 +1957,7 @@ router.get('/export/newsletters', async (req, res) => {
 // ─────────────────────────────────────────────────────────────────
 
 // POST /api/admin/danger/clear-newsletters — permanently delete all newsletter subscribers
-router.post('/danger/clear-newsletters', async (req, res) => {
+router.post('/danger/clear-newsletters', requireTeamRoles(['SUPERADMIN']), async (req, res) => {
   try {
     const { confirm } = req.body;
     if (confirm !== 'DELETE') {
@@ -1973,7 +1973,7 @@ router.post('/danger/clear-newsletters', async (req, res) => {
 });
 
 // POST /api/admin/danger/delete-draft-blogs — delete all draft blog posts
-router.post('/danger/delete-draft-blogs', async (req, res) => {
+router.post('/danger/delete-draft-blogs', requireTeamRoles(['SUPERADMIN']), async (req, res) => {
   try {
     const { confirm } = req.body;
     if (confirm !== 'DELETE') {
@@ -1989,7 +1989,7 @@ router.post('/danger/delete-draft-blogs', async (req, res) => {
 });
 
 // POST /api/admin/danger/revoke-pending-verifications — reject all pending verification requests
-router.post('/danger/revoke-pending-verifications', async (req, res) => {
+router.post('/danger/revoke-pending-verifications', requireTeamRoles(['SUPERADMIN']), async (req, res) => {
   try {
     const { confirm } = req.body;
     if (confirm !== 'DELETE') {
@@ -2116,7 +2116,7 @@ router.get('/referrals', async (req, res) => {
 });
 
 // POST /api/admin/referrals/:id/status — Approve or pay a referral manually
-router.post('/referrals/:id/status', async (req, res) => {
+router.post('/referrals/:id/status', requireTeamRoles(['SUPERADMIN', 'MANAGER', 'FINANCE']), async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body; // e.g. "VERIFIED", "REWARDED"

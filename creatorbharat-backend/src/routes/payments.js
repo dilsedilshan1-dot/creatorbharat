@@ -400,6 +400,14 @@ router.post('/release-escrow', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'No active paid escrow transaction found for this deal.' });
     }
 
+    // Ownership Verification: Only the brand that created the campaign or an ADMIN can release escrow
+    const isAdmin = req.user.role === 'ADMIN';
+    const isOwningBrand = req.user.role === 'BRAND' && req.user.brand && payment.brandId === req.user.brand.id;
+
+    if (!isAdmin && !isOwningBrand) {
+      return res.status(403).json({ error: 'Unauthorized. Only the campaign owner or an administrator can release escrow funds.' });
+    }
+
     // Razorpay split logic:
     // In production, we trigger transfers: razorpay.transfers.create({ ... })
     // For sandbox/development: we mock the transfer logs

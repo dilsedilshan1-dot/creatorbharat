@@ -163,6 +163,11 @@ router.delete('/:id', authMiddleware, requireRole(['ADMIN']), requireTeamRoles([
       data: { role: 'CREATOR' }
     });
 
+    // Invalidate active sessions / refresh tokens
+    await prisma.refreshToken.deleteMany({
+      where: { userId: member.userId }
+    }).catch(() => {});
+
     // Delete TeamMember profile
     await prisma.teamMember.delete({
       where: { id }
