@@ -37,10 +37,13 @@ yarn-error.log*
 *_PLAN.md
 *_MAP.md
 *_REPORT.md
+!PHASE_0_SECURITY_REPORT.md
 *_AUDIT.md
 *_CERTIFICATION.md
 *_PROJECT_CONTEXT.md
 *_CONTEXT.md
+
+!.env.example
 
 # ── Frontend Plan files ───────────────────────────────────────
 FRONTEND_ANALYSIS_REPORT*.md

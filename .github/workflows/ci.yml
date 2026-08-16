@@ -28,8 +28,18 @@ jobs:
           cd creatorbharat-backend
           npm ci
 
+      - name: Run Backend Security & Unit Tests
+        env:
+          DATABASE_URL: "postgresql://mockuser:mockpass@localhost:5432/mockdb"
+          JWT_SECRET: "ci_runner_jwt_secret_must_be_configured_64_bytes_secure_1234567890"
+          JWT_REFRESH_SECRET: "ci_runner_jwt_refresh_secret_must_be_configured_64_bytes_12345"
+          NODE_ENV: "test"
+        run: |
+          cd creatorbharat-backend
+          npm test
+
       - name: Build Success Notification
-        run: echo "✅ Backend dependencies and Prisma client generated successfully!"
+        run: echo "✅ Backend dependencies, Prisma client, and security tests passed successfully!"
 
   admin:
     name: Admin Dashboard Build Check

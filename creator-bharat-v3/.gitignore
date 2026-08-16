@@ -17,12 +17,14 @@ out
 
 # Environment variables (CRITICAL)
 .env
+.env.*
 .env.local
 .env.*.local
 .env.development
 .env.test
 .env.production
 .env.staging
+!.env.example
 
 # OS Junk
 .DS_Store

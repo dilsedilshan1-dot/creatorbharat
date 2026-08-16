@@ -8,15 +8,15 @@ import { authMiddleware } from '../middleware/auth.js';
 const router = express.Router();
 
 // Helper to log uploads in manifest.json
-function logUpload(fileName, fileUrl, size, type) {
+function logUpload(fileName, fileUrl, size, type, userId) {
   try {
     const publicDir = path.join(process.cwd(), 'public');
     const uploadsDir = path.join(publicDir, 'uploads');
     const manifestPath = path.join(uploadsDir, 'manifest.json');
 
     // Create directories if missing
-    if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir);
-    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+    if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
     let manifest = [];
     if (fs.existsSync(manifestPath)) {
@@ -34,6 +34,7 @@ function logUpload(fileName, fileUrl, size, type) {
         url: fileUrl,
         size,
         type,
+        userId: userId || null,
         createdAt: new Date()
       });
       fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
@@ -78,7 +79,7 @@ router.post('/image', authMiddleware, upload.single('file'), async (req, res) =>
     const absoluteUrl = fileUrl.startsWith('/') ? `${baseUrl}${fileUrl}` : fileUrl;
 
     // Log the upload details
-    logUpload(req.file.originalname, absoluteUrl, req.file.size, req.file.mimetype);
+    logUpload(req.file.originalname, absoluteUrl, req.file.size, req.file.mimetype, req.user.id);
 
     res.json({
       success: true,
@@ -87,7 +88,7 @@ router.post('/image', authMiddleware, upload.single('file'), async (req, res) =>
     });
   } catch (err) {
     console.error('[uploads/image] Error:', err.message);
-    res.status(500).json({ error: err.message || 'File upload failed.' });
+    res.status(500).json({ error: 'File upload failed. Please try again.' });
   }
 });
 
@@ -112,7 +113,7 @@ router.post('/video', authMiddleware, uploadVideo.single('file'), async (req, re
     const absoluteUrl = fileUrl.startsWith('/') ? `${baseUrl}${fileUrl}` : fileUrl;
 
     // Log the upload details
-    logUpload(req.file.originalname, absoluteUrl, req.file.size, req.file.mimetype);
+    logUpload(req.file.originalname, absoluteUrl, req.file.size, req.file.mimetype, req.user.id);
 
     res.json({
       success: true,
@@ -121,7 +122,7 @@ router.post('/video', authMiddleware, uploadVideo.single('file'), async (req, re
     });
   } catch (err) {
     console.error('[uploads/video] Error:', err.message);
-    res.status(500).json({ error: err.message || 'File upload failed.' });
+    res.status(500).json({ error: 'File upload failed. Please try again.' });
   }
 });
 
@@ -138,9 +139,14 @@ router.get('/', authMiddleware, async (req, res) => {
       }
     }
 
+    // Filter by user if not ADMIN
+    if (req.user.role !== 'ADMIN') {
+      manifest = manifest.filter(item => !item.userId || item.userId === req.user.id);
+    }
+
     // Also scan the local directory to make sure files exist on disk
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    if (fs.existsSync(uploadsDir)) {
+    if (fs.existsSync(uploadsDir) && req.user.role === 'ADMIN') {
       const files = fs.readdirSync(uploadsDir);
       const baseUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
       
@@ -180,18 +186,39 @@ router.get('/', authMiddleware, async (req, res) => {
 // DELETE /api/uploads/:filename - Delete uploaded media file
 router.delete('/:filename', authMiddleware, async (req, res) => {
   try {
-    const { filename } = req.params;
+    const rawFilename = req.params.filename;
     
-    // Protect manifest file
-    if (filename === 'manifest.json') {
-      return res.status(400).json({ error: 'Manifest cannot be deleted.' });
+    // Path traversal protection: ensure filename is safe
+    const filename = path.basename(rawFilename);
+    if (!filename || filename !== rawFilename || filename === 'manifest.json' || filename === '.' || filename === '..') {
+      return res.status(400).json({ error: 'Invalid or prohibited filename.' });
     }
 
-    const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    const resolvedPath = path.resolve(uploadsDir, filename);
+
+    // Verify resolved path remains inside uploads directory
+    if (!resolvedPath.startsWith(uploadsDir)) {
+      return res.status(400).json({ error: 'Path traversal attempt rejected.' });
+    }
+
+    // Verify file ownership via manifest if available
+    const manifestPath = path.join(uploadsDir, 'manifest.json');
+    if (fs.existsSync(manifestPath)) {
+      try {
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        const item = manifest.find(i => i.name === filename || i.url.endsWith('/' + filename));
+        if (item && item.userId && item.userId !== req.user.id && req.user.role !== 'ADMIN') {
+          return res.status(403).json({ error: 'Forbidden. You do not own this media file.' });
+        }
+      } catch (e) {
+        // Continue if manifest parse fails
+      }
+    }
 
     // Try deleting file locally
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (fs.existsSync(resolvedPath)) {
+      fs.unlinkSync(resolvedPath);
     }
 
     // Unlog from manifest

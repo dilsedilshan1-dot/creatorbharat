@@ -123,6 +123,10 @@ router.post('/:id/apply', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Campaign deal not found.' });
     }
 
+    if (campaign.status !== 'ACTIVE') {
+      return res.status(400).json({ error: `Cannot apply to this campaign. Campaign status is ${campaign.status || 'inactive'}.` });
+    }
+
     const exists = await prisma.application.findUnique({
       where: {
         campaignId_creatorId: {

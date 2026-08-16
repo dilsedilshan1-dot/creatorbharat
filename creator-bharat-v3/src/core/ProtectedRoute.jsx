@@ -30,8 +30,9 @@ const ProtectedRoute = ({ children, allowedRole }) => {
   // If their profile is incomplete, redirect them to /creator/onboarding (unless they are already going to onboarding or profile builder pages)
   if (st.user && st.role === 'creator') {
     const creatorProfile = st.user.creatorProfile || st.user.creator || {};
-    const hasIndianPhone = creatorProfile.phone && /^[6-9]\d{9}$/.test(creatorProfile.phone.replace(/\D/g, ''));
-    const hasIndianLocation = creatorProfile.state && creatorProfile.city;
+    const rawPhone = creatorProfile.phone || creatorProfile.contactPhone || st.user.phone || '';
+    const hasIndianPhone = rawPhone && /^[6-9]\d{9}$/.test(String(rawPhone).replace(/\D/g, ''));
+    const hasIndianLocation = Boolean(creatorProfile.state && creatorProfile.city);
     
     const isProfileIncomplete = !hasIndianPhone || !hasIndianLocation;
     

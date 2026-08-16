@@ -13,6 +13,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import prisma from './prisma.js';
 import { getSettings } from './utils/settings.js';
+import { authMiddleware, requireRole, requireTeamRoles } from './middleware/auth.js';
 
 // Route Imports
 import authRouter from './routes/auth.js';
@@ -42,7 +43,11 @@ import savedRouter from './routes/saved.js';
 import teamRouter from './routes/team.js';
 import { runOnboardingDrip } from './drip/onboardingDrip.js';
 
+const originalNodeEnv = process.env.NODE_ENV;
 dotenv.config();
+if (originalNodeEnv) {
+  process.env.NODE_ENV = originalNodeEnv;
+}
 console.log('--- GOOGLE OAUTH STARTUP CHECK ---');
 console.log('GOOGLE_CLIENT_ID exists:', !!process.env.GOOGLE_CLIENT_ID);
 console.log('GOOGLE_CLIENT_SECRET exists:', !!process.env.GOOGLE_CLIENT_SECRET);
@@ -710,11 +715,8 @@ app.get('/api/platform-settings', async (req, res) => {
 });
 
 // Admin GET — full settings fetch (admin auth)
-app.get('/api/admin/platform-settings', async (req, res) => {
+app.get('/api/admin/platform-settings', authMiddleware, requireRole(['ADMIN']), async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-    jwt.verify(token, process.env.JWT_SECRET);
     const record = await prisma.platformSettings.findUnique({ where: { key: 'global' } });
     if (!record) {
       await prisma.platformSettings.create({ data: { key: 'global', value: JSON.stringify(DEFAULT_PLATFORM_SETTINGS) } });
@@ -737,11 +739,8 @@ app.get('/api/admin/platform-settings', async (req, res) => {
 });
 
 // Admin PUT — update settings
-app.put('/api/admin/platform-settings', async (req, res) => {
+app.put('/api/admin/platform-settings', authMiddleware, requireRole(['ADMIN']), requireTeamRoles(['SUPERADMIN', 'MODERATOR', 'MANAGER']), async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-    jwt.verify(token, process.env.JWT_SECRET);
     const newSettings = req.body;
     if (!newSettings || typeof newSettings !== 'object') {
       return res.status(400).json({ error: 'Invalid settings payload.' });
@@ -777,11 +776,8 @@ const DEFAULT_ADMIN_PANEL_SETTINGS = {
 };
 
 // Admin Panel settings — GET
-app.get('/api/admin/panel-settings', async (req, res) => {
+app.get('/api/admin/panel-settings', authMiddleware, requireRole(['ADMIN']), async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-    jwt.verify(token, process.env.JWT_SECRET);
     const record = await prisma.platformSettings.findUnique({ where: { key: 'admin-panel' } });
     if (!record) {
       await prisma.platformSettings.create({ data: { key: 'admin-panel', value: JSON.stringify(DEFAULT_ADMIN_PANEL_SETTINGS) } });
@@ -797,11 +793,8 @@ app.get('/api/admin/panel-settings', async (req, res) => {
 });
 
 // Admin Panel settings — PUT
-app.put('/api/admin/panel-settings', async (req, res) => {
+app.put('/api/admin/panel-settings', authMiddleware, requireRole(['ADMIN']), requireTeamRoles(['SUPERADMIN']), async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-    jwt.verify(token, process.env.JWT_SECRET);
     const newSettings = req.body;
     if (!newSettings || typeof newSettings !== 'object') {
       return res.status(400).json({ error: 'Invalid settings payload.' });
@@ -820,18 +813,15 @@ app.put('/api/admin/panel-settings', async (req, res) => {
 });
 
 // Admin Credentials — PUT
-app.put('/api/admin/update-credentials', async (req, res) => {
+app.put('/api/admin/update-credentials', authMiddleware, requireRole(['ADMIN']), requireTeamRoles(['SUPERADMIN']), async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { email, currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ error: 'Current password and new password are required.' });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
     if (!user) return res.status(404).json({ error: 'Admin user not found.' });
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
@@ -840,7 +830,7 @@ app.put('/api/admin/update-credentials', async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     const updateData = { password: hashedPassword };
     if (email) {
-      updateData.email = email;
+      updateData.email = email.toLowerCase().trim();
     }
 
     const updatedUser = await prisma.user.update({
@@ -855,23 +845,46 @@ app.put('/api/admin/update-credentials', async (req, res) => {
   }
 });
 
-// GET /api/admin/system/backup
-app.get('/api/admin/system/backup', async (req, res) => {
+// GET /api/admin/system/backup — Secure sanitized backup (SUPERADMIN only)
+app.get('/api/admin/system/backup', authMiddleware, requireRole(['ADMIN']), requireTeamRoles(['SUPERADMIN']), async (req, res) => {
   try {
-    const token = req.query.token || req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-    jwt.verify(token, process.env.JWT_SECRET);
+    // Sanitize user data: NEVER export password hashes or 2FA secrets
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        phone: true,
+        role: true,
+        isSuspended: true,
+        createdAt: true,
+        updatedAt: true
+      },
+      take: 5000
+    });
 
-    const users = await prisma.user.findMany({ select: { id: true, email: true, role: true, createdAt: true } });
-    const creators = await prisma.creator.findMany() || [];
-    const brands = await prisma.brand.findMany() || [];
-    const campaigns = await prisma.campaign.findMany() || [];
-    const payments = await prisma.payment.findMany() || [];
-    const teamMembers = await prisma.teamMember.findMany() || [];
+    // Sanitize creator data: exclude sensitive KYC documents (Aadhaar / PAN URLs)
+    const rawCreators = await prisma.creator.findMany({ take: 5000 });
+    const creators = rawCreators.map(({ aadhaarUrl, panUrl, ...rest }) => rest);
+
+    const brands = await prisma.brand.findMany({ take: 5000 });
+    const campaigns = await prisma.campaign.findMany({ take: 5000 });
+    const payments = await prisma.payment.findMany({ take: 5000 });
+    const teamMembers = await prisma.teamMember.findMany({
+      select: {
+        id: true,
+        userId: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true
+      },
+      take: 1000
+    });
 
     const backupData = {
       timestamp: new Date().toISOString(),
-      version: '1.0.0',
+      version: '3.0.0',
+      exportedBy: req.user.email,
       database: {
         usersCount: users.length,
         creatorsCount: creators.length,
@@ -898,12 +911,8 @@ app.get('/api/admin/system/backup', async (req, res) => {
 });
 
 // GET /api/admin/system/diagnostics
-app.get('/api/admin/system/diagnostics', async (req, res) => {
+app.get('/api/admin/system/diagnostics', authMiddleware, requireRole(['ADMIN']), requireTeamRoles(['SUPERADMIN', 'MODERATOR', 'MANAGER', 'FINANCE']), async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-    jwt.verify(token, process.env.JWT_SECRET);
-
     const counts = {
       users: await prisma.user.count(),
       creators: await prisma.creator.count(),
@@ -987,13 +996,21 @@ io.use(async (socket, next) => {
     if (!token) {
       return next(new Error('Authentication failed: Missing token'));
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'cb_super_secret_jwt_key_2026_production');
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      return next(new Error('Authentication failed: Server configuration error'));
+    }
+    const decoded = jwt.verify(token, jwtSecret);
+    const userId = decoded.userId || decoded.id;
+    if (!userId) {
+      return next(new Error('Authentication failed: Invalid token payload'));
+    }
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: userId },
       include: { creator: true, brand: true }
     });
-    if (!user) {
-      return next(new Error('Authentication failed: User not found'));
+    if (!user || user.isSuspended) {
+      return next(new Error('Authentication failed: User not found or suspended'));
     }
     socket.user = user;
     next();
@@ -2013,7 +2030,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-if (process.env.NODE_ENV !== 'test') {
+const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
+if (!isTestEnv) {
   server.listen(PORT, () => {
     logger.info(`CreatorBharat SaaS API Server running on port ${PORT}`, { port: PORT });
   });

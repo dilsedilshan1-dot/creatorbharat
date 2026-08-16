@@ -1,7 +1,7 @@
 // 🇮🇳 CreatorBharat SaaS Admin Router
 import express from 'express';
 import prisma from '../prisma.js';
-import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { authMiddleware, requireRole, requireTeamRoles } from '../middleware/auth.js';
 import { sendEmail } from '../utils/mailer.js';
 import { getSettings, invalidateSettingsCache } from '../utils/settings.js';
 import { createNotification } from './notifications.js';
@@ -69,7 +69,7 @@ router.get('/payments', async (req, res) => {
 });
 
 // POST /api/admin/users/suspend/:userId — toggle account suspension status
-router.post('/users/suspend/:userId', async (req, res) => {
+router.post('/users/suspend/:userId', requireTeamRoles(['SUPERADMIN', 'MODERATOR', 'MANAGER']), async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -92,7 +92,7 @@ router.post('/users/suspend/:userId', async (req, res) => {
 });
 
 // POST /api/admin/payments/override — manually release or refund escrow balances
-router.post('/payments/override', async (req, res) => {
+router.post('/payments/override', requireTeamRoles(['SUPERADMIN']), async (req, res) => {
   try {
     const { paymentId, action } = req.body;
     if (!paymentId || !action) {
@@ -152,7 +152,7 @@ router.post('/payments/override', async (req, res) => {
 });
 
 // DELETE /api/admin/campaigns/:campaignId — delete campaigns that violate T&C
-router.delete('/campaigns/:campaignId', async (req, res) => {
+router.delete('/campaigns/:campaignId', requireTeamRoles(['SUPERADMIN', 'MODERATOR', 'MANAGER']), async (req, res) => {
   try {
     const { campaignId } = req.params;
     await prisma.campaign.delete({ where: { id: campaignId } });
@@ -164,7 +164,7 @@ router.delete('/campaigns/:campaignId', async (req, res) => {
 });
 
 // PUT /api/admin/creators/:id — administrative update creator profile details
-router.put('/creators/:id', async (req, res) => {
+router.put('/creators/:id', requireTeamRoles(['SUPERADMIN', 'MODERATOR', 'MANAGER']), async (req, res) => {
   try {
     const { id } = req.params;
     const {

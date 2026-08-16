@@ -231,9 +231,14 @@ router.post('/register-team', async (req, res) => {
     });
 
     // Generate JWT
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET environment variable is missing.');
+    }
+
     const jwtToken = jwt.sign(
       { userId: result.user.id, role: 'ADMIN' },
-      process.env.JWT_SECRET || 'cb_super_secret_jwt_key_2026_production',
+      jwtSecret,
       { expiresIn: '30d' }
     );
 

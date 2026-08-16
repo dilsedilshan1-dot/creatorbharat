@@ -174,10 +174,14 @@ router.get('/:idOrHandle', async (req, res) => {
         if (req.headers.authorization) {
           const token = req.headers.authorization.split(' ')[1];
           const jwt = await import('jsonwebtoken');
-          const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'your_secret_key');
-          if (decoded.id === creator.userId || decoded.role === 'ADMIN') {
-            const rank = await getCreatorRankDetails(creator);
-            return res.json({ ...creator, rank, isPreview: true });
+          const jwtSecret = process.env.JWT_SECRET;
+          if (jwtSecret) {
+            const decoded = jwt.default.verify(token, jwtSecret);
+            const tokenUserId = decoded.userId || decoded.id;
+            if (tokenUserId === creator.userId || decoded.role === 'ADMIN') {
+              const rank = await getCreatorRankDetails(creator);
+              return res.json({ ...creator, rank, isPreview: true });
+            }
           }
         }
       } catch (jwtErr) {
@@ -203,7 +207,7 @@ router.put('/me', authMiddleware, async (req, res) => {
 
     const {
       name, bio, photo, coverImage, coverPhoto, city, state, niche, platform,
-      followers, engagementRate, rateMin, rateMax, score,
+      followers, engagementRate, rateMin, rateMax,
       aadhaarUrl, panUrl, status,
       fullStory, socialLinks, milestones, services, packages, localHubs,
       regionalDialects, localVoice,
@@ -244,7 +248,6 @@ router.put('/me', authMiddleware, async (req, res) => {
         engagementRate: engagementRate !== undefined ? parseFloat(engagementRate) : undefined,
         rateMin: rateMin !== undefined ? parseInt(rateMin) : undefined,
         rateMax: rateMax !== undefined ? parseInt(rateMax) : undefined,
-        score: score !== undefined ? parseInt(score) : undefined,
         aadhaarUrl,
         panUrl,
         status: finalStatus,

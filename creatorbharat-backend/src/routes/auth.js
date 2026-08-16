@@ -19,17 +19,25 @@ const HANDLE_REGEX = /^[a-zA-Z0-9_.-]{3,30}$/;
 // ─── Token Helpers ──────────────────────────────────────────────────────────
 
 const signAccessToken = (userId) => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is missing.');
+  }
   return jwt.sign(
     { userId, type: 'access' },
-    process.env.JWT_SECRET || 'cb_super_secret_jwt_key_2026_production',
+    secret,
     { expiresIn: '15m' }
   );
 };
 
 const signRefreshToken = (userId) => {
+  const refreshSecret = process.env.JWT_REFRESH_SECRET;
+  if (!refreshSecret) {
+    throw new Error('JWT_REFRESH_SECRET environment variable is missing.');
+  }
   return jwt.sign(
     { userId, type: 'refresh' },
-    process.env.JWT_REFRESH_SECRET || 'cb_refresh_secret_jwt_key_2026_production',
+    refreshSecret,
     { expiresIn: '7d' }
   );
 };
@@ -139,12 +147,15 @@ router.post('/refresh', async (req, res) => {
     }
 
     // Verify JWT signature
+    const refreshSecret = process.env.JWT_REFRESH_SECRET;
+    if (!refreshSecret) {
+      console.error('[POST /api/auth/refresh] Fatal: JWT_REFRESH_SECRET is not configured.');
+      return res.status(500).json({ error: 'Internal server configuration error.' });
+    }
+
     let decoded;
     try {
-      decoded = jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET || 'cb_refresh_secret_jwt_key_2026_production'
-      );
+      decoded = jwt.verify(refreshToken, refreshSecret);
     } catch {
       return res.status(401).json({ error: 'Invalid or expired refresh token.' });
     }

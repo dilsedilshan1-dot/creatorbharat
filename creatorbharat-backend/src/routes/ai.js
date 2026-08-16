@@ -1,15 +1,29 @@
 import { Router } from 'express';
+import { rateLimit } from 'express-rate-limit';
 import { authMiddleware } from '../middleware/auth.js';
 import { getSettings } from '../utils/settings.js';
 
 const router = Router();
 
+// Rate limiter for public AI chatbot (20 requests/min/IP)
+export const aiChatLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20, // Limit each IP to 20 requests per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many AI requests. Please wait a minute before sending more messages.' }
+});
+
 // ─── 0. AI CHATBOT (Public) ────────────────────────────────────────────────────
 // POST /api/ai/chat — CreatorBharat AI Assistant (no auth required for public)
-router.post('/chat', async (req, res) => {
+router.post('/chat', aiChatLimiter, async (req, res) => {
   const { message, history = [] } = req.body;
-  if (!message || !message.trim()) {
+  if (!message || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'Message is required.' });
+  }
+
+  if (message.length > 500) {
+    return res.status(400).json({ error: 'Message exceeds maximum limit of 500 characters.' });
   }
 
   const SYSTEM_CONTEXT = `You are BharatAI, the official AI assistant for CreatorBharat — India's first creator-brand collaboration platform focused on Tier 2 & Tier 3 city creators.
@@ -34,12 +48,11 @@ Keep answers concise (2-4 sentences max) unless explaining a complex topic. Use 
     const geminiKey = process.env.GEMINI_API_KEY || settings.geminiApiKey;
 
     if (geminiKey) {
-      // Build conversation turns for Gemini
+      // Build conversation turns for Gemini (bounded to last 6 messages)
       const contents = [];
-      // Add history (last 6 messages for context)
-      const recentHistory = history.slice(-6);
+      const recentHistory = Array.isArray(history) ? history.slice(-6).filter(h => h && typeof h.content === 'string') : [];
       recentHistory.forEach(msg => {
-        contents.push({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.content }] });
+        contents.push({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.content.slice(0, 500) }] });
       });
       // Add system context + current message
       contents.push({ role: 'user', parts: [{ text: `${SYSTEM_CONTEXT}\n\nUser: ${message}` }] });
@@ -62,7 +75,6 @@ Keep answers concise (2-4 sentences max) unless explaining a complex topic. Use 
         const errText = await response.text();
         console.error(`[AI/chat] Gemini API error ${response.status}:`, errText);
       }
-
     }
 
     // Smart keyword-based fallback responses
@@ -170,7 +182,8 @@ Do NOT include any markdown code blocks, backticks, or text other than the JSON 
 
     return res.json(resultJson);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('[POST /api/ai/brief-assistant] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to generate campaign brief.' });
   }
 });
 
@@ -221,7 +234,8 @@ Format it as a professional pitch message. Keep it to 2-3 short paragraphs. High
 
     return res.json({ pitch: pitchText.trim() });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('[POST /api/ai/pitch-assistant] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to generate pitch proposal.' });
   }
 });
 

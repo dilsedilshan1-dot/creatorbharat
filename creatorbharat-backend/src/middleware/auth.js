@@ -10,17 +10,32 @@ export const authMiddleware = async (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    console.error('[authMiddleware] Fatal: JWT_SECRET environment variable is missing.');
+    return res.status(500).json({ error: 'Internal server configuration error.' });
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'cb_super_secret_jwt_key_2026_production');
+    const decoded = jwt.verify(token, jwtSecret);
+    const userId = decoded.userId || decoded.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Invalid token payload.' });
+    }
     
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: userId },
       include: { creator: true, brand: true }
     });
 
     if (!user) {
       return res.status(401).json({ error: 'Session expired. User not found.' });
+    }
+
+    if (user.isSuspended) {
+      return res.status(403).json({ error: 'Account is suspended. Please contact support.' });
     }
 
     req.user = user;
@@ -44,7 +59,7 @@ export const requireRole = (allowedRoles) => {
 export const requireTeamRoles = (allowedRoles) => {
   return async (req, res, next) => {
     try {
-      if (req.user.role !== 'ADMIN') {
+      if (!req.user || req.user.role !== 'ADMIN') {
         return res.status(403).json({ error: 'Access denied. Admins only.' });
       }
       const member = await prisma.teamMember.findUnique({
@@ -56,7 +71,7 @@ export const requireTeamRoles = (allowedRoles) => {
       req.teamMember = member;
       next();
     } catch (err) {
-      console.error('[requireTeamRoles] Error:', err);
+      console.error('[requireTeamRoles] Error:', err.message);
       res.status(500).json({ error: 'RBAC verification failed.' });
     }
   };
