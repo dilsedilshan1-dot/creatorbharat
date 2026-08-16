@@ -2,6 +2,7 @@
 import prisma from '../prisma.js';
 import { sendEmail } from '../utils/mailer.js';
 import { createNotification } from './notificationService.js';
+import { OutboxService } from './outboxService.js';
 
 export class ApplicationService {
   /**
@@ -31,7 +32,14 @@ export class ApplicationService {
     }
 
     const campaign = await prisma.campaign.findUnique({
-      where: { id: campaignId }
+      where: { id: campaignId },
+      include: {
+        brand: {
+          include: {
+            user: true
+          }
+        }
+      }
     });
 
     if (!campaign) {
@@ -61,13 +69,34 @@ export class ApplicationService {
       throw error;
     }
 
-    const application = await prisma.application.create({
-      data: {
-        campaignId,
-        creatorId: creator.id,
-        pitch: message,
-        status: 'PENDING'
-      }
+    // Atomic transaction for domain mutation and transactional outbox event
+    const application = await prisma.$transaction(async (tx) => {
+      const app = await tx.application.create({
+        data: {
+          campaignId,
+          creatorId: creator.id,
+          pitch: message,
+          status: 'PENDING'
+        }
+      });
+
+      await OutboxService.publish(tx, {
+        eventType: 'APPLICATION_SUBMITTED',
+        aggregateType: 'Application',
+        aggregateId: app.id,
+        payload: {
+          applicationId: app.id,
+          campaignId,
+          creatorId: creator.id,
+          creatorName: creator.name,
+          message,
+          brandUserId: campaign?.brand?.user?.id || null,
+          brandEmail: campaign?.brand?.user?.email || null,
+          campaignTitle: campaign.title
+        }
+      });
+
+      return app;
     });
 
     // Background notifications to brand (non-blocking)
@@ -208,14 +237,15 @@ export class ApplicationService {
       throw error;
     }
 
-    const updated = await prisma.application.update({
-      where: { id: applicationId },
-      data: { status }
-    });
+    // Atomic transaction for application update, gig creation, and transactional outbox event
+    const updated = await prisma.$transaction(async (tx) => {
+      const appUpdate = await tx.application.update({
+        where: { id: applicationId },
+        data: { status }
+      });
 
-    if (status === 'ACCEPTED') {
-      try {
-        const existingGig = await prisma.campaignGig.findFirst({
+      if (status === 'ACCEPTED') {
+        const existingGig = await tx.campaignGig.findFirst({
           where: {
             campaignId: application.campaignId,
             creatorId: application.creatorId
@@ -227,7 +257,7 @@ export class ApplicationService {
           const milestone1Amount = Math.round(totalBudget * 0.4);
           const milestone2Amount = totalBudget - milestone1Amount;
 
-          await prisma.campaignGig.create({
+          await tx.campaignGig.create({
             data: {
               campaignId: application.campaignId,
               creatorId: application.creatorId,
@@ -251,10 +281,33 @@ export class ApplicationService {
             }
           });
         }
-      } catch (err) {
-        console.error('[applicationService.js] Failed to create CampaignGig:', err.message);
       }
-    }
+
+      // Fetch creator details for outbox event payload
+      const creator = await tx.creator.findUnique({
+        where: { id: application.creatorId },
+        include: { user: true }
+      });
+
+      await OutboxService.publish(tx, {
+        eventType: 'APPLICATION_STATUS_UPDATED',
+        aggregateType: 'Application',
+        aggregateId: applicationId,
+        payload: {
+          applicationId,
+          campaignId: application.campaignId,
+          creatorId: application.creatorId,
+          creatorUserId: creator?.user?.id || null,
+          creatorEmail: creator?.user?.email || null,
+          creatorName: creator?.name || 'Creator',
+          brandCompanyName: brand.companyName || 'Brand Partner',
+          campaignTitle: application.campaign.title,
+          status
+        }
+      });
+
+      return appUpdate;
+    });
 
     // Notify creator of status update (non-blocking)
     (async () => {

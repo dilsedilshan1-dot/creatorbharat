@@ -1,5 +1,6 @@
 // 🇮🇳 CreatorBharat SaaS Gig Service
 import prisma from '../prisma.js';
+import { OutboxService } from './outboxService.js';
 
 export class GigService {
   /**
@@ -83,7 +84,12 @@ export class GigService {
 
     const gig = await prisma.campaignGig.findUnique({
       where: { id: gigId },
-      include: { milestones: true }
+      include: {
+        milestones: true,
+        campaign: {
+          include: { brand: { include: { user: true } } }
+        }
+      }
     });
 
     if (!gig) {
@@ -111,17 +117,32 @@ export class GigService {
       throw error;
     }
 
-    const updatedMilestone = await prisma.gigMilestone.update({
-      where: { id: milestoneId },
-      data: {
-        status: 'SUBMITTED',
-        proofText: proofText || null,
-        proofUrl: proofUrl || null,
-        updatedAt: new Date()
-      }
-    });
+    return prisma.$transaction(async (tx) => {
+      const updatedMilestone = await tx.gigMilestone.update({
+        where: { id: milestoneId },
+        data: {
+          status: 'SUBMITTED',
+          proofText: proofText || null,
+          proofUrl: proofUrl || null,
+          updatedAt: new Date()
+        }
+      });
 
-    return { success: true, milestone: updatedMilestone };
+      await OutboxService.publish(tx, {
+        eventType: 'MILESTONE_PROOF_SUBMITTED',
+        aggregateType: 'GigMilestone',
+        aggregateId: milestoneId,
+        payload: {
+          gigId,
+          milestoneId,
+          creatorName: creator.name,
+          brandUserId: gig.campaign?.brand?.user?.id || null,
+          milestoneTitle: milestone.title
+        }
+      });
+
+      return { success: true, milestone: updatedMilestone };
+    });
   }
 
   /**
@@ -147,7 +168,8 @@ export class GigService {
       where: { id: gigId },
       include: {
         campaign: true,
-        milestones: true
+        milestones: true,
+        creator: { include: { user: true } }
       }
     });
 
@@ -176,7 +198,7 @@ export class GigService {
       throw error;
     }
 
-    // Atomic transaction for milestone approval, wallet transaction, and gig completion
+    // Atomic transaction for milestone approval, wallet transaction, gig completion, and outbox event
     return prisma.$transaction(async (tx) => {
       const updatedMilestone = await tx.gigMilestone.update({
         where: { id: milestoneId },
@@ -212,6 +234,19 @@ export class GigService {
         });
       }
 
+      await OutboxService.publish(tx, {
+        eventType: 'MILESTONE_APPROVED',
+        aggregateType: 'GigMilestone',
+        aggregateId: milestoneId,
+        payload: {
+          gigId,
+          milestoneId,
+          creatorUserId: gig.creator?.user?.id || null,
+          milestoneTitle: milestone.title,
+          amountPaise: (BigInt(amountInInr) * BigInt(100)).toString()
+        }
+      });
+
       return {
         success: true,
         milestone: updatedMilestone,
@@ -220,3 +255,4 @@ export class GigService {
     });
   }
 }
+

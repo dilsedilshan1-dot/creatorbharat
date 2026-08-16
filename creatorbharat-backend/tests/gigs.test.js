@@ -32,7 +32,16 @@ vi.mock('../src/prisma.js', () => {
     },
     walletTransaction: {
       create: vi.fn().mockResolvedValue({})
-    }
+    },
+    outboxEvent: {
+      create: vi.fn().mockResolvedValue({ id: 'evt-1' })
+    },
+    $transaction: vi.fn().mockImplementation(async (callback) => {
+      if (typeof callback === 'function') {
+        return callback(mockPrisma);
+      }
+      return Promise.all(callback);
+    })
   };
   return {
     default: mockPrisma
