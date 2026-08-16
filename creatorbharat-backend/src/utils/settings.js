@@ -3,6 +3,7 @@
 // Admin panel changes → DB updated → next request gets fresh settings.
 
 import prisma from '../prisma.js';
+import config from '../config/index.js';
 
 let cachedSettings = null;
 let cacheExpiry = 0;
@@ -12,7 +13,7 @@ const DEFAULTS = {
   id: 'singleton',
   siteName: 'CreatorBharat',
   supportEmail: 'support@creatorbharat.com',
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+  frontendUrl: config.app.frontendUrl,
   logoUrl: '',
   footerEmail: 'hello@creatorbharat.com',
   proMembershipPrice: 49,
@@ -24,16 +25,16 @@ const DEFAULTS = {
   maintenanceMode: false,
   enableEmail: true,
   enableSMS: true,
-  razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
-  razorpaySecret: process.env.RAZORPAY_SECRET || '',
+  razorpayKeyId: config.payment.razorpay.keyId,
+  razorpaySecret: config.payment.razorpay.keySecret,
   razorpayMode: 'test',
-  resendApiKey: process.env.RESEND_API_KEY || '',
-  emailFrom: process.env.EMAIL_FROM || 'CreatorBharat <onboarding@creatorbharat.com>',
+  resendApiKey: config.mail.resendApiKey,
+  emailFrom: config.mail.emailFrom,
   smsProvider: 'fast2sms',
-  fast2smsKey: process.env.FAST2SMS_API_KEY || '',
-  twilioSid: process.env.TWILIO_ACCOUNT_SID || '',
-  twilioToken: process.env.TWILIO_AUTH_TOKEN || '',
-  twilioPhone: process.env.TWILIO_PHONE_NUMBER || '',
+  fast2smsKey: config.mail.sms.fast2smsKey,
+  twilioSid: config.mail.sms.twilioSid,
+  twilioToken: config.mail.sms.twilioToken,
+  twilioPhone: config.mail.sms.twilioPhone,
 };
 
 /**

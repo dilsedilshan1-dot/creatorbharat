@@ -1,6 +1,7 @@
 // 🇮🇳 CreatorBharat SaaS Auth Middleware
 import jwt from 'jsonwebtoken';
 import prisma from '../prisma.js';
+import config from '../config/index.js';
 
 export const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -10,7 +11,7 @@ export const authMiddleware = async (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
-  const jwtSecret = process.env.JWT_SECRET;
+  const jwtSecret = config.auth.jwtSecret || process.env.JWT_SECRET;
 
   if (!jwtSecret) {
     console.error('[authMiddleware] Fatal: JWT_SECRET environment variable is missing.');
@@ -82,7 +83,7 @@ export const extractAuthUser = (req) => {
   const authHeader = req.headers?.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
   const token = authHeader.split(' ')[1];
-  const jwtSecret = process.env.JWT_SECRET;
+  const jwtSecret = config.auth.jwtSecret || process.env.JWT_SECRET;
   if (!jwtSecret) return null;
   try {
     const decoded = jwt.verify(token, jwtSecret);

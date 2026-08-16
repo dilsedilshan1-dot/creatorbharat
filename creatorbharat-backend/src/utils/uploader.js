@@ -4,12 +4,13 @@ import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import config from '../config/index.js';
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  cloud_name: config.storage.cloudinary.cloudName,
+  api_key: config.storage.cloudinary.apiKey,
+  api_secret: config.storage.cloudinary.apiSecret
 });
 
 // Configure Multer memory storage (holds file buffers in RAM)
@@ -61,9 +62,9 @@ export const uploadVideo = multer({
  */
 export async function uploadFileToCloud(fileBuffer, originalName, folder = 'creatorbharat') {
   const hasCloudinaryCredentials = 
-    process.env.CLOUDINARY_CLOUD_NAME && 
-    process.env.CLOUDINARY_API_KEY && 
-    process.env.CLOUDINARY_API_SECRET;
+    config.storage.cloudinary.cloudName && 
+    config.storage.cloudinary.apiKey && 
+    config.storage.cloudinary.apiSecret;
 
   if (!hasCloudinaryCredentials) {
     console.warn('[Uploader] Cloudinary credentials missing. Falling back to local storage.');

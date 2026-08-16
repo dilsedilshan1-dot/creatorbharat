@@ -1,4 +1,6 @@
-const isProduction = process.env.NODE_ENV === 'production';
+import config from '../config/index.js';
+
+const isProduction = config.app.isProduction;
 
 export const logger = {
   info(message, meta = {}) {
