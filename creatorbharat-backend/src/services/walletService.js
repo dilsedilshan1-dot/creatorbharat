@@ -277,13 +277,30 @@ export class WalletService {
   /**
    * Locks funds from available balance into locked escrow / pending payout status.
    */
-  static async lock(walletId, amountPaise, options, externalTx = null) {
+  static async lock(walletId, amountPaise, options = {}, externalTx = null) {
     const paise = typeof amountPaise === 'bigint' ? amountPaise : BigInt(amountPaise);
     if (paise <= BigInt(0)) {
       throw new FinancialError('INVALID_AMOUNT', 'Lock amount must be greater than zero.');
     }
 
     const execute = async (tx) => {
+      // 1. Idempotency Check
+      if (options.idempotencyKey || options.referenceId) {
+        const existingTx = await tx.walletTransaction.findFirst({
+          where: {
+            OR: [
+              ...(options.idempotencyKey ? [{ idempotencyKey: options.idempotencyKey }] : []),
+              ...(options.referenceId ? [{ referenceId: options.referenceId }] : [])
+            ]
+          }
+        });
+
+        if (existingTx) {
+          const currentWallet = await tx.wallet.findUnique({ where: { id: walletId } });
+          return { wallet: currentWallet, transaction: existingTx, isDuplicate: true };
+        }
+      }
+
       const wallet = await tx.wallet.findUnique({ where: { id: walletId } });
       if (!wallet) throw new FinancialError('WALLET_NOT_FOUND', `Wallet ${walletId} does not exist.`);
 
@@ -311,8 +328,27 @@ export class WalletService {
         throw new FinancialError('CONCURRENCY_CONFLICT', 'Failed to lock funds due to concurrent update.');
       }
 
+      // Create ledger entry for the lock operation
+      const legacyAmountINR = -Math.round(Number(paise) / 100);
+      const ledgerEntry = await tx.walletTransaction.create({
+        data: {
+          walletId: wallet.id,
+          creatorId: wallet.creatorId || wallet.userId,
+          amount: legacyAmountINR,
+          amountPaise: -paise,
+          balanceAfterPaise: newBalancePaise,
+          type: options.type || 'BANK_WITHDRAWAL',
+          status: 'PENDING',
+          description: options.description || 'Funds locked for pending payout',
+          referenceType: options.referenceType || 'LOCK_WITHDRAWAL',
+          referenceId: options.referenceId || null,
+          idempotencyKey: options.idempotencyKey || null,
+          metadata: options.metadata || null
+        }
+      });
+
       const updatedWallet = await tx.wallet.findUnique({ where: { id: wallet.id } });
-      return { wallet: updatedWallet };
+      return { wallet: updatedWallet, transaction: ledgerEntry, isDuplicate: false };
     };
 
     return externalTx ? execute(externalTx) : prisma.$transaction(execute);
@@ -321,13 +357,30 @@ export class WalletService {
   /**
    * Unlocks locked funds back into available balance (e.g. cancelled withdrawal).
    */
-  static async unlock(walletId, amountPaise, options, externalTx = null) {
+  static async unlock(walletId, amountPaise, options = {}, externalTx = null) {
     const paise = typeof amountPaise === 'bigint' ? amountPaise : BigInt(amountPaise);
     if (paise <= BigInt(0)) {
       throw new FinancialError('INVALID_AMOUNT', 'Unlock amount must be greater than zero.');
     }
 
     const execute = async (tx) => {
+      // 1. Idempotency Check
+      if (options.idempotencyKey || options.referenceId) {
+        const existingTx = await tx.walletTransaction.findFirst({
+          where: {
+            OR: [
+              ...(options.idempotencyKey ? [{ idempotencyKey: options.idempotencyKey }] : []),
+              ...(options.referenceId ? [{ referenceId: options.referenceId }] : [])
+            ]
+          }
+        });
+
+        if (existingTx) {
+          const currentWallet = await tx.wallet.findUnique({ where: { id: walletId } });
+          return { wallet: currentWallet, transaction: existingTx, isDuplicate: true };
+        }
+      }
+
       const wallet = await tx.wallet.findUnique({ where: { id: walletId } });
       if (!wallet) throw new FinancialError('WALLET_NOT_FOUND', `Wallet ${walletId} does not exist.`);
 
@@ -355,8 +408,27 @@ export class WalletService {
         throw new FinancialError('CONCURRENCY_CONFLICT', 'Failed to unlock funds due to concurrent update.');
       }
 
+      // Create ledger entry for the unlock operation
+      const legacyAmountINR = Math.round(Number(paise) / 100);
+      const ledgerEntry = await tx.walletTransaction.create({
+        data: {
+          walletId: wallet.id,
+          creatorId: wallet.creatorId || wallet.userId,
+          amount: legacyAmountINR,
+          amountPaise: paise,
+          balanceAfterPaise: newBalancePaise,
+          type: options.type || 'REFUND',
+          status: 'SUCCESS',
+          description: options.description || 'Funds unlocked back to available balance',
+          referenceType: options.referenceType || 'UNLOCK_WITHDRAWAL',
+          referenceId: options.referenceId || null,
+          idempotencyKey: options.idempotencyKey || null,
+          metadata: options.metadata || null
+        }
+      });
+
       const updatedWallet = await tx.wallet.findUnique({ where: { id: wallet.id } });
-      return { wallet: updatedWallet };
+      return { wallet: updatedWallet, transaction: ledgerEntry, isDuplicate: false };
     };
 
     return externalTx ? execute(externalTx) : prisma.$transaction(execute);
@@ -365,13 +437,30 @@ export class WalletService {
   /**
    * Permanently disburses locked funds (e.g. payout sent to bank via gateway).
    */
-  static async release(walletId, amountPaise, options, externalTx = null) {
+  static async release(walletId, amountPaise, options = {}, externalTx = null) {
     const paise = typeof amountPaise === 'bigint' ? amountPaise : BigInt(amountPaise);
     if (paise <= BigInt(0)) {
       throw new FinancialError('INVALID_AMOUNT', 'Release amount must be greater than zero.');
     }
 
     const execute = async (tx) => {
+      // 1. Idempotency Check
+      if (options.idempotencyKey || options.referenceId) {
+        const existingTx = await tx.walletTransaction.findFirst({
+          where: {
+            OR: [
+              ...(options.idempotencyKey ? [{ idempotencyKey: options.idempotencyKey }] : []),
+              ...(options.referenceId ? [{ referenceId: options.referenceId }] : [])
+            ]
+          }
+        });
+
+        if (existingTx) {
+          const currentWallet = await tx.wallet.findUnique({ where: { id: walletId } });
+          return { wallet: currentWallet, transaction: existingTx, isDuplicate: true };
+        }
+      }
+
       const wallet = await tx.wallet.findUnique({ where: { id: walletId } });
       if (!wallet) throw new FinancialError('WALLET_NOT_FOUND', `Wallet ${walletId} does not exist.`);
 
@@ -397,11 +486,85 @@ export class WalletService {
         throw new FinancialError('CONCURRENCY_CONFLICT', 'Failed to release locked funds due to concurrent update.');
       }
 
+      // Create ledger entry for the disbursement completion
+      const legacyAmountINR = -Math.round(Number(paise) / 100);
+      const ledgerEntry = await tx.walletTransaction.create({
+        data: {
+          walletId: wallet.id,
+          creatorId: wallet.creatorId || wallet.userId,
+          amount: legacyAmountINR,
+          amountPaise: -paise,
+          balanceAfterPaise: wallet.balancePaise, // Available balance remains unchanged
+          type: options.type || 'BANK_WITHDRAWAL',
+          status: 'SUCCESS',
+          description: options.description || 'Locked funds disbursed to bank',
+          referenceType: options.referenceType || 'RELEASE_LOCKED',
+          referenceId: options.referenceId || null,
+          idempotencyKey: options.idempotencyKey || null,
+          metadata: options.metadata || null
+        }
+      });
+
       const updatedWallet = await tx.wallet.findUnique({ where: { id: wallet.id } });
-      return { wallet: updatedWallet };
+      return { wallet: updatedWallet, transaction: ledgerEntry, isDuplicate: false };
     };
 
     return externalTx ? execute(externalTx) : prisma.$transaction(execute);
+  }
+
+  /**
+   * Issues a compensatory refund credit to a wallet.
+   */
+  static async refund(walletId, amountPaise, options = {}, externalTx = null) {
+    return this.credit(
+      walletId,
+      amountPaise,
+      {
+        ...options,
+        type: 'REFUND',
+        referenceType: options.referenceType || 'REFUND',
+        description: options.description || 'Refund credited to wallet'
+      },
+      externalTx
+    );
+  }
+
+  /**
+   * Executes an administrative balance adjustment with required audit rationale.
+   */
+  static async adjust(walletId, amountPaise, options = {}, externalTx = null) {
+    const paise = typeof amountPaise === 'bigint' ? amountPaise : BigInt(amountPaise);
+    if (!options.reason && !options.description) {
+      throw new FinancialError('INVALID_ADJUSTMENT', 'Adjustment requires a specific reason or description.');
+    }
+
+    if (paise > BigInt(0)) {
+      return this.credit(
+        walletId,
+        paise,
+        {
+          ...options,
+          type: 'REFUND',
+          referenceType: 'ADMIN_ADJUSTMENT',
+          description: options.description || `Administrative Credit: ${options.reason || 'Ledger adjustment'}`
+        },
+        externalTx
+      );
+    } else if (paise < BigInt(0)) {
+      return this.debit(
+        walletId,
+        -paise,
+        {
+          ...options,
+          type: 'BANK_WITHDRAWAL',
+          referenceType: 'ADMIN_ADJUSTMENT',
+          description: options.description || `Administrative Debit: ${options.reason || 'Ledger adjustment'}`
+        },
+        externalTx
+      );
+    } else {
+      throw new FinancialError('INVALID_AMOUNT', 'Adjustment amount cannot be zero.');
+    }
   }
 }
 

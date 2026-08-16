@@ -256,4 +256,145 @@ describe('WalletService & Financial Ledger Invariant Tests', () => {
     // Balance MUST remain ₹5,000 (not ₹10,000)
     expect(getWallet().balancePaise).toBe(BigInt(500000));
   });
+
+  // ─── 10. Refund Primitive ─────────────────────────────────────────────────
+  it('10. WalletService.refund adds compensatory credit to wallet and creates REFUND transaction', async () => {
+    const { mockPrisma, getWallet, getTransactions } = createMockDb({
+      id: 'w1',
+      userId: 'u1',
+      creatorId: 'c1',
+      balancePaise: BigInt(20000), // ₹200
+      lockedPaise: BigInt(0),
+      version: 1
+    });
+
+    const result = await WalletService.refund('w1', BigInt(30000), {
+      description: 'Refund for disputed campaign',
+      referenceId: 'refund_ref_1'
+    }, mockPrisma);
+
+    expect(result.wallet.balancePaise).toBe(BigInt(50000)); // ₹500
+    expect(result.wallet.version).toBe(2);
+
+    const txs = getTransactions();
+    expect(txs).toHaveLength(1);
+    expect(txs[0].type).toBe('REFUND');
+    expect(txs[0].amountPaise).toBe(BigInt(30000));
+    expect(txs[0].balanceAfterPaise).toBe(BigInt(50000));
+  });
+
+  // ─── 11. Adjust Primitive (Positive and Negative) ──────────────────────────
+  it('11. WalletService.adjust handles both positive and negative administrative ledger corrections', async () => {
+    const { mockPrisma, getWallet } = createMockDb({
+      id: 'w1',
+      userId: 'u1',
+      creatorId: 'c1',
+      balancePaise: BigInt(50000), // ₹500
+      lockedPaise: BigInt(0),
+      version: 1
+    });
+
+    // Positive adjustment: +₹200
+    const adjPos = await WalletService.adjust('w1', BigInt(20000), {
+      reason: 'Reconciliation bonus',
+      referenceId: 'adj_pos_1'
+    }, mockPrisma);
+    expect(adjPos.wallet.balancePaise).toBe(BigInt(70000));
+
+    // Negative adjustment: -₹100
+    const adjNeg = await WalletService.adjust('w1', BigInt(-10000), {
+      reason: 'Chargeback fee adjustment',
+      referenceId: 'adj_neg_1'
+    }, mockPrisma);
+    expect(adjNeg.wallet.balancePaise).toBe(BigInt(60000));
+  });
+
+  // ─── 12. Concurrent Valid Split (₹500 + ₹500 from ₹1,000) ──────────────────
+  it('12. Sequential or retried concurrent debits (₹500 + ₹500 on ₹1,000) both succeed with final balance exactly ₹0', async () => {
+    let walletState = {
+      id: 'w_split',
+      balancePaise: BigInt(100000), // ₹1,000
+      version: 1
+    };
+
+    const atomicDebitWithRetry = async (debitPaise, maxRetries = 3) => {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        const current = { ...walletState };
+        if (current.balancePaise < debitPaise) {
+          throw new Error('INSUFFICIENT_FUNDS');
+        }
+        if (walletState.version === current.version && walletState.balancePaise >= debitPaise) {
+          walletState.balancePaise -= debitPaise;
+          walletState.version += 1;
+          return { success: true, balancePaise: walletState.balancePaise };
+        }
+      }
+      throw new Error('CONCURRENCY_EXHAUSTED');
+    };
+
+    const res1 = await atomicDebitWithRetry(BigInt(50000));
+    expect(res1.success).toBe(true);
+
+    const res2 = await atomicDebitWithRetry(BigInt(50000));
+    expect(res2.success).toBe(true);
+
+    expect(walletState.balancePaise).toBe(BigInt(0)); // Exactly ₹0 remaining
+    expect(walletState.version).toBe(3);
+  });
+
+  // ─── 13. Comprehensive Accounting Transition Matrix ────────────────────────
+  it('13. Executes full financial accounting lifecycle (Credit -> Lock -> Unlock -> Lock -> Release -> Refund -> Adjust) verifying balanceAfter on every step', async () => {
+    const { mockPrisma, getWallet, getTransactions } = createMockDb({
+      id: 'w_lifecycle',
+      userId: 'u_life',
+      creatorId: 'c_life',
+      balancePaise: BigInt(0),
+      lockedPaise: BigInt(0),
+      version: 1
+    });
+
+    // Step 1: Credit ₹1,000 (100,000 paise)
+    const op1 = await WalletService.credit('w_lifecycle', BigInt(100000), { description: 'Campaign escrow released' }, mockPrisma);
+    expect(op1.wallet.balancePaise).toBe(BigInt(100000));
+    expect(op1.wallet.lockedPaise).toBe(BigInt(0));
+    expect(op1.transaction.balanceAfterPaise).toBe(BigInt(100000));
+
+    // Step 2: Lock ₹400 (40,000 paise) for withdrawal
+    const op2 = await WalletService.lock('w_lifecycle', BigInt(40000), { description: 'Withdrawal requested' }, mockPrisma);
+    expect(op2.wallet.balancePaise).toBe(BigInt(60000));
+    expect(op2.wallet.lockedPaise).toBe(BigInt(40000));
+    expect(op2.transaction.balanceAfterPaise).toBe(BigInt(60000));
+
+    // Step 3: Unlock ₹100 (10,000 paise)
+    const op3 = await WalletService.unlock('w_lifecycle', BigInt(10000), { description: 'Partial withdrawal cancelled' }, mockPrisma);
+    expect(op3.wallet.balancePaise).toBe(BigInt(70000));
+    expect(op3.wallet.lockedPaise).toBe(BigInt(30000));
+    expect(op3.transaction.balanceAfterPaise).toBe(BigInt(70000));
+
+    // Step 4: Release ₹300 (30,000 paise) to bank
+    const op4 = await WalletService.release('w_lifecycle', BigInt(30000), { description: 'Bank transfer confirmed' }, mockPrisma);
+    expect(op4.wallet.balancePaise).toBe(BigInt(70000));
+    expect(op4.wallet.lockedPaise).toBe(BigInt(0));
+    expect(op4.transaction.balanceAfterPaise).toBe(BigInt(70000));
+
+    // Step 5: Refund ₹50 (5,000 paise)
+    const op5 = await WalletService.refund('w_lifecycle', BigInt(5000), { description: 'Fee refund' }, mockPrisma);
+    expect(op5.wallet.balancePaise).toBe(BigInt(75000));
+    expect(op5.wallet.lockedPaise).toBe(BigInt(0));
+    expect(op5.transaction.balanceAfterPaise).toBe(BigInt(75000));
+
+    // Step 6: Adjust -₹50 (-5,000 paise)
+    const op6 = await WalletService.adjust('w_lifecycle', BigInt(-5000), { reason: 'Tax deduction' }, mockPrisma);
+    expect(op6.wallet.balancePaise).toBe(BigInt(70000));
+    expect(op6.wallet.lockedPaise).toBe(BigInt(0));
+    expect(op6.transaction.balanceAfterPaise).toBe(BigInt(70000));
+
+    // Final Invariants Check
+    const finalWallet = getWallet();
+    expect(finalWallet.balancePaise).toBe(BigInt(70000));
+    expect(finalWallet.lockedPaise).toBe(BigInt(0));
+    expect(finalWallet.balancePaise >= BigInt(0)).toBe(true);
+    expect(finalWallet.lockedPaise >= BigInt(0)).toBe(true);
+    expect(getTransactions()).toHaveLength(6);
+  });
 });

@@ -32,13 +32,12 @@ export async function verifyLedgerParity(options = { verbose: false }) {
     console.log(`[Ledger Parity]: Auditing ${wallets.length} active wallets.\n`);
 
     for (const wallet of wallets) {
-      let computedPaise = BigInt(0);
+      let computedAvailablePaise = BigInt(0);
+      let computedLockedPaise = BigInt(0);
       let legacySumINR = 0;
       const seenIdempotencyKeys = new Set();
       let hasDuplicates = false;
       let hasSequenceError = false;
-
-      let lastBalanceAfter = BigInt(0);
 
       for (const tx of wallet.transactions) {
         // Idempotency uniqueness
@@ -49,29 +48,46 @@ export async function verifyLedgerParity(options = { verbose: false }) {
           seenIdempotencyKeys.add(tx.idempotencyKey);
         }
 
-        // Amount sum
+        // Amount calculation
         const txPaise = tx.amountPaise !== null && tx.amountPaise !== undefined
           ? tx.amountPaise
           : BigInt(Math.round(tx.amount * 100));
 
-        computedPaise += txPaise;
         legacySumINR += tx.amount;
+
+        // Accounting breakdown by referenceType / operation
+        if (tx.referenceType === 'LOCK_WITHDRAWAL') {
+          const lockedAmount = txPaise < BigInt(0) ? -txPaise : txPaise;
+          computedAvailablePaise -= lockedAmount;
+          computedLockedPaise += lockedAmount;
+        } else if (tx.referenceType === 'UNLOCK_WITHDRAWAL') {
+          const unlockedAmount = txPaise < BigInt(0) ? -txPaise : txPaise;
+          computedAvailablePaise += unlockedAmount;
+          computedLockedPaise -= unlockedAmount;
+        } else if (tx.referenceType === 'RELEASE_LOCKED') {
+          const releasedAmount = txPaise < BigInt(0) ? -txPaise : txPaise;
+          computedLockedPaise -= releasedAmount;
+        } else {
+          // Standard credit/debit
+          computedAvailablePaise += txPaise;
+        }
 
         // Sequence verification if balanceAfterPaise is populated
         if (tx.balanceAfterPaise !== null && tx.balanceAfterPaise !== undefined) {
-          if (tx.balanceAfterPaise !== computedPaise) {
+          if (tx.balanceAfterPaise !== computedAvailablePaise) {
             hasSequenceError = true;
           }
         }
       }
 
       // Parity check
-      const balanceMatch = wallet.balancePaise === computedPaise;
+      const availableMatch = wallet.balancePaise === computedAvailablePaise;
+      const lockedMatch = wallet.lockedPaise === computedLockedPaise;
       const nonNegative = wallet.balancePaise >= BigInt(0) && wallet.lockedPaise >= BigInt(0);
       const totalEconomicPaise = wallet.balancePaise + wallet.lockedPaise;
 
       let status = 'PASS';
-      if (!balanceMatch || hasDuplicates || hasSequenceError) {
+      if (!availableMatch || !lockedMatch || hasDuplicates || hasSequenceError) {
         status = 'FAIL';
         report.failed++;
       } else if (!nonNegative) {
