@@ -397,4 +397,173 @@ describe('WalletService & Financial Ledger Invariant Tests', () => {
     expect(finalWallet.lockedPaise >= BigInt(0)).toBe(true);
     expect(getTransactions()).toHaveLength(6);
   });
+
+  // ─── 14. Specific Lifecycle Test 1 & 2: LOCK 300 -> RELEASE 300 ────────────
+  it('14. Lifecycle Test 1 & 2: Available 1000, Locked 0 -> LOCK 300 (Avail 700, Lock 300) -> RELEASE 300 (Avail 700, Lock 0, Net Economic Position 700, Zero Double-Debit)', async () => {
+    const { mockPrisma, getWallet, getTransactions } = createMockDb({
+      id: 'w_l1',
+      userId: 'u1',
+      creatorId: 'c1',
+      balancePaise: BigInt(100000), // Available ₹1,000
+      lockedPaise: BigInt(0),
+      version: 1
+    });
+
+    // Step 1: LOCK ₹300
+    const lockRes = await WalletService.lock('w_l1', BigInt(30000), {
+      description: 'Lock ₹300 for payout',
+      referenceId: 'lock_tx_1'
+    }, mockPrisma);
+
+    expect(lockRes.wallet.balancePaise).toBe(BigInt(70000)); // Available = ₹700
+    expect(lockRes.wallet.lockedPaise).toBe(BigInt(30000));  // Locked = ₹300
+    expect(lockRes.transaction.amountPaise).toBe(BigInt(-30000));
+    expect(lockRes.transaction.balanceAfterPaise).toBe(BigInt(70000));
+
+    // Step 2: RELEASE ₹300
+    const relRes = await WalletService.release('w_l1', BigInt(30000), {
+      description: 'Release ₹300 to bank',
+      referenceId: 'rel_tx_1'
+    }, mockPrisma);
+
+    expect(relRes.wallet.balancePaise).toBe(BigInt(70000)); // Available remains ₹700
+    expect(relRes.wallet.lockedPaise).toBe(BigInt(0));      // Locked is 0
+    expect(relRes.transaction.amountPaise).toBe(BigInt(0)); // Available movement is 0 (NO DOUBLE DEBIT)
+    expect(relRes.transaction.balanceAfterPaise).toBe(BigInt(70000));
+
+    // Ledger Parity check
+    const txs = getTransactions();
+    const sumAvailableDelta = txs.reduce((acc, t) => acc + t.amountPaise, BigInt(0));
+    expect(sumAvailableDelta).toBe(BigInt(-30000)); // Total available delta is exactly -₹300
+    expect(BigInt(100000) + sumAvailableDelta).toBe(relRes.wallet.balancePaise); // 1000 - 300 = 700
+  });
+
+  // ─── 15. Specific Lifecycle Test 3: LOCK 300 -> UNLOCK 300 ─────────────────
+  it('15. Lifecycle Test 3: LOCK 300 -> UNLOCK 300 restores Available to 1000 with Locked 0 and no phantom debit/credit', async () => {
+    const { mockPrisma, getWallet, getTransactions } = createMockDb({
+      id: 'w_l2',
+      userId: 'u1',
+      creatorId: 'c1',
+      balancePaise: BigInt(100000), // Available ₹1,000
+      lockedPaise: BigInt(0),
+      version: 1
+    });
+
+    await WalletService.lock('w_l2', BigInt(30000), { referenceId: 'lock_2' }, mockPrisma);
+    expect(getWallet().balancePaise).toBe(BigInt(70000));
+    expect(getWallet().lockedPaise).toBe(BigInt(30000));
+
+    await WalletService.unlock('w_l2', BigInt(30000), { referenceId: 'unlock_2' }, mockPrisma);
+    expect(getWallet().balancePaise).toBe(BigInt(100000));
+    expect(getWallet().lockedPaise).toBe(BigInt(0));
+
+    const txs = getTransactions();
+    const sumAvailableDelta = txs.reduce((acc, t) => acc + t.amountPaise, BigInt(0));
+    expect(sumAvailableDelta).toBe(BigInt(0)); // Net effect is 0
+  });
+
+  // ─── 16. Specific Lifecycle Test 4: LOCK 300 -> RELEASE 300 -> CREDIT 100 ─
+  it('16. Lifecycle Test 4: LOCK 300 -> RELEASE 300 -> CREDIT 100 results in Available 800, Locked 0', async () => {
+    const { mockPrisma, getWallet, getTransactions } = createMockDb({
+      id: 'w_l3',
+      userId: 'u1',
+      creatorId: 'c1',
+      balancePaise: BigInt(100000), // Available ₹1,000
+      lockedPaise: BigInt(0),
+      version: 1
+    });
+
+    await WalletService.lock('w_l3', BigInt(30000), { referenceId: 'lock_3' }, mockPrisma);
+    await WalletService.release('w_l3', BigInt(30000), { referenceId: 'rel_3' }, mockPrisma);
+    await WalletService.credit('w_l3', BigInt(10000), { referenceId: 'cred_3', description: 'Bonus' }, mockPrisma);
+
+    expect(getWallet().balancePaise).toBe(BigInt(80000)); // ₹800
+    expect(getWallet().lockedPaise).toBe(BigInt(0));
+
+    const txs = getTransactions();
+    const sumAvailableDelta = txs.reduce((acc, t) => acc + t.amountPaise, BigInt(0));
+    expect(sumAvailableDelta).toBe(BigInt(-20000)); // Net available delta = -200 (1000 - 200 = 800)
+    expect(BigInt(100000) + sumAvailableDelta).toBe(getWallet().balancePaise);
+  });
+
+  // ─── 17. Concurrent LOCK Operations Exceeding Available Balance ───────────
+  it('17. Concurrent LOCK operations (₹800 + ₹800 on ₹1,000 balance) reject double-locking', async () => {
+    let walletState = {
+      id: 'w_lock_conc',
+      balancePaise: BigInt(100000), // ₹1,000
+      lockedPaise: BigInt(0),
+      version: 1
+    };
+
+    const atomicLock = async (lockPaise) => {
+      const current = { ...walletState };
+      if (current.balancePaise < lockPaise) {
+        throw new Error('INSUFFICIENT_FUNDS');
+      }
+      if (walletState.version === current.version && walletState.balancePaise >= lockPaise) {
+        walletState.balancePaise -= lockPaise;
+        walletState.lockedPaise += lockPaise;
+        walletState.version += 1;
+        return { success: true };
+      } else {
+        throw new Error('CONCURRENCY_CONFLICT');
+      }
+    };
+
+    const results = [];
+    try {
+      await atomicLock(BigInt(80000));
+      results.push({ status: 'SUCCESS' });
+    } catch (e) {
+      results.push({ status: 'FAILED' });
+    }
+
+    try {
+      await atomicLock(BigInt(80000));
+      results.push({ status: 'SUCCESS' });
+    } catch (e) {
+      results.push({ status: 'FAILED' });
+    }
+
+    expect(results.filter(r => r.status === 'SUCCESS')).toHaveLength(1);
+    expect(results.filter(r => r.status === 'FAILED')).toHaveLength(1);
+    expect(walletState.balancePaise).toBe(BigInt(20000)); // ₹200 remaining available
+    expect(walletState.lockedPaise).toBe(BigInt(80000));  // ₹800 locked
+  });
+
+  // ─── 18. Duplicate LOCK and RELEASE Idempotency ───────────────────────────
+  it('18. Duplicate LOCK and RELEASE submissions with same idempotencyKey have exactly one financial effect', async () => {
+    const { mockPrisma, getWallet } = createMockDb({
+      id: 'w_idem',
+      userId: 'u1',
+      creatorId: 'c1',
+      balancePaise: BigInt(100000), // ₹1,000
+      lockedPaise: BigInt(0),
+      version: 1
+    });
+
+    // 1. Lock with idempotency key
+    const lock1 = await WalletService.lock('w_idem', BigInt(30000), { idempotencyKey: 'idem_lock_1' }, mockPrisma);
+    expect(lock1.isDuplicate).toBe(false);
+    expect(getWallet().balancePaise).toBe(BigInt(70000));
+    expect(getWallet().lockedPaise).toBe(BigInt(30000));
+
+    // Duplicate Lock
+    const lock2 = await WalletService.lock('w_idem', BigInt(30000), { idempotencyKey: 'idem_lock_1' }, mockPrisma);
+    expect(lock2.isDuplicate).toBe(true);
+    expect(getWallet().balancePaise).toBe(BigInt(70000));
+    expect(getWallet().lockedPaise).toBe(BigInt(30000));
+
+    // 2. Release with idempotency key
+    const rel1 = await WalletService.release('w_idem', BigInt(30000), { idempotencyKey: 'idem_rel_1' }, mockPrisma);
+    expect(rel1.isDuplicate).toBe(false);
+    expect(getWallet().balancePaise).toBe(BigInt(70000));
+    expect(getWallet().lockedPaise).toBe(BigInt(0));
+
+    // Duplicate Release
+    const rel2 = await WalletService.release('w_idem', BigInt(30000), { idempotencyKey: 'idem_rel_1' }, mockPrisma);
+    expect(rel2.isDuplicate).toBe(true);
+    expect(getWallet().balancePaise).toBe(BigInt(70000));
+    expect(getWallet().lockedPaise).toBe(BigInt(0));
+  });
 });

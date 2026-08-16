@@ -55,21 +55,22 @@ export async function verifyLedgerParity(options = { verbose: false }) {
 
         legacySumINR += tx.amount;
 
-        // Accounting breakdown by referenceType / operation
+        // Available balance is directly mutated by txPaise
+        computedAvailablePaise += txPaise;
+
+        // Locked balance accounting breakdown
         if (tx.referenceType === 'LOCK_WITHDRAWAL') {
           const lockedAmount = txPaise < BigInt(0) ? -txPaise : txPaise;
-          computedAvailablePaise -= lockedAmount;
           computedLockedPaise += lockedAmount;
         } else if (tx.referenceType === 'UNLOCK_WITHDRAWAL') {
           const unlockedAmount = txPaise < BigInt(0) ? -txPaise : txPaise;
-          computedAvailablePaise += unlockedAmount;
           computedLockedPaise -= unlockedAmount;
         } else if (tx.referenceType === 'RELEASE_LOCKED') {
-          const releasedAmount = txPaise < BigInt(0) ? -txPaise : txPaise;
+          const metadataAmount = tx.metadata && tx.metadata.disbursedAmountPaise
+            ? BigInt(tx.metadata.disbursedAmountPaise)
+            : BigInt(0);
+          const releasedAmount = metadataAmount > BigInt(0) ? metadataAmount : (txPaise < BigInt(0) ? -txPaise : txPaise);
           computedLockedPaise -= releasedAmount;
-        } else {
-          // Standard credit/debit
-          computedAvailablePaise += txPaise;
         }
 
         // Sequence verification if balanceAfterPaise is populated

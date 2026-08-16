@@ -487,13 +487,13 @@ export class WalletService {
       }
 
       // Create ledger entry for the disbursement completion
-      const legacyAmountINR = -Math.round(Number(paise) / 100);
+      // Available balance is unchanged (it was already debited at LOCK), so amountPaise is 0n.
       const ledgerEntry = await tx.walletTransaction.create({
         data: {
           walletId: wallet.id,
           creatorId: wallet.creatorId || wallet.userId,
-          amount: legacyAmountINR,
-          amountPaise: -paise,
+          amount: 0,
+          amountPaise: BigInt(0),
           balanceAfterPaise: wallet.balancePaise, // Available balance remains unchanged
           type: options.type || 'BANK_WITHDRAWAL',
           status: 'SUCCESS',
@@ -501,7 +501,11 @@ export class WalletService {
           referenceType: options.referenceType || 'RELEASE_LOCKED',
           referenceId: options.referenceId || null,
           idempotencyKey: options.idempotencyKey || null,
-          metadata: options.metadata || null
+          metadata: {
+            disbursedAmountPaise: paise.toString(),
+            disbursedAmountINR: paiseToRupees(paise),
+            ...(options.metadata || {})
+          }
         }
       });
 
