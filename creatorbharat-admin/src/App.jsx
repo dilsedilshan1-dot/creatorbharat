@@ -17,6 +17,7 @@ import BrandsSection from './components/sections/BrandsSection';
 import CmsSection from './components/sections/CmsSection';
 import SystemControlSection from './components/sections/SystemControlSection';
 import EngagementSection from './components/sections/EngagementSection';
+import { AuditLogsSection } from './components/sections/AuditLogsSection';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5173' : 'https://creatorbharat.com');
@@ -2775,6 +2776,11 @@ export default function App() {
               handleClearCache={handleClearCache}
               fetchData={fetchData}
             />
+          )}
+
+          {/* ══ AUDIT LOGS ═════════════════════════════════════════════════ */}
+          {activeTab === 'audit-logs' && (
+            <AuditLogsSection />
           )}
 
 

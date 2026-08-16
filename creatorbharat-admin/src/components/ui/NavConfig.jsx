@@ -62,6 +62,7 @@ export const NAV_SECTIONS = (counts) => [
     color: T.slate,
     items: [
       { id: 'settings', label: 'Settings', icon: SlidersHorizontal },
+      { id: 'audit-logs', label: 'Security & Audit Logs', icon: ShieldAlert },
       { id: 'feature-control', label: 'Platform Control Center', icon: Cpu },
       { id: 'admin-control', label: 'Admin Panel Control', icon: ShieldCheck },
       { id: 'danger', label: 'Danger Zone', icon: ShieldAlert },
@@ -73,6 +74,7 @@ export const NAV_SECTIONS = (counts) => [
 export const TAB_META = {
   dashboard: { title: 'Dashboard Overview', sub: 'Real-time platform metrics and priority actions' },
   activity: { title: 'Platform Activity Log', sub: 'Live feed of all recent platform events' },
+  'audit-logs': { title: 'Security & Audit Logs', sub: 'Immutable, cryptographically recorded forensic audit trail' },
   verifications: { title: 'KYC Verification Queue', sub: 'Review and approve creator identity documents' },
   creators: { title: 'All Creators', sub: 'Manage creator profiles, scores and suspensions' },
   'creator-wallets': { title: 'Creator Wallets', sub: 'View transaction history and wallet balances per creator' },
