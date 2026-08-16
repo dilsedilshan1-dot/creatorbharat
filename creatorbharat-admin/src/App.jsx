@@ -18,6 +18,8 @@ import CmsSection from './components/sections/CmsSection';
 import SystemControlSection from './components/sections/SystemControlSection';
 import EngagementSection from './components/sections/EngagementSection';
 import { AuditLogsSection } from './components/sections/AuditLogsSection';
+import { AdminLayout } from './layout/AdminLayout';
+import { AdminModals } from './components/modals/AdminModals';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5173' : 'https://creatorbharat.com');
@@ -2465,287 +2467,19 @@ export default function App() {
   const meta = TAB_META[activeTab] || { title: activeTab, sub: '' };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: T.bg, color: T.navy, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-
-      {/* ── Toast Container ────────────────────────────────────────────────── */}
-      <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 9999, display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {toasts.map(t => (
-          <div key={t.id} style={{ padding: '12px 18px', background: T.card, borderLeft: `4px solid ${t.type === 'success' ? T.green : t.type === 'error' ? T.red : T.blue}`, borderRadius: 10, fontSize: 13, fontWeight: 700, color: T.navy, display: 'flex', alignItems: 'center', gap: 10, boxShadow: '0 10px 30px rgba(0,0,0,0.1)', minWidth: 260 }}>
-            <span>{t.type === 'success' ? '✓' : t.type === 'error' ? '✗' : 'ℹ'}</span>
-            {t.msg}
-          </div>
-        ))}
-      </div>
-
-      {/* ── SIDEBAR ────────────────────────────────────────────────────────── */}
-      <aside className="no-scrollbar" style={{ 
-        width: 260, 
-        background: 'linear-gradient(180deg, #070a13 0%, #0d111d 100%)', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        padding: '0', 
-        flexShrink: 0, 
-        position: 'sticky', 
-        top: 0, 
-        height: '100vh', 
-        overflowY: 'auto', 
-        boxShadow: '8px 0 32px rgba(0,0,0,0.22)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
-        transition: 'all 0.3s ease'
-      }}>
-
-        {/* Logo Section */}
-        <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ 
-              width: 44, 
-              height: 44, 
-              borderRadius: 12, 
-              background: 'linear-gradient(135deg, #f97316 0%, #dc2626 100%)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              fontWeight: 950, 
-              fontSize: 18, 
-              color: '#fff', 
-              boxShadow: '0 8px 20px rgba(249,115,22,0.3)', 
-              flexShrink: 0, 
-              letterSpacing: -1,
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%)' }} />
-              CB
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', lineHeight: 1.1, letterSpacing: -0.4 }}>
-                Creator<span style={{ color: '#f97316' }}>Bharat</span>
-              </div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: 2.2, fontWeight: 800, marginTop: 4 }}>
-                Admin Portal
-              </div>
-            </div>
-            {dataLoading && <RefreshCw size={13} style={{ color: T.orange, animation: 'spin 1s linear infinite', flexShrink: 0 }} />}
-          </div>
-          
-          {/* Online status badge */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 8, 
-            marginTop: 16, 
-            padding: '8px 12px', 
-            background: 'rgba(34,197,94,0.06)', 
-            borderRadius: 10, 
-            border: '1px solid rgba(34,197,94,0.09)' 
-          }}>
-            <div className="pulse-dot" style={{ 
-              width: 7, 
-              height: 7, 
-              borderRadius: '50%', 
-              background: '#22c55e', 
-              flexShrink: 0 
-            }} />
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>
-              Neon DB · Active Session
-            </span>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav className="no-scrollbar" style={{ flex: 1, padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 24, overflowY: 'auto' }}>
-          {NAV_SECTIONS(counts).map((section, si) => (
-            <div key={si} style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ 
-                fontSize: 9, 
-                color: 'rgba(255,255,255,0.3)', 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.15em', 
-                fontWeight: 800, 
-                padding: '0 18px', 
-                marginBottom: 8, 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 8 
-              }}>
-                <span style={{ color: section.color || T.orange, opacity: 0.8 }}>{section.title.split(' ')[0]}</span>
-                <span>{section.title.split(' ').slice(1).join(' ')}</span>
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.04)' }} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {section.items.map(item => {
-                  const Icon = item.icon;
-                  const active = activeTab === item.id;
-                  return (
-                    <button 
-                      key={item.id} 
-                      onClick={() => setActiveTab(item.id)} 
-                      style={{
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: 10, 
-                        padding: '8px 12px',
-                        margin: '1px 10px',
-                        borderRadius: 8, 
-                        border: active ? '1px solid rgba(249,115,22,0.22)' : '1px solid transparent',
-                        background: active ? 'linear-gradient(135deg, rgba(249,115,22,0.12) 0%, rgba(239,68,68,0.03) 100%)' : 'transparent',
-                        color: active ? '#fff' : 'rgba(255,255,255,0.55)',
-                        fontSize: 12.5, 
-                        fontWeight: active ? 700 : 500, 
-                        cursor: 'pointer', 
-                        textAlign: 'left',
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', 
-                        width: 'calc(100% - 20px)',
-                        boxShadow: active ? '0 4px 12px rgba(249,115,22,0.05)' : 'none',
-                        position: 'relative',
-                        paddingLeft: active ? 12 : 12
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.color = '#fff';
-                        e.currentTarget.style.transform = 'translateX(4px)';
-                        if (!active) {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-                        }
-                        const iconCont = e.currentTarget.querySelector('.icon-container');
-                        if (iconCont) {
-                          iconCont.style.background = active ? 'rgba(249,115,22,0.25)' : 'rgba(255,255,255,0.08)';
-                          iconCont.style.transform = 'scale(1.05)';
-                        }
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.color = active ? '#fff' : 'rgba(255,255,255,0.55)';
-                        e.currentTarget.style.transform = 'none';
-                        if (!active) {
-                          e.currentTarget.style.background = 'transparent';
-                        }
-                        const iconCont = e.currentTarget.querySelector('.icon-container');
-                        if (iconCont) {
-                          iconCont.style.background = active ? 'rgba(249,115,22,0.18)' : 'rgba(255,255,255,0.03)';
-                          iconCont.style.transform = 'none';
-                        }
-                      }}
-                    >
-                      {active && (
-                        <div style={{
-                          position: 'absolute',
-                          left: 0,
-                          top: '25%',
-                          height: '50%',
-                          width: 3,
-                          background: '#f97316',
-                          borderRadius: '0 4px 4px 0',
-                          boxShadow: '0 0 8px #f97316'
-                        }} />
-                      )}
-                      <div className="icon-container" style={{ 
-                        width: 26, 
-                        height: 26, 
-                        borderRadius: 6, 
-                        background: active ? 'rgba(249,115,22,0.18)' : 'rgba(255,255,255,0.03)', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        flexShrink: 0, 
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                        border: active ? '1px solid rgba(249,115,22,0.15)' : '1px solid transparent'
-                      }}>
-                        <Icon size={13.5} style={{ 
-                          color: active ? '#f97316' : 'inherit',
-                          filter: active ? 'drop-shadow(0 0 3px rgba(249,115,22,0.3))' : 'none'
-                        }} />
-                      </div>
-                      <span style={{ flex: 1 }}>{item.label}</span>
-                      {item.badge !== undefined && item.badge > 0 && (
-                        <span style={{ 
-                          padding: '2px 6px', 
-                          borderRadius: 6, 
-                          background: active ? T.orange : 'rgba(255,255,255,0.08)', 
-                          color: active ? '#fff' : 'rgba(255,255,255,0.45)', 
-                          fontSize: 9.5, 
-                          fontWeight: 800, 
-                          minWidth: 18, 
-                          textAlign: 'center',
-                          border: active ? 'none' : '1px solid rgba(255,255,255,0.05)'
-                        }}>
-                          {item.badge > 99 ? '99+' : item.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
-
-        {/* Bottom Actions */}
-        <div style={{ padding: '16px 14px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <button onClick={fetchData} style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            gap: 8, 
-            padding: '10px', 
-            borderRadius: 8, 
-            border: '1px solid rgba(255,255,255,0.08)', 
-            background: 'rgba(255,255,255,0.03)', 
-            color: 'rgba(255,255,255,0.6)', 
-            fontSize: 12, 
-            fontWeight: 600, 
-            cursor: 'pointer', 
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)' 
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
-          >
-            <RefreshCw size={13.5} style={{ animation: dataLoading ? 'spin 1s linear infinite' : 'none' }} /> Sync Data
-          </button>
-          <button onClick={handleLogout} style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            gap: 8, 
-            padding: '10px', 
-            borderRadius: 8, 
-            border: '1px solid rgba(239,68,68,0.15)', 
-            background: 'rgba(239,68,68,0.05)', 
-            color: '#f87171', 
-            fontSize: 12, 
-            fontWeight: 600, 
-            cursor: 'pointer', 
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)' 
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; e.currentTarget.style.color = '#ff9999'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.05)'; e.currentTarget.style.color = '#f87171'; }}
-          >
-            <LogOut size={13.5} /> Sign Out
-          </button>
-        </div>
-      </aside>
-
-      {/* ── MAIN CONTENT ────────────────────────────────────────────────────── */}
-      <main style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-        {/* Top Header Bar */}
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', borderBottom: `1px solid ${T.border}`, background: T.card, position: 'sticky', top: 0, zIndex: 100 }}>
-          <div>
-            <h2 style={{ margin: '0 0 2px', fontSize: 20, fontWeight: 900, color: T.navy }}>{meta.title}</h2>
-            <p style={{ margin: 0, fontSize: 12, color: T.muted, fontWeight: 500 }}>{meta.sub}</p>
-          </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <span style={{ padding: '6px 14px', background: T.greenLight, color: T.green, fontSize: 11, fontWeight: 800, borderRadius: 30, display: 'flex', alignItems: 'center', gap: 6, border: `1px solid ${T.green}25` }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.green }}></span>
-              Live · Neon DB Connected
-            </span>
-            <a href={FRONTEND_URL} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 14px', background: T.orangeLight, color: T.orange, fontSize: 11, fontWeight: 800, borderRadius: 30, textDecoration: 'none', border: `1px solid ${T.orangeBorder}`, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <ExternalLink size={11} /> Visit Site
-            </a>
-          </div>
-        </header>
-
-        {/* Content */}
-        <div style={{ padding: '32px 40px', flex: 1 }}>
-
-          {/* ══ DASHBOARD ══════════════════════════════════════════════════ */}
+    <AdminLayout
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      counts={counts}
+      fetchData={fetchData}
+      dataLoading={dataLoading}
+      handleLogout={handleLogout}
+      adminUser={adminUser}
+      FRONTEND_URL={FRONTEND_URL}
+      toasts={toasts}
+      dismissToast={(id) => setToasts(prev => prev.filter(t => t.id !== id))}
+    >
+      {/* ══ DASHBOARD ══════════════════════════════════════════════════ */}
           {activeTab === 'dashboard' && (
             <DashboardSection
               deepStats={deepStats}
@@ -3260,118 +2994,6 @@ export default function App() {
             />
           )}
 
-        </div>
-      </main>
-
-      {/* ══ KYC DRAWER ═══════════════════════════════════════════════════════ */}
-      {drawerOpen && selectedCreator && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
-          <div onClick={() => { setDrawerOpen(false); setShowRejectForm(false); setRejectionReason(''); }} style={{ flex: 1, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)' }} />
-          <div style={{ width: 420, background: T.card, display: 'flex', flexDirection: 'column', boxShadow: '-20px 0 60px rgba(0,0,0,0.12)', overflowY: 'auto' }}>
-            {/* Drawer Header */}
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <h3 style={{ margin: '0 0 4px', fontSize: 17, fontWeight: 900, color: T.navy }}>KYC Audit: {selectedCreator.name}</h3>
-                <p style={{ margin: 0, fontSize: 12, color: T.muted }}>@{selectedCreator.handle}</p>
-              </div>
-              <button onClick={() => { setDrawerOpen(false); setShowRejectForm(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-
-            {/* Creator Info */}
-            <div style={{ padding: '24px 28px', flex: 1 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {[
-                  { label: 'Full Name', value: selectedCreator.name },
-                  { label: 'Handle', value: `@${selectedCreator.handle}` },
-                  { label: 'Email', value: selectedCreator.user?.email || '—' },
-                  { label: 'Phone', value: selectedCreator.user?.phone || '—' },
-                  { label: 'City / State', value: `${selectedCreator.city || '—'}, ${selectedCreator.state || '—'}` },
-                  { label: 'Followers', value: fmtNum(selectedCreator.followers) },
-                  { label: 'Niche', value: (selectedCreator.niche || []).join(', ') || '—' },
-                  { label: 'Bio', value: selectedCreator.bio || '—' },
-                ].map((f, i) => (
-                  <div key={i}>
-                    <div style={{ fontSize: 10, fontWeight: 800, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>{f.label}</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: T.navy }}>{f.value}</div>
-                  </div>
-                ))}
-
-                {/* Document Links */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 8 }}>
-                  {[
-                    { label: 'Aadhaar', url: selectedCreator.aadhaarUrl },
-                    { label: 'PAN Card', url: selectedCreator.panUrl }
-                  ].map((doc, i) => (
-                    <a key={i} href={doc.url || '#'} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: doc.url ? T.greenLight : T.redLight, border: `1px solid ${doc.url ? T.green : T.red}25`, borderRadius: 10, textDecoration: 'none', color: doc.url ? T.green : T.red, fontSize: 12, fontWeight: 800 }}>
-                      {doc.url ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-                      {doc.label}
-                    </a>
-                  ))}
-                </div>
-                <a href={`${FRONTEND_URL}/creator/${selectedCreator.id}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: T.blueLight, border: `1px solid ${T.blue}25`, borderRadius: 10, textDecoration: 'none', color: T.blue, fontSize: 12, fontWeight: 800 }}>
-                  <ExternalLink size={14} /> View Live Profile on Frontend
-                </a>
-
-                {/* Document Previews */}
-                {(selectedCreator.aadhaarUrl || selectedCreator.panUrl) && (
-                  <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <div style={{ fontSize: 10, fontWeight: 800, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>Uploaded Documents Preview</div>
-                    <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }} className="no-scrollbar">
-                      {selectedCreator.aadhaarUrl && (
-                        <div style={{ flex: '0 0 160px', border: `1px solid ${T.border}`, borderRadius: 12, padding: 8, background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <div style={{ fontSize: 10, fontWeight: 800, color: T.slate, marginBottom: 6, textAlign: 'center' }}>Aadhaar</div>
-                          {selectedCreator.aadhaarUrl.toLowerCase().endsWith('.pdf') ? (
-                            <div style={{ height: 100, width: '100%', display: 'grid', placeItems: 'center', background: '#e2e8f0', borderRadius: 8, fontSize: 11, fontWeight: 700, color: T.muted }}>PDF Document</div>
-                          ) : (
-                            <img src={selectedCreator.aadhaarUrl} alt="Aadhaar" style={{ width: '100%', height: 100, objectFit: 'contain', borderRadius: 8, cursor: 'zoom-in' }} onClick={() => window.open(selectedCreator.aadhaarUrl, '_blank')} />
-                          )}
-                          <a href={selectedCreator.aadhaarUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 10, textAlign: 'center', marginTop: 6, color: T.blue, fontWeight: 800, textDecoration: 'none' }}>View Original</a>
-                        </div>
-                      )}
-                      {selectedCreator.panUrl && (
-                        <div style={{ flex: '0 0 160px', border: `1px solid ${T.border}`, borderRadius: 12, padding: 8, background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <div style={{ fontSize: 10, fontWeight: 800, color: T.slate, marginBottom: 6, textAlign: 'center' }}>PAN Card</div>
-                          {selectedCreator.panUrl.toLowerCase().endsWith('.pdf') ? (
-                            <div style={{ height: 100, width: '100%', display: 'grid', placeItems: 'center', background: '#e2e8f0', borderRadius: 8, fontSize: 11, fontWeight: 700, color: T.muted }}>PDF Document</div>
-                          ) : (
-                            <img src={selectedCreator.panUrl} alt="PAN Card" style={{ width: '100%', height: 100, objectFit: 'contain', borderRadius: 8, cursor: 'zoom-in' }} onClick={() => window.open(selectedCreator.panUrl, '_blank')} />
-                          )}
-                          <a href={selectedCreator.panUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 10, textAlign: 'center', marginTop: 6, color: T.blue, fontWeight: 800, textDecoration: 'none' }}>View Original</a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div style={{ padding: '20px 28px', borderTop: `1px solid ${T.border}`, background: T.bg }}>
-              {showRejectForm ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <label style={{ fontSize: 11, fontWeight: 800, color: T.slate, textTransform: 'uppercase' }}>Rejection Reason</label>
-                  <textarea value={rejectionReason} onChange={e => setRejectionReason(e.target.value)} placeholder="e.g. Documents are blurry, name mismatch on ID..." rows={3} style={{ width: '100%', padding: '10px 12px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, resize: 'none', outline: 'none', boxSizing: 'border-box' }} />
-                  <div style={{ display: 'flex', gap: 10 }}>
-                    <button onClick={() => { handleRejectVerification(selectedCreator.id, rejectionReason || 'Documents invalid. Please re-upload.'); }} style={{ flex: 1, padding: '11px', background: T.red, color: '#fff', border: 'none', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>Send Rejection</button>
-                    <button onClick={() => { setShowRejectForm(false); setRejectionReason(''); }} style={{ padding: '11px 16px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ display: 'flex', gap: 10 }}>
-                    <button onClick={() => handleApproveVerification(selectedCreator.id)} style={{ flex: 1, padding: '11px', background: T.green, color: '#fff', border: 'none', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer', boxShadow: `0 4px 12px ${T.green}30` }}>✓ Approve Verification</button>
-                    <button onClick={() => setShowRejectForm(true)} style={{ flex: 1, padding: '11px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>✗ Reject KYC</button>
-                  </div>
-                  <button onClick={() => handleToggleSuspension(selectedCreator.user?.id)} style={{ width: '100%', padding: '10px', background: T.redLight, color: T.red, border: `1px solid ${T.red}25`, borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
-                    {selectedCreator.user?.isSuspended ? '↑ Unsuspend Account' : '⛔ Suspend / Ban Account'}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ══ BRAND DRAWER ═══════════════════════════════════════════════════ */}
       {brandDrawerOpen && selectedBrand && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
@@ -3412,813 +3034,256 @@ export default function App() {
         </div>
       )}
 
-      {/* ══ SCORE ADJUSTMENT MODAL ═════════════════════════════════════════ */}
-      {scoreModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)' }}>
-          <div style={{ width: 420, background: T.card, borderRadius: 24, padding: 32, boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <h3 style={{ margin: '0 0 6px', fontSize: 17, fontWeight: 900, color: T.navy }}>Adjust Creator Score</h3>
-            <p style={{ margin: '0 0 24px', fontSize: 13, color: T.muted }}>Creator: <strong>{scoreModal.creator.name}</strong> (@{scoreModal.creator.handle})</p>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>New Score (0 - 1000)</label>
-              <input type="number" min="0" max="1000" value={scoreInput} onChange={e => setScoreInput(e.target.value)} style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 16, fontWeight: 800, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-            </div>
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Reason (Optional)</label>
-              <input type="text" value={scoreReason} onChange={e => setScoreReason(e.target.value)} placeholder="e.g. Bonus for viral campaign performance..." style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-            </div>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <button onClick={handleAdjustScore} style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Update Score</button>
-              <button onClick={() => { setScoreModal(null); setScoreInput(''); setScoreReason(''); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AdminModals
+        podcastModalOpen={podcastModalOpen}
+        setPodcastModalOpen={setPodcastModalOpen}
+        editingPodcast={editingPodcast}
+        setEditingPodcast={setEditingPodcast}
+        clearPodcastForm={clearPodcastForm}
+        handleSavePodcast={handleSavePodcast}
+        podCreatorId={podCreatorId}
+        setPodCreatorId={setPodCreatorId}
+        creators={creators}
+        podTitle={podTitle}
+        setPodTitle={setPodTitle}
+        podDesc={podDesc}
+        setPodDesc={setPodDesc}
+        podDuration={podDuration}
+        setPodDuration={setPodDuration}
+        podThumbnail={podThumbnail}
+        setPodThumbnail={setPodThumbnail}
+        podAudioUrl={podAudioUrl}
+        setPodAudioUrl={setPodAudioUrl}
+        podVideoUrl={podVideoUrl}
+        setPodVideoUrl={setPodVideoUrl}
+        podPublished={podPublished}
+        setPodPublished={setPodPublished}
+        handleUploadMedia={handleUploadMedia}
 
-      {/* ══ BLOG EDITOR MODAL ══════════════════════════════════════════════ */}
-      {blogModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 700, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingBlog ? 'Edit Blog Article' : 'Create New Blog Article'}</h3>
-              <button onClick={() => { setBlogModalOpen(false); setEditingBlog(null); clearBlogForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSaveBlog} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Title</label>
-                  <input value={blogTitle} onChange={e => { setBlogTitle(e.target.value); if(!editingBlog) setBlogSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')); }} placeholder="Article title..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>URL Slug</label>
-                  <input value={blogSlug} onChange={e => setBlogSlug(e.target.value)} placeholder="url-slug-here" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Author</label>
-                  <input value={blogAuthor} onChange={e => setBlogAuthor(e.target.value)} placeholder="Author name" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Tags (comma separated)</label>
-                  <input value={blogTags} onChange={e => setBlogTags(e.target.value)} placeholder="tag1, tag2, tag3" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <PremiumMediaUpload
-                label="Cover Image"
-                value={blogImage}
-                onChange={setBlogImage}
-                type="image"
-                onUploadFile={handleUploadMedia}
-              />
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Category</label>
-                <select value={blogCategory} onChange={e => setBlogCategory(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                  {['Marketing', 'Creator Economy', 'Brand Strategy', 'Platform Updates', 'Tips & Tricks', 'Success Stories'].map(c => <option key={c}>{c}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Excerpt</label>
-                <textarea value={blogExcerpt} onChange={e => setBlogExcerpt(e.target.value)} rows={2} placeholder="Short description..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, resize: 'none', outline: 'none', boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Body Content (HTML or Markdown)</label>
-                <textarea value={blogBody} onChange={e => setBlogBody(e.target.value)} rows={10} placeholder="<h2>Section Title</h2><p>Content...</p>" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, color: T.navy, resize: 'vertical', outline: 'none', fontFamily: 'monospace', boxSizing: 'border-box' }} />
-              </div>
-              <div style={{ display: 'flex', gap: 20 }}>
-                {[
-                  { label: 'Featured Article', value: blogFeatured, setter: setBlogFeatured },
-                  { label: 'Published', value: blogPublished, setter: setBlogPublished },
-                ].map((toggle, i) => (
-                  <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 13, fontWeight: 700, color: T.navy }}>
-                    <input type="checkbox" checked={toggle.value} onChange={e => toggle.setter(e.target.checked)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
-                    {toggle.label}
-                  </label>
-                ))}
-              </div>
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>
-                  {editingBlog ? 'Update Article' : 'Publish Article'}
-                </button>
-                <button type="button" onClick={() => { setBlogModalOpen(false); setEditingBlog(null); clearBlogForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+        editCreatorModalOpen={editCreatorModalOpen}
+        setEditCreatorModalOpen={setEditCreatorModalOpen}
+        setEditingCreator={setEditingCreator}
+        handleSaveCreator={handleSaveCreator}
+        editCreName={editCreName}
+        setEditCreName={setEditCreName}
+        editCreHandle={editCreHandle}
+        setEditCreHandle={setEditCreHandle}
+        editCreBio={editCreBio}
+        setEditCreBio={setEditCreBio}
+        editCreCity={editCreCity}
+        setEditCreCity={setEditCreCity}
+        editCreState={editCreState}
+        setEditCreState={setEditCreState}
+        editCreFollowers={editCreFollowers}
+        setEditCreFollowers={setEditCreFollowers}
+        editCreRateMin={editCreRateMin}
+        setEditCreRateMin={setEditCreRateMin}
+        editCreRateMax={editCreRateMax}
+        setEditCreRateMax={setEditCreRateMax}
+        editCreNiche={editCreNiche}
+        setEditCreNiche={setEditCreNiche}
+        editCrePlatform={editCrePlatform}
+        setEditCrePlatform={setEditCrePlatform}
+        editCrePhoto={editCrePhoto}
+        setEditCrePhoto={setEditCrePhoto}
+        editCreCoverImage={editCreCoverImage}
+        setEditCreCoverImage={setEditCreCoverImage}
+        editCreAadhaarUrl={editCreAadhaarUrl}
+        setEditCreAadhaarUrl={setEditCreAadhaarUrl}
+        editCrePanUrl={editCrePanUrl}
+        setEditCrePanUrl={setEditCrePanUrl}
+        editCreStatus={editCreStatus}
+        setEditCreStatus={setEditCreStatus}
+        editCreIsVerified={editCreIsVerified}
+        setEditCreIsVerified={setEditCreIsVerified}
+        editCreIsPro={editCreIsPro}
+        setEditCreIsPro={setEditCreIsPro}
 
-      {/* ══ GALLERY EDITOR MODAL ════════════════════════════════════════════ */}
-      {galleryModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 650, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingGallery ? 'Edit Gallery Item' : 'Add New Gallery Item'}</h3>
-              <button onClick={() => { setGalleryModalOpen(false); setEditingGallery(null); clearGalleryForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSaveGallery} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Title</label>
-                  <input value={galTitle} onChange={e => setGalTitle(e.target.value)} placeholder="Event or highlight title..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Media Type</label>
-                  <select value={galType} onChange={e => setGalType(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                    <option value="photo">Photo</option>
-                    <option value="video">Video</option>
-                  </select>
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Location</label>
-                  <input value={galLocation} onChange={e => setGalLocation(e.target.value)} placeholder="e.g. Jaipur, Rajasthan" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Date</label>
-                  <input value={galDate} onChange={e => setGalDate(e.target.value)} placeholder="e.g. March 14, 2026" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Category</label>
-                  <select value={galCategory} onChange={e => setGalCategory(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                    {['Summits', 'Collaborations', 'Workshops', 'Media'].map(c => <option key={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Tags (comma separated)</label>
-                  <input value={galTags} onChange={e => setGalTags(e.target.value)} placeholder="e.g. Fashion, Summit, Regional" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              
-              <PremiumMediaUpload
-                label="Thumbnail Image"
-                value={galThumbnail}
-                onChange={setGalThumbnail}
-                type="image"
-                onUploadFile={handleUploadMedia}
-              />
+        editBrandModalOpen={editBrandModalOpen}
+        setEditBrandModalOpen={setEditBrandModalOpen}
+        setEditingBrand={setEditingBrand}
+        handleSaveBrand={handleSaveBrand}
+        editBrandName={editBrandName}
+        setEditBrandName={setEditBrandName}
+        editBrandIndustry={editBrandIndustry}
+        setEditBrandIndustry={setEditBrandIndustry}
+        editBrandWebsite={editBrandWebsite}
+        setEditBrandWebsite={setEditBrandWebsite}
 
-              {galType === 'video' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: 16 }}>
-                  <PremiumMediaUpload
-                    label="Video File / Link"
-                    value={galVideoUrl}
-                    onChange={setGalVideoUrl}
-                    type="video"
-                    onUploadFile={handleUploadMedia}
-                  />
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Duration</label>
-                    <input value={galDuration} onChange={e => setGalDuration(e.target.value)} placeholder="e.g. 2:45" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                </div>
-              )}
+        editCampaignModalOpen={editCampaignModalOpen}
+        setEditCampaignModalOpen={setEditCampaignModalOpen}
+        setEditingCampaign={setEditingCampaign}
+        handleSaveCampaign={handleSaveCampaign}
+        editCampTitle={editCampTitle}
+        setEditCampTitle={setEditCampTitle}
+        editCampBudget={editCampBudget}
+        setEditCampBudget={setEditCampBudget}
+        editCampDesc={editCampDesc}
+        setEditCampDesc={setEditCampDesc}
+        editCampPlatform={editCampPlatform}
+        setEditCampPlatform={setEditCampPlatform}
+        editCampNiche={editCampNiche}
+        setEditCampNiche={setEditCampNiche}
+        editCampStatus={editCampStatus}
+        setEditCampStatus={setEditCampStatus}
 
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Highlights</label>
-                <textarea value={galDesc} onChange={e => setGalDesc(e.target.value)} rows={3} placeholder="Provide details about the summit, workshop, or collaboration..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, resize: 'none', outline: 'none', boxSizing: 'border-box' }} />
-              </div>
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>
-                  {editingGallery ? 'Update Gallery Item' : 'Add Gallery Item'}
-                </button>
-                <button type="button" onClick={() => { setGalleryModalOpen(false); setEditingGallery(null); clearGalleryForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+        createCreatorModalOpen={createCreatorModalOpen}
+        setCreateCreatorModalOpen={setCreateCreatorModalOpen}
+        clearCreatorForm={clearCreatorForm}
+        handleCreateCreator={handleCreateCreator}
+        creEmail={creEmail}
+        setCreEmail={setCreEmail}
+        crePassword={crePassword}
+        setCrePassword={setCrePassword}
+        creName={creName}
+        setCreName={setCreName}
+        creHandle={creHandle}
+        setCreHandle={setCreHandle}
+        crePhone={crePhone}
+        setCrePhone={setCrePhone}
+        creCity={creCity}
+        setCreCity={setCreCity}
+        creState={creState}
+        setCreState={setCreState}
+        creFollowers={creFollowers}
+        setCreFollowers={setCreFollowers}
+        creRateMin={creRateMin}
+        setCreRateMin={setCreRateMin}
+        creRateMax={creRateMax}
+        setCreRateMax={setCreRateMax}
+        creNiche={creNiche}
+        setCreNiche={setCreNiche}
+        crePlatform={crePlatform}
+        setCrePlatform={setCrePlatform}
 
+        createBrandModalOpen={createBrandModalOpen}
+        setCreateBrandModalOpen={setCreateBrandModalOpen}
+        clearBrandForm={clearBrandForm}
+        handleCreateBrand={handleCreateBrand}
+        brandEmail={brandEmail}
+        setBrandEmail={setBrandEmail}
+        brandPassword={brandPassword}
+        setBrandPassword={setBrandPassword}
+        brandCompanyName={brandCompanyName}
+        setBrandCompanyName={setBrandCompanyName}
+        brandIndustry={brandIndustry}
+        setBrandIndustry={setBrandIndustry}
+        brandWebsite={brandWebsite}
+        setBrandWebsite={setBrandWebsite}
+        brandPhone={brandPhone}
+        setBrandPhone={setBrandPhone}
 
-      {/* ══ PODCAST EDITOR MODAL ════════════════════════════════════ */}
-      {podcastModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 650, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingPodcast ? 'Edit Podcast Episode' : 'Create New Podcast Episode'}</h3>
-              <button onClick={() => { setPodcastModalOpen(false); setEditingPodcast(null); clearPodcastForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSavePodcast} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Host / Creator</label>
-                <select value={podCreatorId} onChange={e => setPodCreatorId(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                  <option value="">Select a host creator...</option>
-                  {creators.map(c => (
-                    <option key={c.id} value={c.id}>{c.name} (@{c.handle})</option>
-                  ))}
-                </select>
-              </div>
+        createCampaignModalOpen={createCampaignModalOpen}
+        setCreateCampaignModalOpen={setCreateCampaignModalOpen}
+        clearCampaignForm={clearCampaignForm}
+        handleCreateCampaign={handleCreateCampaign}
+        campBrandId={campBrandId}
+        setCampBrandId={setCampBrandId}
+        brands={brands}
+        campTitle={campTitle}
+        setCampTitle={setCampTitle}
+        campBudget={campBudget}
+        setCampBudget={setCampBudget}
+        campDesc={campDesc}
+        setCampDesc={setCampDesc}
+        campPlatform={campPlatform}
+        setCampPlatform={setCampPlatform}
+        campNiche={campNiche}
+        setCampNiche={setCampNiche}
+        campStatus={campStatus}
+        setCampStatus={setCampStatus}
 
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Episode Title</label>
-                <input value={podTitle} onChange={e => setPodTitle(e.target.value)} required placeholder="e.g. Building Creators in India" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-              </div>
+        eventModalOpen={eventModalOpen}
+        setEventModalOpen={setEventModalOpen}
+        editingEvent={editingEvent}
+        setEditingEvent={setEditingEvent}
+        handleSaveEvent={handleSaveEvent}
+        evtTitle={evtTitle}
+        setEvtTitle={setEvtTitle}
+        evtDescription={evtDescription}
+        setEvtDescription={setEvtDescription}
+        evtDate={evtDate}
+        setEvtDate={setEvtDate}
+        evtLocation={evtLocation}
+        setEvtLocation={setEvtLocation}
+        evtLink={evtLink}
+        setEvtLink={setEvtLink}
+        evtImage={evtImage}
+        setEvtImage={setEvtImage}
 
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Show Notes</label>
-                <textarea value={podDesc} onChange={e => setPodDesc(e.target.value)} rows={3} placeholder="What is this episode about?" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
-              </div>
+        grantAchModalOpen={grantAchModalOpen}
+        setGrantAchModalOpen={setGrantAchModalOpen}
+        handleSaveAchievement={handleSaveAchievement}
+        achCreatorId={achCreatorId}
+        setAchCreatorId={setAchCreatorId}
+        achType={achType}
+        setAchType={setAchType}
+        achTitle={achTitle}
+        setAchTitle={setAchTitle}
+        achDescription={achDescription}
+        setAchDescription={setAchDescription}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Duration (e.g. 12:34)</label>
-                  <input value={podDuration} onChange={e => setPodDuration(e.target.value)} required placeholder="e.g. 45:10" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <PremiumMediaUpload
-                    label="Cover Image / Thumbnail"
-                    value={podThumbnail}
-                    onChange={setPodThumbnail}
-                    type="image"
-                    onUploadFile={handleUploadMedia}
-                  />
-                </div>
-              </div>
+        missionModalOpen={missionModalOpen}
+        setMissionModalOpen={setMissionModalOpen}
+        editingMission={editingMission}
+        setEditingMission={setEditingMission}
+        handleSaveMission={handleSaveMission}
+        misTitle={misTitle}
+        setMisTitle={setMisTitle}
+        misReward={misReward}
+        setMisReward={setMisReward}
+        misRewardColor={misRewardColor}
+        setMisRewardColor={setMisRewardColor}
+        misDeadline={misDeadline}
+        setMisDeadline={setMisDeadline}
+        misDescription={misDescription}
+        setMisDescription={setMisDescription}
+        misSteps={misSteps}
+        setMisSteps={setMisSteps}
+        misActive={misActive}
+        setMisActive={setMisActive}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <PremiumMediaUpload
-                  label="Audio File (MP3)"
-                  value={podAudioUrl}
-                  onChange={setPodAudioUrl}
-                  type="audio"
-                  onUploadFile={handleUploadMedia}
-                />
-                <PremiumMediaUpload
-                  label="Video File (MP4) - Optional"
-                  value={podVideoUrl}
-                  onChange={setPodVideoUrl}
-                  type="video"
-                  onUploadFile={handleUploadMedia}
-                />
-              </div>
+        scoreModal={scoreModal}
+        setScoreModal={setScoreModal}
+        scoreInput={scoreInput}
+        setScoreInput={setScoreInput}
+        scoreReason={scoreReason}
+        setScoreReason={setScoreReason}
+        handleSaveScore={handleSaveScore}
 
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: T.navy, cursor: 'pointer', marginTop: 8 }}>
-                <input type="checkbox" checked={podPublished} onChange={e => setPodPublished(e.target.checked)} style={{ width: 16, height: 16 }} />
-                ✓ Publish Episode immediately
-              </label>
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+        selectedCreator={selectedCreator}
+        handleVerifyCreator={handleVerifyCreator}
+        handleRejectCreator={handleRejectCreator}
 
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>
-                  {editingPodcast ? 'Update Episode' : 'Publish Episode'}
-                </button>
-                <button type="button" onClick={() => { setPodcastModalOpen(false); setEditingPodcast(null); clearPodcastForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ EDIT CREATOR PROFILE MODAL ════════════════════════════════ */}
-      {editCreatorModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 700, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Edit Creator Profile</h3>
-              <button onClick={() => { setEditCreatorModalOpen(false); setEditingCreator(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSaveCreator} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Full Name</label>
-                  <input value={editCreName} onChange={e => setEditCreName(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Handle</label>
-                  <input value={editCreHandle} onChange={e => setEditCreHandle(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Bio / Tagline</label>
-                <textarea value={editCreBio} onChange={e => setEditCreBio(e.target.value)} rows={2} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'none' }} />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>City</label>
-                  <input value={editCreCity} onChange={e => setEditCreCity(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>State</label>
-                  <input value={editCreState} onChange={e => setEditCreState(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Followers</label>
-                  <input type="number" value={editCreFollowers} onChange={e => setEditCreFollowers(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Min Rate (INR)</label>
-                  <input type="number" value={editCreRateMin} onChange={e => setEditCreRateMin(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Max Rate (INR)</label>
-                  <input type="number" value={editCreRateMax} onChange={e => setEditCreRateMax(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Niches (comma separated)</label>
-                  <input value={editCreNiche} onChange={e => setEditCreNiche(e.target.value)} placeholder="Fashion, Tech, Lifestyle" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Platforms (comma separated)</label>
-                  <input value={editCrePlatform} onChange={e => setEditCrePlatform(e.target.value)} placeholder="Instagram, YouTube" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <PremiumMediaUpload
-                  label="Profile Avatar Photo"
-                  value={editCrePhoto}
-                  onChange={setEditCrePhoto}
-                  type="image"
-                  onUploadFile={handleUploadMedia}
-                />
-                <PremiumMediaUpload
-                  label="Profile Cover Banner"
-                  value={editCreCoverImage}
-                  onChange={setEditCreCoverImage}
-                  type="image"
-                  onUploadFile={handleUploadMedia}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <PremiumMediaUpload
-                  label="Aadhaar ID Card (PDF/Image)"
-                  value={editCreAadhaarUrl}
-                  onChange={setEditCreAadhaarUrl}
-                  type="image"
-                  onUploadFile={handleUploadMedia}
-                />
-                <PremiumMediaUpload
-                  label="PAN Card (PDF/Image)"
-                  value={editCrePanUrl}
-                  onChange={setEditCrePanUrl}
-                  type="image"
-                  onUploadFile={handleUploadMedia}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, alignItems: 'center' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Account Status</label>
-                  <select value={editCreStatus} onChange={e => setEditCreStatus(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                    <option value="DRAFT">DRAFT</option>
-                    <option value="SUBMITTED">SUBMITTED</option>
-                    <option value="VERIFIED">VERIFIED</option>
-                  </select>
-                </div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: T.navy, cursor: 'pointer', marginTop: 16 }}>
-                  <input type="checkbox" checked={editCreIsVerified} onChange={e => setEditCreIsVerified(e.target.checked)} style={{ width: 16, height: 16 }} />
-                  ✓ Verified Badge
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: T.navy, cursor: 'pointer', marginTop: 16 }}>
-                  <input type="checkbox" checked={editCreIsPro} onChange={e => setEditCreIsPro(e.target.checked)} style={{ width: 16, height: 16 }} />
-                  ⚡ Pro Tier Member
-                </label>
-              </div>
-
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Update Creator Profile</button>
-                <button type="button" onClick={() => { setEditCreatorModalOpen(false); setEditingCreator(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ EDIT BRAND PROFILE MODAL ══════════════════════════════════ */}
-      {editBrandModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 550, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Edit Brand Profile</h3>
-              <button onClick={() => { setEditBrandModalOpen(false); setEditingBrand(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSaveBrand} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Company Name</label>
-                <input value={editBrandName} onChange={e => setEditBrandName(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Industry</label>
-                  <input value={editBrandIndustry} onChange={e => setEditBrandIndustry(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Website</label>
-                  <input value={editBrandWebsite} onChange={e => setEditBrandWebsite(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Update Brand Profile</button>
-                <button type="button" onClick={() => { setEditBrandModalOpen(false); setEditingBrand(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ EDIT CAMPAIGN MODAL ══════════════════════════════════════ */}
-      {editCampaignModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 600, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Edit Campaign</h3>
-              <button onClick={() => { setEditCampaignModalOpen(false); setEditingCampaign(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSaveCampaign} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Campaign Title</label>
-                  <input value={editCampTitle} onChange={e => setEditCampTitle(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Budget (INR)</label>
-                  <input type="number" value={editCampBudget} onChange={e => setEditCampBudget(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Brief</label>
-                <textarea value={editCampDesc} onChange={e => setEditCampDesc(e.target.value)} rows={4} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Target Platforms (comma separated)</label>
-                  <input value={editCampPlatform} onChange={e => setEditCampPlatform(e.target.value)} placeholder="Instagram, YouTube" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Target Niches (comma separated)</label>
-                  <input value={editCampNiche} onChange={e => setEditCampNiche(e.target.value)} placeholder="Fashion, Tech" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Campaign Status</label>
-                <select value={editCampStatus} onChange={e => setEditCampStatus(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="COMPLETED">COMPLETED</option>
-                  <option value="PAUSED">PAUSED</option>
-                </select>
-              </div>
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Update Campaign Details</button>
-                <button type="button" onClick={() => { setEditCampaignModalOpen(false); setEditingCampaign(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ CREATE CREATOR PROFILE MODAL ════════════════════════════════ */}
-      {createCreatorModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 700, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Create New Creator Account</h3>
-              <button onClick={() => { setCreateCreatorModalOpen(false); clearCreatorForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleCreateCreator} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Email Address *</label>
-                  <input type="email" value={creEmail} onChange={e => setCreEmail(e.target.value)} required placeholder="creator@email.com" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Password *</label>
-                  <input type="password" value={crePassword} onChange={e => setCrePassword(e.target.value)} required placeholder="Min 8 characters" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Full Name *</label>
-                  <input value={creName} onChange={e => setCreName(e.target.value)} required placeholder="e.g. Dilshan Mohmmad" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Handle * (Unique)</label>
-                  <input value={creHandle} onChange={e => setCreHandle(e.target.value)} required placeholder="e.g. dilshan_m" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Phone Number</label>
-                  <input value={crePhone} onChange={e => setCrePhone(e.target.value)} placeholder="10-digit number" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>City</label>
-                  <input value={creCity} onChange={e => setCreCity(e.target.value)} placeholder="e.g. Jaipur" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>State</label>
-                  <input value={creState} onChange={e => setCreState(e.target.value)} placeholder="e.g. Rajasthan" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Followers</label>
-                  <input type="number" value={creFollowers} onChange={e => setCreFollowers(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Min Rate (INR)</label>
-                  <input type="number" value={creRateMin} onChange={e => setCreRateMin(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Max Rate (INR)</label>
-                  <input type="number" value={creRateMax} onChange={e => setCreRateMax(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Niches (comma separated)</label>
-                  <input value={creNiche} onChange={e => setCreNiche(e.target.value)} placeholder="Fashion, Tech, Lifestyle" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Platforms (comma separated)</label>
-                  <input value={crePlatform} onChange={e => setCrePlatform(e.target.value)} placeholder="Instagram, YouTube" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Create Creator Account</button>
-                <button type="button" onClick={() => { setCreateCreatorModalOpen(false); clearCreatorForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ CREATE BRAND PROFILE MODAL ════════════════════════════════ */}
-      {createBrandModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 550, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Create New Brand Account</h3>
-              <button onClick={() => { setCreateBrandModalOpen(false); clearBrandForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleCreateBrand} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Email Address *</label>
-                  <input type="email" value={brandEmail} onChange={e => setBrandEmail(e.target.value)} required placeholder="brand@company.com" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Password *</label>
-                  <input type="password" value={brandPassword} onChange={e => setBrandPassword(e.target.value)} required placeholder="Min 8 characters" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Company Name *</label>
-                <input value={brandCompanyName} onChange={e => setBrandCompanyName(e.target.value)} required placeholder="e.g. Tata Projects Ltd" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Industry</label>
-                  <input value={brandIndustry} onChange={e => setBrandIndustry(e.target.value)} placeholder="e.g. Technology" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Website</label>
-                  <input value={brandWebsite} onChange={e => setBrandWebsite(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Phone Number</label>
-                <input value={brandPhone} onChange={e => setBrandPhone(e.target.value)} placeholder="e.g. 9876543210" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-              </div>
-
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Create Brand Account</button>
-                <button type="button" onClick={() => { setCreateBrandModalOpen(false); clearBrandForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ CREATE CAMPAIGN MODAL ══════════════════════════════════════ */}
-      {createCampaignModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 600, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Create New Campaign</h3>
-              <button onClick={() => { setCreateCampaignModalOpen(false); clearCampaignForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleCreateCampaign} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Select Brand *</label>
-                <select value={campBrandId} onChange={e => setCampBrandId(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                  <option value="">-- Choose Brand --</option>
-                  {brands.map(b => (
-                    <option key={b.id} value={b.id}>{b.companyName}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Campaign Title *</label>
-                  <input value={campTitle} onChange={e => setCampTitle(e.target.value)} required placeholder="e.g. Diwali Special Launch" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Budget (INR) *</label>
-                  <input type="number" value={campBudget} onChange={e => setCampBudget(e.target.value)} required placeholder="50000" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Brief *</label>
-                <textarea value={campDesc} onChange={e => setCampDesc(e.target.value)} rows={4} required placeholder="Detail the campaign requirements, deliverables, etc..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Target Platforms (comma separated)</label>
-                  <input value={campPlatform} onChange={e => setCampPlatform(e.target.value)} placeholder="Instagram, YouTube" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Target Niches (comma separated)</label>
-                  <input value={campNiche} onChange={e => setCampNiche(e.target.value)} placeholder="Fashion, Tech" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Campaign Status</label>
-                <select value={campStatus} onChange={e => setCampStatus(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="COMPLETED">COMPLETED</option>
-                  <option value="PAUSED">PAUSED</option>
-                </select>
-              </div>
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Create Campaign</button>
-                <button type="button" onClick={() => { setCreateCampaignModalOpen(false); clearCampaignForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ NEW/EDIT EVENT MODAL ════════════════════════════════════ */}
-      {eventModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 600, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingEvent ? 'Edit Event Details' : 'Create New Event'}</h3>
-              <button onClick={() => { setEventModalOpen(false); setEditingEvent(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSaveEvent} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Event Title *</label>
-                <input value={evtTitle} onChange={e => setEvtTitle(e.target.value)} required placeholder="e.g. National Creator Summit 2026" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Agenda *</label>
-                <textarea value={evtDescription} onChange={e => setEvtDescription(e.target.value)} required rows={4} placeholder="What is the schedule, key hosts, and learning outcomes?" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Date & Time *</label>
-                  <input type="datetime-local" value={evtDate} onChange={e => setEvtDate(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Location / Venue *</label>
-                  <input value={evtLocation} onChange={e => setEvtLocation(e.target.value)} required placeholder="e.g. New Delhi, ILBS Auditorium" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Registration link</label>
-                  <input value={evtLink} onChange={e => setEvtLink(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Banner Cover Image URL</label>
-                  <input value={evtImage} onChange={e => setEvtImage(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>{editingEvent ? 'Update Event Details' : 'Create Event'}</button>
-                <button type="button" onClick={() => { setEventModalOpen(false); setEditingEvent(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ GRANT ACHIEVEMENT MODAL ══════════════════════════════════ */}
-      {grantAchModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 550, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Grant Creator Achievement Badge</h3>
-              <button onClick={() => { setGrantAchModalOpen(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSaveAchievement} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Select Creator *</label>
-                <select value={achCreatorId} onChange={e => setAchCreatorId(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                  <option value="">-- Choose Creator --</option>
-                  {creators.map(c => (
-                    <option key={c.id} value={c.id}>{c.name} (@{c.handle})</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Badge Type *</label>
-                  <select value={achType} onChange={e => setAchType(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                    <option value="VERIFICATION">VERIFICATION</option>
-                    <option value="FOLLOWER_MILESTONE">FOLLOWER MILESTONE</option>
-                    <option value="DEAL_MILESTONE">DEAL MILESTONE</option>
-                    <option value="CUSTOM">CUSTOM BADGE</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Badge Title *</label>
-                  <input value={achTitle} onChange={e => setAchTitle(e.target.value)} required placeholder="e.g. Rising Star, Superhost" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Criteria</label>
-                <textarea value={achDescription} onChange={e => setAchDescription(e.target.value)} rows={3} placeholder="Describe the reason for awarding this badge..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
-              </div>
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Grant Badge</button>
-                <button type="button" onClick={() => { setGrantAchModalOpen(false); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ══ NEW/EDIT MISSION MODAL ══════════════════════════════════ */}
-      {missionModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 600, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingMission ? 'Edit Monthly Mission' : 'Create Monthly Mission'}</h3>
-              <button onClick={() => { setMissionModalOpen(false); setEditingMission(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleSaveMission} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Mission Title *</label>
-                  <input value={misTitle} onChange={e => setMisTitle(e.target.value)} required placeholder="e.g. Join the Creator Network" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Reward Tag *</label>
-                  <input value={misReward} onChange={e => setMisReward(e.target.value)} required placeholder="e.g. 500 Coins, Swag Bag" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Reward Color (Hex)</label>
-                  <input value={misRewardColor} onChange={e => setMisRewardColor(e.target.value)} placeholder="#FF9431" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Deadline Date *</label>
-                  <input type="date" value={misDeadline} onChange={e => setMisDeadline(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Instructions *</label>
-                <textarea value={misDescription} onChange={e => setMisDescription(e.target.value)} required rows={3} placeholder="What does the creator need to do?" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Steps / Checklist (One per line) *</label>
-                <textarea value={misSteps} onChange={e => setMisSteps(e.target.value)} required rows={4} placeholder="Complete your profile&#10;Verify your email&#10;Share referral link" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
-              </div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: T.navy, cursor: 'pointer', marginTop: 8 }}>
-                <input type="checkbox" checked={misActive} onChange={e => setMisActive(e.target.checked)} style={{ width: 16, height: 16 }} />
-                ✓ Mission is Active and visible to creators
-              </label>
-              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>{editingMission ? 'Update Mission' : 'Create Mission'}</button>
-                <button type="button" onClick={() => { setMissionModalOpen(false); setEditingMission(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* CSS for spin animation */}
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        * { box-sizing: border-box; }
-        body { margin: 0; }
-        tr:hover { background: rgba(248, 250, 252, 0.8); }
-      `}</style>
-    </div>
+        galleryModalOpen={galleryModalOpen}
+        setGalleryModalOpen={setGalleryModalOpen}
+        editingGallery={editingGallery}
+        setEditingGallery={setEditingGallery}
+        clearGalleryForm={clearGalleryForm}
+        handleSaveGallery={handleSaveGallery}
+        galTitle={galTitle}
+        setGalTitle={setGalTitle}
+        galType={galType}
+        setGalType={setGalType}
+        galLocation={galLocation}
+        setGalLocation={setGalLocation}
+        galDate={galDate}
+        setGalDate={setGalDate}
+        galCategory={galCategory}
+        setGalCategory={setGalCategory}
+        galTags={galTags}
+        setGalTags={setGalTags}
+        galThumbnail={galThumbnail}
+        setGalThumbnail={setGalThumbnail}
+        galVideoUrl={galVideoUrl}
+        setGalVideoUrl={setGalVideoUrl}
+        galDuration={galDuration}
+        setGalDuration={setGalDuration}
+        galDesc={galDesc}
+        setGalDesc={setGalDesc}
+      />
+    </AdminLayout>
   );
 }
