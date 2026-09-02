@@ -591,22 +591,24 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
                                   {/* Industry Brand Affinity Fit */}
                                   <SectionTitle icon={Sparkles}>Brand Affinity Fit</SectionTitle>
-                                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '60px' }}>
-                                     {(creator.brand_affinities || nicheTags.map((n, idx) => {
-                                        const scores = ['98%', '94%', '90%', '85%'];
-                                        return {
-                                           name: n.replace(/Verified Creator|Elite Partner/gi, 'Brand Collaborations').trim(),
-                                           score: scores[idx] || '85%'
-                                        };
-                                     })).slice(0, 4).map(aff => (
-                                        <div key={aff.name} style={{ padding: '16px', background: 'rgba(248,250,252,0.92)', borderRadius: '20px', border: '1.5px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
-                                           <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>{aff.name}</span>
-                                           <span style={{ fontSize: '11px', fontWeight: 900, color: '#10b981', background: 'rgba(16,185,129,0.08)', padding: '4px 10px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
-                                              {aff.score} Fit
-                                           </span>
-                                        </div>
-                                     ))}
-                                  </div>
+                                  {Array.isArray(creator.brand_affinities) && creator.brand_affinities.length > 0 ? (
+                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '60px' }}>
+                                        {creator.brand_affinities.slice(0, 4).map(aff => (
+                                           <div key={aff.name} style={{ padding: '16px', background: 'rgba(248,250,252,0.92)', borderRadius: '20px', border: '1.5px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
+                                              <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>{aff.name}</span>
+                                              {aff.score && (
+                                                 <span style={{ fontSize: '11px', fontWeight: 900, color: '#10b981', background: 'rgba(16,185,129,0.08)', padding: '4px 10px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
+                                                    {aff.score} Fit
+                                                 </span>
+                                              )}
+                                           </div>
+                                        ))}
+                                     </div>
+                                  ) : (
+                                     <div style={{ padding: '24px 32px', background: 'rgba(248,250,252,0.92)', borderRadius: '24px', border: '1.5px solid #f1f5f9', textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: 600, marginBottom: '60px', lineHeight: 1.5 }}>
+                                        Brand affinity insights will appear as your profile gains verified campaign data.
+                                     </div>
+                                  )}
 
                                   <SectionTitle icon={Zap}>Digital Footprint</SectionTitle>
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '60px' }}>
@@ -637,26 +639,32 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
                                   {/* Professional Production Suite & Tech Stack */}
                                   <SectionTitle icon={ShieldCheck}>Production Suite & Creative Tech</SectionTitle>
-                                  <div style={{ padding: '32px', background: 'rgba(248,250,252,0.92)', borderRadius: '32px', border: '1.5px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
-                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                        <div>
-                                           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Primary Camera Suite</div>
-                                           <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>{creator.camera || (nicheTags.some(n => n.includes('Tech') || n.includes('Auto')) ? 'Sony FX3 / Sony A7R V (4K HDR)' : 'Sony A7 IV / iPhone 15 Pro Max')}</div>
-                                        </div>
-                                        <div>
-                                           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Audio Capture Suite</div>
-                                           <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>{creator.audio || (nicheTags.some(n => n.includes('Tech') || n.includes('Podcast')) ? 'DJI Mic 2 / Shure SM7B Setup' : 'Rode Wireless PRO')}</div>
-                                        </div>
-                                        <div>
-                                           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Editing & Post Suite</div>
-                                           <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>{creator.editing || 'DaVinci Resolve / Premiere Pro CC'}</div>
-                                        </div>
-                                        <div>
-                                           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Studio Environments</div>
-                                           <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>{creator.studio || (nicheTags.some(n => n.includes('Tech')) ? 'Acoustic Treated RGB Pro Studio' : 'Natural Light Home Studio')}</div>
+                                  {(creator.camera || creator.audio || creator.editing || creator.studio) ? (
+                                     <div style={{ padding: '32px', background: 'rgba(248,250,252,0.92)', borderRadius: '32px', border: '1.5px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                           <div>
+                                              <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Primary Camera Suite</div>
+                                              <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>{creator.camera || '—'}</div>
+                                           </div>
+                                           <div>
+                                              <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Audio Capture Suite</div>
+                                              <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>{creator.audio || '—'}</div>
+                                           </div>
+                                           <div>
+                                              <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Editing & Post Suite</div>
+                                              <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>{creator.editing || '—'}</div>
+                                           </div>
+                                           <div>
+                                              <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Studio Environments</div>
+                                              <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>{creator.studio || '—'}</div>
+                                           </div>
                                         </div>
                                      </div>
-                                  </div>
+                                  ) : (
+                                     <div style={{ padding: '24px 32px', background: 'rgba(248,250,252,0.92)', borderRadius: '24px', border: '1.5px solid #f1f5f9', textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: 600, marginBottom: '60px' }}>
+                                        Production specifications available upon direct inquiry.
+                                     </div>
+                                  )}
                                </div>
 
                                {/* AUDIENCE ARCHITECTURE */}
