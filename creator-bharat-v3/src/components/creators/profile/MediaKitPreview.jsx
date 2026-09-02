@@ -806,7 +806,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
                                            <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>OFFICIAL BOOKING EMAIL</div>
-                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.email || creator.user?.email || `${creator.slug || 'hello'}@creatorbharat.com`}</div>
+                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.contactEmail || creator.email || creator.user?.email || 'Direct Message via CreatorBharat'}</div>
                                         </div>
                                         <div style={{ width: '44px', height: '44px', background: '#3b82f615', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                            <Mail size={18} color="#3b82f6" />
@@ -817,7 +817,16 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #e2e8f0', paddingTop: '20px' }}>
                                         <div>
                                            <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>PRIMARY CREATOR BASE</div>
-                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.city || 'Mumbai'}, {creator.state || 'India'}</div>
+                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>
+                                              {(() => {
+                                                 const city = creator.city && String(creator.city).trim();
+                                                 const state = creator.state && String(creator.state).trim();
+                                                 if (city && state) return `${city}, ${state}`;
+                                                 if (city) return `${city}, India`;
+                                                 if (state) return `${state}, India`;
+                                                 return 'Location available upon request';
+                                              })()}
+                                           </div>
                                         </div>
                                         <div style={{ width: '44px', height: '44px', background: '#ef444415', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                            <MapPin size={18} color="#ef4444" />
