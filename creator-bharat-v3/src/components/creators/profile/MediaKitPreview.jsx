@@ -852,26 +852,112 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
                                   {/* Professional Creative Background & Credentials */}
                                   <SectionTitle icon={Briefcase}>Creative Background & Milestones</SectionTitle>
-                                  <div style={{ padding: '32px', background: 'rgba(248,250,252,0.92)', borderRadius: '40px', border: '1.5px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
-                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
-                                        <div>
-                                           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Years in Industry</div>
-                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.experience || '5+ Years Active'}</div>
+                                  {(() => {
+                                     const normalizedMilestones = Array.isArray(creator.milestones)
+                                        ? creator.milestones.map(m => {
+                                             if (!m || typeof m !== 'object') return null;
+                                             const year = m.year || m.y || '';
+                                             const title = m.title || m.t || '';
+                                             const desc = m.desc || m.d || '';
+                                             if (!year && !title && !desc) return null;
+                                             return { year, title, desc };
+                                          }).filter(Boolean)
+                                        : [];
+
+                                     const story = creator.fullStory && typeof creator.fullStory === 'object' ? {
+                                        p1: typeof creator.fullStory.p1 === 'string' ? creator.fullStory.p1.trim() : '',
+                                        quote: typeof creator.fullStory.quote === 'string' ? creator.fullStory.quote.trim() : '',
+                                        p2: typeof creator.fullStory.p2 === 'string' ? creator.fullStory.p2.trim() : '',
+                                        p3: typeof creator.fullStory.p3 === 'string' ? creator.fullStory.p3.trim() : ''
+                                     } : null;
+
+                                     const hasStory = Boolean(story && (story.p1 || story.quote || story.p2 || story.p3));
+                                     const hasMilestones = normalizedMilestones.length > 0;
+                                     const hasExperience = Boolean(creator.experience && String(creator.experience).trim());
+                                     const hasEducation = Boolean(creator.education && String(creator.education).trim());
+                                     const hasFormats = Boolean(creator.experience_formats && String(creator.experience_formats).trim());
+                                     const hasCoBrandedIp = Boolean(creator.cobranded_ip && String(creator.cobranded_ip).trim());
+
+                                     const hasAnyBackground = hasStory || hasMilestones || hasExperience || hasEducation || hasFormats || hasCoBrandedIp;
+
+                                     if (!hasAnyBackground) {
+                                        return (
+                                           <div style={{ padding: '24px 32px', background: 'rgba(248,250,252,0.92)', borderRadius: '40px', border: '1.5px solid #f1f5f9', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2, textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: 600 }}>
+                                              Creative background and credentials available upon request.
+                                           </div>
+                                        );
+                                     }
+
+                                     return (
+                                        <div style={{ padding: '32px', background: 'rgba(248,250,252,0.92)', borderRadius: '40px', border: '1.5px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
+                                           {/* Story Narrative if present */}
+                                           {hasStory && (
+                                              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                 {story.quote && (
+                                                    <p style={{ fontSize: '14px', fontStyle: 'italic', color: '#0f172a', fontWeight: 700, margin: '0 0 8px 0', borderLeft: '3px solid #FF9431', paddingLeft: '14px', lineHeight: 1.5 }}>
+                                                       "{story.quote}"
+                                                    </p>
+                                                 )}
+                                                 {story.p1 && <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>{story.p1}</p>}
+                                                 {story.p2 && <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>{story.p2}</p>}
+                                                 {story.p3 && <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>{story.p3}</p>}
+                                              </div>
+                                           )}
+
+                                           {/* Verified Milestones Timeline if present */}
+                                           {hasMilestones && (
+                                              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', borderTop: hasStory ? '1px dashed #e2e8f0' : 'none', paddingTop: hasStory ? '16px' : '0' }}>
+                                                 <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>KEY MILESTONES & ACHIEVEMENTS</div>
+                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                    {normalizedMilestones.slice(0, 4).map((m, idx) => (
+                                                       <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                                                          {m.year && (
+                                                             <span style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', background: '#FF943115', padding: '2px 8px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
+                                                                {m.year}
+                                                             </span>
+                                                          )}
+                                                          <div>
+                                                             {m.title && <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>{m.title}</div>}
+                                                             {m.desc && <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>{m.desc}</div>}
+                                                          </div>
+                                                       </div>
+                                                    ))}
+                                                 </div>
+                                              </div>
+                                           )}
+
+                                           {/* Explicit Credentials if present */}
+                                           {(hasExperience || hasEducation || hasFormats || hasCoBrandedIp) && (
+                                              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px', borderTop: (hasStory || hasMilestones) ? '1px dashed #e2e8f0' : 'none', paddingTop: (hasStory || hasMilestones) ? '16px' : '0' }}>
+                                                 {hasExperience && (
+                                                    <div>
+                                                       <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Years in Industry</div>
+                                                       <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.experience}</div>
+                                                    </div>
+                                                 )}
+                                                 {hasEducation && (
+                                                    <div style={{ borderTop: hasExperience ? '1px dashed #e2e8f0' : 'none', paddingTop: hasExperience ? '16px' : '0' }}>
+                                                       <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Education & Credentials</div>
+                                                       <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.education}</div>
+                                                    </div>
+                                                 )}
+                                                 {hasFormats && (
+                                                    <div style={{ borderTop: (hasExperience || hasEducation) ? '1px dashed #e2e8f0' : 'none', paddingTop: (hasExperience || hasEducation) ? '16px' : '0' }}>
+                                                       <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Primary Content Formats</div>
+                                                       <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.experience_formats}</div>
+                                                    </div>
+                                                 )}
+                                                 {hasCoBrandedIp && (
+                                                    <div style={{ borderTop: (hasExperience || hasEducation || hasFormats) ? '1px dashed #e2e8f0' : 'none', paddingTop: (hasExperience || hasEducation || hasFormats) ? '16px' : '0' }}>
+                                                       <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Co-Branded IP (Shows)</div>
+                                                       <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.cobranded_ip}</div>
+                                                    </div>
+                                                 )}
+                                              </div>
+                                           )}
                                         </div>
-                                        <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '16px' }}>
-                                           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Education & Credentials</div>
-                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.education || 'B.A. Cinema & Media Studies'}</div>
-                                        </div>
-                                        <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '16px' }}>
-                                           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Primary Content Formats</div>
-                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.experience_formats || (nicheTags.some(n => n.includes('Tech') || n.includes('Auto')) ? 'Cinematic Reviews, Video Reels' : 'Lifestyle Vlogs, Curated Posts')}</div>
-                                        </div>
-                                        <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '16px' }}>
-                                           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Co-Branded IP (Shows)</div>
-                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.cobranded_ip || (nicheTags.some(n => n.includes('Tech')) ? 'TechBytes Podcast Series' : 'Regional Travel Diary Series')}</div>
-                                        </div>
-                                     </div>
-                                  </div>
+                                     );
+                                  })()}
 
                                   {/* Collaboration Logistics Widget */}
                                   <SectionTitle icon={Globe}>Collaboration Logistics</SectionTitle>
