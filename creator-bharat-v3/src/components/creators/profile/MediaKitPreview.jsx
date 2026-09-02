@@ -200,11 +200,19 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
     ? creator.collabs.map(c => (typeof c === 'string' ? c : (c.p || c.brand || c.name || ''))).filter(Boolean)
     : [];
 
-  const logistics = creator.logistics || {
-    timezone: 'India (IST — UTC+5:30)',
-    invoicing: 'SWIFT, Stripe, PayPal Accepted',
-    shipping: 'DHL & FedEx International Shipping',
-    meetings: 'Google Meet, Zoom, Slack'
+  const logistics = {
+    timezone: (creator.logistics && typeof creator.logistics.timezone === 'string' && creator.logistics.timezone.trim())
+      ? creator.logistics.timezone.trim()
+      : 'Timezone coordinated per campaign.',
+    invoicing: (creator.logistics && typeof creator.logistics.invoicing === 'string' && creator.logistics.invoicing.trim())
+      ? creator.logistics.invoicing.trim()
+      : 'CreatorBharat Escrow & Direct Bank Transfer',
+    shipping: (creator.logistics && typeof creator.logistics.shipping === 'string' && creator.logistics.shipping.trim())
+      ? creator.logistics.shipping.trim()
+      : 'Domestic & International Coordination Available',
+    meetings: (creator.logistics && typeof creator.logistics.meetings === 'string' && creator.logistics.meetings.trim())
+      ? creator.logistics.meetings.trim()
+      : 'Google Meet, Zoom, or CreatorBharat Direct'
   };
 
   const handlePrint = () => {
@@ -563,31 +571,57 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                   )}
 
                                   <SectionTitle icon={Briefcase}>Signature Offerings</SectionTitle>
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '60px' }}>
-                                     {(creator.packages || (creator.services && creator.services.length > 0 ? creator.services.map((s, idx) => ({
-                                        l: s.t,
-                                        v: s.rate ? `₹${Number(s.rate).toLocaleString('en-IN')}` : 'Custom',
-                                        items: s.d ? s.d.split(',').map(item => item.trim()) : []
-                                     })) : [
-                                        { l: 'Dedicated Integration', v: 'Custom', items: ['Full-length dedicated brand integration with premium production.'] },
-                                        { l: 'Short-Form Video', v: 'Custom', items: ['High retention reel/short with native storytelling.'] }
-                                     ])).slice(0, 2).map((pkg, i) => {
-                                        const title = pkg.title || pkg.l;
-                                        const price = pkg.price || pkg.v;
-                                        const desc = pkg.desc || (pkg.items && pkg.items.join(', ')) || 'Premium branded content.';
-                                        return (
-                                           <div key={title || i} style={{ padding: '20px', background: 'rgba(248,250,252,0.92)', borderRadius: '24px', border: '1.5px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
-                                              <div>
-                                                 <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '6px' }}>{title}</div>
-                                                 <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600, maxWidth: '220px', lineHeight: 1.4 }}>{desc}</div>
-                                              </div>
-                                              <div style={{ fontSize: '14px', fontWeight: 950, color: '#FF9431', background: '#FF943115', padding: '8px 16px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
-                                                 {price}
-                                              </div>
-                                           </div>
-                                        );
-                                     })}
-                                  </div>
+                                   {(() => {
+                                      const rawPackages = Array.isArray(creator.packages) && creator.packages.length > 0
+                                         ? creator.packages.map(p => {
+                                              if (!p || typeof p !== 'object') return null;
+                                              const title = p.name || p.title || p.l || '';
+                                              const rawPrice = p.price !== undefined && p.price !== null ? p.price : (p.rate !== undefined && p.rate !== null ? p.rate : p.v);
+                                              const price = rawPrice ? (typeof rawPrice === 'number' || (!isNaN(Number(rawPrice)) && String(rawPrice).trim() !== '') ? `₹${Number(rawPrice).toLocaleString('en-IN')}` : String(rawPrice)) : 'Custom';
+                                              const desc = p.desc || p.description || (Array.isArray(p.items) ? p.items.join(', ') : '');
+                                              if (!title && !price && !desc) return null;
+                                              return { title: title || 'Campaign Package', price, desc: desc || 'Custom campaign deliverables.' };
+                                           }).filter(Boolean)
+                                         : [];
+
+                                      const rawServices = rawPackages.length === 0 && Array.isArray(creator.services) && creator.services.length > 0
+                                         ? creator.services.map(s => {
+                                              if (!s || typeof s !== 'object') return null;
+                                              const title = s.title || s.t || s.name || '';
+                                              const rawPrice = s.rate !== undefined && s.rate !== null ? s.rate : (s.price !== undefined && s.price !== null ? s.price : s.v);
+                                              const price = rawPrice ? (typeof rawPrice === 'number' || (!isNaN(Number(rawPrice)) && String(rawPrice).trim() !== '') ? `₹${Number(rawPrice).toLocaleString('en-IN')}` : String(rawPrice)) : 'Custom';
+                                              const desc = s.desc || s.d || (s.items && Array.isArray(s.items) ? s.items.join(', ') : (typeof s.d === 'string' ? s.d : ''));
+                                              if (!title && !price && !desc) return null;
+                                              return { title: title || 'Custom Deliverable', price, desc: desc || 'Tailored brand content.' };
+                                           }).filter(Boolean)
+                                         : [];
+
+                                      const offerings = rawPackages.length > 0 ? rawPackages : rawServices;
+
+                                      if (offerings.length === 0) {
+                                         return (
+                                            <div style={{ padding: '24px 32px', background: 'rgba(248,250,252,0.92)', borderRadius: '24px', border: '1.5px solid #f1f5f9', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
+                                               Custom campaign packages and deliverables available upon inquiry.
+                                            </div>
+                                         );
+                                      }
+
+                                      return (
+                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '60px' }}>
+                                            {offerings.slice(0, 3).map((pkg, i) => (
+                                               <div key={pkg.title || i} style={{ padding: '20px', background: 'rgba(248,250,252,0.92)', borderRadius: '24px', border: '1.5px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
+                                                  <div>
+                                                     <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '6px' }}>{pkg.title}</div>
+                                                     <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600, maxWidth: '220px', lineHeight: 1.4 }}>{pkg.desc}</div>
+                                                  </div>
+                                                  <div style={{ fontSize: '14px', fontWeight: 950, color: '#FF9431', background: '#FF943115', padding: '8px 16px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
+                                                     {pkg.price}
+                                                  </div>
+                                               </div>
+                                            ))}
+                                         </div>
+                                      );
+                                   })()}
 
                                   {/* Industry Brand Affinity Fit */}
                                   <SectionTitle icon={Sparkles}>Brand Affinity Fit</SectionTitle>
