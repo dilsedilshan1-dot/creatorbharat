@@ -671,56 +671,77 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                <div className="printable-section print-col-right" style={{ position: 'relative', zIndex: 2 }}>
                                   <SectionTitle icon={PieChart}>Audience Architecture</SectionTitle>
                                   <div style={{ background: 'rgba(248,250,252,0.92)', padding: '40px', borderRadius: '40px', border: '1.5px solid #f1f5f9', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
-                                     <div style={{ marginBottom: '40px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                                           <span style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>Geographic Heatmap</span>
-                                           <span style={{ fontSize: '14px', fontWeight: 950, color: '#FF9431' }}>Reach</span>
+                                     {/* Creator Focus Areas (from creator.localHubs) */}
+                                     {Array.isArray(creator.localHubs) && creator.localHubs.length > 0 && (
+                                        <div style={{ marginBottom: '32px' }}>
+                                           <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a', marginBottom: '14px' }}>Creator Focus Areas</div>
+                                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                              {creator.localHubs.map(hub => {
+                                                 const label = typeof hub === 'string' ? hub : (hub?.name || hub?.l || hub?.city || '');
+                                                 return label ? (
+                                                    <span key={label} style={{ fontSize: '12px', fontWeight: 800, color: '#475569', background: '#ffffff', border: '1.5px solid #e2e8f0', padding: '6px 14px', borderRadius: '100px' }}>
+                                                       {label}
+                                                    </span>
+                                                 ) : null;
+                                              })}
+                                           </div>
                                         </div>
-                                        {(creator.audience_hubs || [
-                                           { l: creator.city || 'Mumbai', p: 48 },
-                                           { l: 'Delhi NCR', p: 32 },
-                                           { l: 'Bangalore Metro', p: 20 }
-                                        ]).map(item => {
-                                           const label = item.l;
-                                           const pct = item.p || parseInt(item.d) || 30;
-                                           return (
-                                              <div key={label} style={{ marginBottom: '20px' }}>
-                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px', fontWeight: 800, color: '#64748b' }}>
-                                                    <span>{label}</span>
-                                                    <span>{pct}%</span>
-                                                 </div>
-                                                 <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '100px', overflow: 'hidden' }}>
-                                                    <div style={{ height: '100%', background: 'linear-gradient(90deg, #FF9431, #FF5C00)', width: `${pct}%` }} />
-                                                 </div>
-                                              </div>
-                                           );
-                                        })}
-                                     </div>
+                                     )}
 
-                                     {(() => {
-                                        const genderBreakdown = creator.audience_gender || { female: 32, male: 68, other: 0 };
-                                        return (
-                                           <>
-                                              <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a', marginBottom: '20px' }}>Gender Breakdown</div>
-                                              <div style={{ display: 'grid', gridTemplateColumns: genderBreakdown.other > 0 ? 'repeat(3, 1fr)' : '1fr 1fr', gap: '16px' }}>
-                                                 <div style={{ padding: '24px 12px', background: '#ffffff', borderRadius: '24px', textAlign: 'center', border: '1.5px solid #e2e8f0' }}>
-                                                    <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 900, marginBottom: '6px', letterSpacing: '0.5px' }}>MALE</div>
-                                                    <div style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a' }}>{genderBreakdown.male}%</div>
-                                                 </div>
-                                                 <div style={{ padding: '24px 12px', background: '#ffffff', borderRadius: '24px', textAlign: 'center', border: '1.5px solid #e2e8f0' }}>
-                                                    <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 900, marginBottom: '6px', letterSpacing: '0.5px' }}>FEMALE</div>
-                                                    <div style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a' }}>{genderBreakdown.female}%</div>
-                                                 </div>
-                                                 {genderBreakdown.other > 0 && (
-                                                    <div style={{ padding: '24px 12px', background: '#ffffff', borderRadius: '24px', textAlign: 'center', border: '1.5px solid #e2e8f0' }}>
-                                                       <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 900, marginBottom: '6px', letterSpacing: '0.5px' }}>OTHER</div>
-                                                       <div style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a' }}>{genderBreakdown.other}%</div>
+                                     {/* Verified Geographic Heatmap (only if real verified audience analytics with percentages exist) */}
+                                     {Array.isArray(creator.audience_hubs) && creator.audience_hubs.length > 0 && creator.audience_hubs.some(h => typeof h.p === 'number') ? (
+                                        <div style={{ marginBottom: '40px' }}>
+                                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                              <span style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>Geographic Heatmap</span>
+                                              <span style={{ fontSize: '14px', fontWeight: 950, color: '#FF9431' }}>Reach</span>
+                                           </div>
+                                           {creator.audience_hubs.map(item => {
+                                              const label = item.l || item.name;
+                                              const pct = item.p || 0;
+                                              return (
+                                                 <div key={label} style={{ marginBottom: '20px' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px', fontWeight: 800, color: '#64748b' }}>
+                                                       <span>{label}</span>
+                                                       <span>{pct}%</span>
                                                     </div>
-                                                 )}
+                                                    <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '100px', overflow: 'hidden' }}>
+                                                       <div style={{ height: '100%', background: 'linear-gradient(90deg, #FF9431, #FF5C00)', width: `${pct}%` }} />
+                                                    </div>
+                                                 </div>
+                                              );
+                                           })}
+                                        </div>
+                                     ) : null}
+
+                                     {/* Verified Gender Breakdown (only if real verified audience analytics exist) */}
+                                     {creator.audience_gender && (typeof creator.audience_gender.male === 'number' || typeof creator.audience_gender.female === 'number') ? (
+                                        <>
+                                           <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a', marginBottom: '20px' }}>Gender Breakdown</div>
+                                           <div style={{ display: 'grid', gridTemplateColumns: (creator.audience_gender.other && creator.audience_gender.other > 0) ? 'repeat(3, 1fr)' : '1fr 1fr', gap: '16px' }}>
+                                              <div style={{ padding: '24px 12px', background: '#ffffff', borderRadius: '24px', textAlign: 'center', border: '1.5px solid #e2e8f0' }}>
+                                                 <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 900, marginBottom: '6px', letterSpacing: '0.5px' }}>MALE</div>
+                                                 <div style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a' }}>{creator.audience_gender.male ?? 0}%</div>
                                               </div>
-                                           </>
-                                        );
-                                     })()}
+                                              <div style={{ padding: '24px 12px', background: '#ffffff', borderRadius: '24px', textAlign: 'center', border: '1.5px solid #e2e8f0' }}>
+                                                 <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 900, marginBottom: '6px', letterSpacing: '0.5px' }}>FEMALE</div>
+                                                 <div style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a' }}>{creator.audience_gender.female ?? 0}%</div>
+                                              </div>
+                                              {creator.audience_gender.other && creator.audience_gender.other > 0 ? (
+                                                 <div style={{ padding: '24px 12px', background: '#ffffff', borderRadius: '24px', textAlign: 'center', border: '1.5px solid #e2e8f0' }}>
+                                                    <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 900, marginBottom: '6px', letterSpacing: '0.5px' }}>OTHER</div>
+                                                    <div style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a' }}>{creator.audience_gender.other}%</div>
+                                                 </div>
+                                              ) : null}
+                                           </div>
+                                        </>
+                                     ) : null}
+
+                                     {/* Neutral state if no verified demographic analytics are linked */}
+                                     {!(Array.isArray(creator.audience_hubs) && creator.audience_hubs.some(h => typeof h.p === 'number')) && !(creator.audience_gender && (typeof creator.audience_gender.male === 'number' || typeof creator.audience_gender.female === 'number')) && (
+                                        <div style={{ textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: 600, lineHeight: 1.5, padding: '12px 8px' }}>
+                                           Audience demographic analytics will be displayed once verified channel insights are linked.
+                                        </div>
+                                     )}
                                   </div>
 
                                   <SectionTitle icon={Globe}>Verified Channels</SectionTitle>
@@ -739,18 +760,45 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                   </div>
 
                                   <SectionTitle icon={ShieldCheck}>Trust & Authority</SectionTitle>
-                                  <div style={{ padding: '32px', background: 'rgba(248,250,252,0.92)', borderRadius: '40px', border: '1.5px solid #f1f5f9', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
-                                     <div style={{ display: 'flex', gap: '4px', marginBottom: '16px' }}>
-                                        {[1,2,3,4,5].map(s => <Star key={s} size={18} fill="#FF9431" color="#FF9431" />)}
-                                        <span style={{ marginLeft: '12px', fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{creator.rating || 4.9}/5.0</span>
+                                  {Array.isArray(creator.reviews) && creator.reviews.length > 0 ? (() => {
+                                     const validReviews = creator.reviews.filter(r => (r?.text || r?.comment || r?.t));
+                                     if (validReviews.length === 0) {
+                                        return (
+                                           <div style={{ padding: '24px 32px', background: 'rgba(248,250,252,0.92)', borderRadius: '40px', border: '1.5px solid #f1f5f9', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2, textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: 600 }}>
+                                              No verified brand reviews yet.
+                                           </div>
+                                        );
+                                     }
+                                     const firstReview = validReviews[0];
+                                     const reviewText = firstReview.text || firstReview.comment || firstReview.t;
+                                     const reviewer = firstReview.reviewerName || firstReview.brand || firstReview.b || 'Verified Brand Partner';
+                                     const ratings = validReviews.map(r => Number(r.rating)).filter(n => !isNaN(n) && n > 0);
+                                     const avgRating = ratings.length > 0 ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : (creator.rating ? Number(creator.rating).toFixed(1) : null);
+                                     const numStars = avgRating ? Math.round(Number(avgRating)) : 5;
+
+                                     return (
+                                        <div style={{ padding: '32px', background: 'rgba(248,250,252,0.92)', borderRadius: '40px', border: '1.5px solid #f1f5f9', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
+                                           <div style={{ display: 'flex', gap: '4px', marginBottom: '16px', alignItems: 'center' }}>
+                                              {[1,2,3,4,5].map(s => (
+                                                 <Star key={s} size={18} fill={s <= numStars ? "#FF9431" : "none"} color="#FF9431" />
+                                              ))}
+                                              {avgRating && (
+                                                 <span style={{ marginLeft: '12px', fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{avgRating}/5.0</span>
+                                              )}
+                                           </div>
+                                           <p style={{ fontSize: '14px', color: '#475569', fontStyle: 'italic', lineHeight: 1.6, fontWeight: 500, marginBottom: '20px' }}>
+                                              "{reviewText}"
+                                           </p>
+                                           <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                              — {reviewer}
+                                           </div>
+                                        </div>
+                                     );
+                                  })() : (
+                                     <div style={{ padding: '24px 32px', background: 'rgba(248,250,252,0.92)', borderRadius: '40px', border: '1.5px solid #f1f5f9', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2, textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: 600 }}>
+                                        No verified brand reviews yet.
                                      </div>
-                                     <p style={{ fontSize: '14px', color: '#475569', fontStyle: 'italic', lineHeight: 1.6, fontWeight: 500, marginBottom: '20px' }}>
-                                        "{creator.reviews?.[0]?.text || creator.reviews?.[0]?.comment || creator.reviews?.[0]?.t || 'Exceptional professional. Delivered 3x ROI on our recent campaign with perfect brand alignment and high-quality production.'}"
-                                     </p>
-                                     <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                        — {creator.reviews?.[0]?.reviewerName || creator.reviews?.[0]?.brand || creator.reviews?.[0]?.b || 'Global Brand Partner'}
-                                     </div>
-                                  </div>
+                                  )}
 
                                   <SectionTitle icon={Mail}>Direct Booking & Location</SectionTitle>
                                   <div style={{ padding: '32px', background: 'rgba(255,255,255,0.92)', borderRadius: '40px', border: '1.5px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '60px', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
