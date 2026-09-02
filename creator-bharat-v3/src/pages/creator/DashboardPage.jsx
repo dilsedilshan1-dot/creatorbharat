@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../core/context';
 import { LS, fmt } from '../../utils/helpers';
 import { fetchCreators, fetchCampaigns } from '../../utils/platformService';
+import { MediaKitPreview } from '../../components/creators/profile/MediaKitPreview';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldCheck, ExternalLink, TrendingUp, Users, Zap, Briefcase,
@@ -821,7 +822,7 @@ const OnboardingPanel = ({ hasIdentity, hasSocials, hasStory, hasServices, allCh
 };
 
 // ─── CB Page & Media Kit Download (spans 6 columns) ─────────────────────────────
-const CBAndMediaKitBento = ({ creator, followingCB, onToggleFollow, isLocked, navigate, dsp }) => {
+const CBAndMediaKitBento = ({ creator, followingCB, onToggleFollow, isLocked, navigate, dsp, onOpenMediaKit }) => {
   const rawProfileId = creator?.handle || creator?.slug || creator?.id || 'elite';
   const cleanProfileId = rawProfileId.startsWith('@') ? rawProfileId.slice(1) : rawProfileId;
 
@@ -894,8 +895,10 @@ const CBAndMediaKitBento = ({ creator, followingCB, onToggleFollow, isLocked, na
           {followingCB ? '✓ Following Page' : '+ Follow Page'}
         </button>
         <button
-          onClick={() => !isLocked && navigate('/creator/analytics')}
+          type="button"
+          onClick={() => !isLocked && onOpenMediaKit && onOpenMediaKit()}
           disabled={isLocked}
+          aria-label="Preview and Download PDF Media Kit"
           style={{
             flex: 1, padding: '10px', borderRadius: 8,
             background: isLocked ? C.bg : '#fff',
@@ -905,7 +908,7 @@ const CBAndMediaKitBento = ({ creator, followingCB, onToggleFollow, isLocked, na
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4
           }}
         >
-          <Download size={12} /> Download PDF
+          <Download size={12} /> Preview Media Kit
         </button>
       </div>
     </BentoCard>
@@ -1434,6 +1437,59 @@ export default function DashboardPage() {
   const { hasIdentity, hasSocials, hasStory, hasServices, allChecksComplete } = checkFlags(c);
   const isLocked = verificationStatus !== 'APPROVED';
   const isAnalyticsLocked = !st.isPro;
+  const [mediaKitOpen, setMediaKitOpen] = useState(false);
+
+  const sanitizedMediaKitCreator = useMemo(() => {
+    if (!c) return null;
+    return {
+      id: c.id,
+      name: c.name,
+      handle: c.handle,
+      slug: c.slug,
+      bio: c.bio,
+      photo: c.photo,
+      coverImage: c.coverImage || c.cover_image,
+      city: c.city,
+      state: c.state,
+      niche: c.niche,
+      platform: c.platform,
+      followers: c.followers,
+      engagementRate: c.engagementRate || c.er,
+      services: c.services,
+      packages: c.packages,
+      milestones: c.milestones,
+      socialLinks: c.socialLinks || c.social_links,
+      gallery: c.gallery,
+      collabs: c.collabs,
+      reviews: c.reviews,
+      isVerified: c.isVerified,
+      isPro: c.isPro,
+      score: c.score,
+      fullStory: c.fullStory || c.full_story,
+      localHubs: c.localHubs || c.local_hubs,
+      rateMin: c.rateMin,
+      rateMax: c.rateMax
+    };
+  }, [c]);
+
+  const stats = useMemo(() => {
+    if (!c) return { followers: 0, er: 0, reach: 0, authenticity: 0, score: 0 };
+    const rawFollowers = c.followers;
+    const followers = (rawFollowers !== undefined && rawFollowers !== null) ? Number(rawFollowers) : 0;
+    const er = (c.engagementRate !== undefined && c.engagementRate !== null)
+      ? Number(c.engagementRate)
+      : ((c.er !== undefined && c.er !== null) ? Number(c.er) : 0);
+    const scoreVal = (score !== undefined && score !== null)
+      ? Number(score)
+      : ((c.score !== undefined && c.score !== null) ? Number(c.score) : 0);
+    return {
+      followers,
+      er,
+      reach: c.reach !== undefined ? Number(c.reach) : 0,
+      authenticity: c.authenticity !== undefined ? Number(c.authenticity) : 0,
+      score: scoreVal
+    };
+  }, [c, score]);
 
   useEffect(() => {
     const v = parseInt(localStorage.getItem('cb_profile_views') || '1424');
@@ -1720,12 +1776,23 @@ export default function DashboardPage() {
             isLocked={isLocked}
             navigate={navigate}
             dsp={dsp}
+            onOpenMediaKit={() => setMediaKitOpen(true)}
           />
         </div>
       </div>
 
       {/* Upgrade sandbox Sim modal */}
       <UpgradeModal isOpen={isUpgradeOpen} onClose={() => setIsUpgradeOpen(false)} onPaymentSuccess={handleUpgradeSuccess} />
+
+      {/* Media Kit Preview Modal */}
+      {sanitizedMediaKitCreator && stats && (
+        <MediaKitPreview
+          open={mediaKitOpen}
+          onClose={() => setMediaKitOpen(false)}
+          creator={sanitizedMediaKitCreator}
+          stats={stats}
+        />
+      )}
 
       {/* Floating State DevBar */}
       {import.meta.env.DEV && (

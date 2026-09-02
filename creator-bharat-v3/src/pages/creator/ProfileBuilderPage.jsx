@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../core/context';
@@ -9,9 +9,10 @@ import {
   User, Globe, Camera, Image as ImageIcon, CheckCircle2, ChevronRight, Sparkles,
   BookOpen, Layers, MapPin, Plus, Trash2, Loader2, ExternalLink,
   Shield, Megaphone, Lock, Link2, Phone, MessageCircle, Star,
-  AtSign, Video, MessageSquare
+  AtSign, Video, MessageSquare, Download
 } from 'lucide-react';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
+import { MediaKitPreview } from '../../components/creators/profile/MediaKitPreview';
 import { updateCreatorProfile } from '../../utils/platformService';
 import { uploadFile } from '../../utils/uploadService';
 import { ENV } from '@/config/env';
@@ -2791,14 +2792,99 @@ export default function ProfileBuilderPage() {
 
   const comp = getDynamicCompleteness(F);
   const score = getDynamicScore(F, c);
+  const [mediaKitOpen, setMediaKitOpen] = useState(false);
+
+  const sanitizedMediaKitCreator = useMemo(() => {
+    if (!c && !F) return null;
+    const base = c || {};
+    return {
+      id: base.id || 'creator',
+      name: F.name || base.name || '',
+      handle: base.handle || `@${base.slug || 'creator'}`,
+      slug: base.slug || '',
+      bio: F.bio !== undefined ? F.bio : (base.bio || ''),
+      photo: F.photo || base.photo || '',
+      coverImage: F.coverImage || base.coverImage || base.cover_image || '',
+      city: F.city !== undefined ? F.city : (base.city || ''),
+      state: F.state !== undefined ? F.state : (base.state || ''),
+      niche: Array.isArray(F.niche) ? F.niche : (Array.isArray(base.niche) ? base.niche : []),
+      platform: base.platform || [],
+      followers: base.followers,
+      engagementRate: base.engagementRate || base.er,
+      services: F.services || base.services || [],
+      packages: F.packages || base.packages || [],
+      milestones: F.milestones || base.milestones || [],
+      socialLinks: F.socialLinks || base.socialLinks || base.social_links || [],
+      gallery: F.gallery || base.gallery || [],
+      collabs: F.collabs || base.collabs || [],
+      reviews: base.reviews || [],
+      isVerified: base.isVerified || false,
+      isPro: isPro || false,
+      score: (score !== undefined && score !== null) ? Number(score) : (base.score || 0),
+      fullStory: {
+        p1: F.storyP1 || base.fullStory?.p1 || base.full_story?.p1 || '',
+        quote: F.storyQuote || base.fullStory?.quote || base.full_story?.quote || '',
+        p2: F.storyP2 || base.fullStory?.p2 || base.full_story?.p2 || '',
+        p3: F.storyP3 || base.fullStory?.p3 || base.full_story?.p3 || ''
+      },
+      localHubs: F.localHubs || base.localHubs || base.local_hubs || [],
+      rateMin: F.rateMin !== undefined ? F.rateMin : (base.rateMin || 0),
+      rateMax: F.rateMax !== undefined ? F.rateMax : (base.rateMax || 0)
+    };
+  }, [c, F, isPro, score]);
+
+  const stats = useMemo(() => {
+    const rawFollowers = c?.followers;
+    const followers = (rawFollowers !== undefined && rawFollowers !== null) ? Number(rawFollowers) : 0;
+    const er = (c?.engagementRate !== undefined && c?.engagementRate !== null)
+      ? Number(c?.engagementRate)
+      : ((c?.er !== undefined && c?.er !== null) ? Number(c?.er) : 0);
+    const scoreVal = (score !== undefined && score !== null)
+      ? Number(score)
+      : ((c?.score !== undefined && c?.score !== null) ? Number(c?.score) : 0);
+    return {
+      followers,
+      er,
+      reach: c?.reach !== undefined ? Number(c?.reach) : 0,
+      authenticity: c?.authenticity !== undefined ? Number(c?.authenticity) : 0,
+      score: scoreVal
+    };
+  }, [c, score]);
 
   return (
     <div className="dashboard-page-container">
       <div className="db-page-header">
-        <div className="badge-saffron">
-           <Shield size={14} fill="#FF9431" /> CREATOR IDENTITY
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <div className="badge-saffron">
+               <Shield size={14} fill="#FF9431" /> CREATOR IDENTITY
+            </div>
+            <h1 className="page-title">Profile Builder</h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMediaKitOpen(true)}
+            aria-label="Preview and Download PDF Media Kit"
+            className="btn-outline-pill"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 20px',
+              borderRadius: 100,
+              border: '1.5px solid #0F172A',
+              background: '#fff',
+              color: '#0F172A',
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(15,23,42,0.06)'
+            }}
+          >
+            <Download size={14} color="#FF9431" />
+            Preview Media Kit
+          </button>
         </div>
-        <h1 className="page-title">Profile Builder</h1>
         <p className="db-sub-text">
           <strong>📢 Public Portfolio Builder:</strong> Build your digital portfolio. The details you fill here (portfolio media, biography, social links, rates) are <strong>public</strong> and will be visible to brands in the marketplace to secure collaborations.
         </p>
@@ -2861,6 +2947,16 @@ export default function ProfileBuilderPage() {
         onSuccess={fetchActivationStatus} 
       />
       <FullScreenSaveOverlay show={saving} title="Syncing Profile..." subtitle="Updating your public creator portfolio to the marketplace" />
+
+      {/* Media Kit Preview Modal */}
+      {sanitizedMediaKitCreator && stats && (
+        <MediaKitPreview
+          open={mediaKitOpen}
+          onClose={() => setMediaKitOpen(false)}
+          creator={sanitizedMediaKitCreator}
+          stats={stats}
+        />
+      )}
     </div>
   );
 }
