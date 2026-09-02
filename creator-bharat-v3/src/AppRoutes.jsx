@@ -113,6 +113,7 @@ export default function AppRoutes({ location }) {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/apply" element={<ApplyPage />} />
         <Route path="/brand-register" element={<BrandRegisterPage />} />
+        <Route path="/brand/register" element={<BrandRegisterPage />} />
         <Route path="/join" element={<JoinPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/verify" element={<VerificationPage />} />
@@ -126,9 +127,14 @@ export default function AppRoutes({ location }) {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/faq" element={<FAQPage />} />
+          <Route path="/faqs" element={<Navigate to="/faq" replace />} />
+          <Route path="/help" element={<Navigate to="/faq" replace />} />
           <Route path="/verify-guide" element={<VerificationGuidePage />} />
           <Route path="/ai-knowledge" element={<AiFaqPage />} />
+          <Route path="/ai-faq" element={<AiFaqPage />} />
           <Route path="/rate-calc" element={<RateCalcPage />} />
+          <Route path="/calculator" element={<Navigate to="/rate-calc" replace />} />
+          <Route path="/rate-calculator" element={<Navigate to="/rate-calc" replace />} />
           <Route path="/ambassador" element={<AmbassadorPage />} />
           <Route path="/press" element={<PressPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
@@ -146,11 +152,17 @@ export default function AppRoutes({ location }) {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/privacy-policy" element={<Navigate to="/privacy" replace />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/terms-of-service" element={<Navigate to="/terms" replace />} />
+          <Route path="/terms-and-conditions" element={<Navigate to="/terms" replace />} />
           <Route path="/creator-guidelines" element={<CreatorGuidelinesPage />} />
           <Route path="/brand-guidelines" element={<BrandGuidelinesPage />} />
+          <Route path="/brand-rules" element={<Navigate to="/brand-guidelines" replace />} />
           <Route path="/cookies" element={<CookiePolicyPage />} />
+          <Route path="/cookie-policy" element={<Navigate to="/cookies" replace />} />
           <Route path="/refunds" element={<RefundPolicyPage />} />
+          <Route path="/refund-policy" element={<Navigate to="/refunds" replace />} />
           <Route path="/creator/:id" element={<CreatorProfilePage />} />
           <Route path="/c/:id" element={<CreatorProfilePage />} />
         </Route>
@@ -214,11 +226,19 @@ export default function AppRoutes({ location }) {
         {/* Brand Ecosystem Group - Completely Isolated Layout */}
         <Route element={<ProtectedRoute allowedRole="brand"><DashboardLayout><Outlet /></DashboardLayout></ProtectedRoute>}>
           <Route path="/brand-dashboard" element={<BrandDashboardPage />} />
+          <Route path="/brand/dashboard" element={<BrandDashboardPage />} />
           <Route path="/brand-applications" element={<BrandApplicationsPage />} />
+          <Route path="/brand/applications" element={<BrandApplicationsPage />} />
           <Route path="/brand-analytics" element={<BrandAnalyticsPage />} />
+          <Route path="/brand/analytics" element={<BrandAnalyticsPage />} />
           <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
+          <Route path="/brand/campaign-builder" element={<CampaignBuilderPage />} />
           <Route path="/brand/notifications" element={<BrandNotificationsPage />} />
           <Route path="/brand/creator-density" element={<CreatorDensityPage />} />
+          <Route path="/brand/creators" element={<CreatorsPage />} />
+          <Route path="/brand/campaigns" element={<CampaignsPage />} />
+          <Route path="/brand/compare" element={<ComparePage />} />
+          <Route path="/brand/settings" element={<SettingsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
 

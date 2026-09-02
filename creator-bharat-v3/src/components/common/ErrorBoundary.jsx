@@ -54,41 +54,66 @@ class ErrorBoundary extends React.Component {
               </p>
             </div>
 
-            <div style={{ 
-              background: 'rgba(255,255,255,0.03)', 
-              border: '1px solid rgba(255,255,255,0.1)',
-              padding: '16px',
-              borderRadius: '12px',
-              fontSize: '12px',
-              fontFamily: 'monospace',
-              color: '#ef4444',
-              width: '100%',
-              textAlign: 'left',
-              overflow: 'auto',
-              maxHeight: '100px'
-            }}>
-              {this.state.error?.toString()}
-            </div>
+            {import.meta.env.DEV && this.state.error && (
+              <div style={{ 
+                background: 'rgba(255,255,255,0.03)', 
+                border: '1px solid rgba(255,255,255,0.1)',
+                padding: '16px',
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontFamily: 'monospace',
+                color: '#ef4444',
+                width: '100%',
+                textAlign: 'left',
+                overflow: 'auto',
+                maxHeight: '100px'
+              }}>
+                {this.state.error?.message || this.state.error?.toString()}
+              </div>
+            )}
 
-            <button 
-              onClick={() => window.location.reload()}
-              style={{
-                background: '#FF9431',
-                color: '#000',
-                border: 'none',
-                padding: '12px 32px',
-                borderRadius: '50px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                textTransform: 'uppercase',
-                letterSpacing: '1px'
-              }}
-              onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
-            >
-              Recover Platform
-            </button>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button 
+                onClick={() => window.location.reload()}
+                style={{
+                  background: '#FF9431',
+                  color: '#000',
+                  border: 'none',
+                  padding: '12px 28px',
+                  borderRadius: '50px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontSize: '13px'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                Reload Page
+              </button>
+              <button 
+                onClick={() => { window.location.href = '/'; }}
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  color: '#fff',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  padding: '12px 28px',
+                  borderRadius: '50px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontSize: '13px'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                Return to Home
+              </button>
+            </div>
           </div>
           
           <style>{`
