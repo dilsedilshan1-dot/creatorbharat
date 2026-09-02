@@ -106,16 +106,99 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
     : (typeof creator.niche === 'string' ? creator.niche.split('&') : ['Digital Storyteller', 'Content Specialist']);
   const nicheTags = [...rawNiches, 'Verified Creator', 'Elite Partner'].slice(0, 3);
 
-  const socialList = [
-    { type: 'Instagram', handle: `@${creator.slug || 'creator'}`, count: fmt.num(stats.followers), color: '#E4405F' },
-    { type: 'YouTube', handle: creator.name, count: '120K', color: '#FF0000' },
-    { type: 'LinkedIn', handle: creator.name, count: '15K', color: '#0077B5' },
-    { type: 'Twitter', handle: `@${creator.slug || 'creator'}`, count: '42K', color: '#1DA1F2' }
-  ];
+  // Dynamic social platform normalization and extraction from real creator data
+  const socialList = (() => {
+    const list = [];
+    const seen = new Set();
+
+    const PLATFORM_META = {
+      'instagram': { type: 'Instagram', color: '#E4405F' },
+      'youtube': { type: 'YouTube', color: '#FF0000' },
+      'linkedin': { type: 'LinkedIn', color: '#0077B5' },
+      'twitter': { type: 'Twitter / X', color: '#1DA1F2' },
+      'twitter / x': { type: 'Twitter / X', color: '#1DA1F2' },
+      'x': { type: 'Twitter / X', color: '#1DA1F2' },
+      'facebook': { type: 'Facebook', color: '#1877F2' }
+    };
+
+    // 1. Process creator.socialLinks array
+    if (Array.isArray(creator.socialLinks)) {
+      creator.socialLinks.forEach(link => {
+        if (!link || !link.platform) return;
+        const normKey = String(link.platform).toLowerCase().trim();
+        const meta = PLATFORM_META[normKey] || { type: link.platform, color: '#6366F1' };
+        if (seen.has(meta.type.toLowerCase())) return;
+
+        const handleStr = link.url || (creator.slug ? `@${creator.slug}` : (creator.handle || ''));
+        if (!handleStr) return;
+
+        const countStr = (link.followers !== undefined && link.followers !== null && String(link.followers).trim() !== '' && Number(link.followers) > 0)
+          ? fmt.num(link.followers)
+          : '—';
+
+        seen.add(meta.type.toLowerCase());
+        list.push({
+          type: meta.type,
+          handle: handleStr,
+          count: countStr,
+          color: meta.color
+        });
+      });
+    }
+
+    // 2. Process direct platform fields if not already captured
+    const directPlatforms = [
+      { key: 'instagram', field: creator.instagram, followers: creator.instagramFollowers || (stats.followers ? stats.followers : undefined) },
+      { key: 'youtube', field: creator.youtube, followers: creator.youtubeFollowers },
+      { key: 'linkedin', field: creator.linkedin, followers: creator.linkedinFollowers },
+      { key: 'twitter', field: creator.twitter, followers: creator.twitterFollowers },
+      { key: 'facebook', field: creator.facebook, followers: creator.facebookFollowers }
+    ];
+
+    directPlatforms.forEach(({ key, field, followers }) => {
+      const meta = PLATFORM_META[key];
+      if (!meta || seen.has(meta.type.toLowerCase())) return;
+      if (!field && !followers) return;
+
+      const handleStr = field || (creator.slug ? `@${creator.slug}` : (creator.handle || ''));
+      if (!handleStr) return;
+
+      const countStr = (followers !== undefined && followers !== null && String(followers).trim() !== '' && Number(followers) > 0)
+        ? fmt.num(followers)
+        : '—';
+
+      seen.add(meta.type.toLowerCase());
+      list.push({
+        type: meta.type,
+        handle: handleStr,
+        count: countStr,
+        color: meta.color
+      });
+    });
+
+    // 3. If platform array exists on creator (e.g. ['Instagram', 'YouTube'])
+    if (Array.isArray(creator.platform)) {
+      creator.platform.forEach(p => {
+        if (!p) return;
+        const normKey = String(p).toLowerCase().trim();
+        const meta = PLATFORM_META[normKey] || { type: p, color: '#6366F1' };
+        if (seen.has(meta.type.toLowerCase())) return;
+        seen.add(meta.type.toLowerCase());
+        list.push({
+          type: meta.type,
+          handle: creator.slug ? `@${creator.slug}` : (creator.handle || '—'),
+          count: (meta.type === 'Instagram' && stats.followers && Number(stats.followers) > 0) ? fmt.num(stats.followers) : '—',
+          color: meta.color
+        });
+      });
+    }
+
+    return list;
+  })();
 
   const pastBrands = Array.isArray(creator.collabs) && creator.collabs.length > 0
-    ? creator.collabs.map(c => c.p)
-    : ['Samsung', 'Nike', 'BMW', 'Apple', 'Coca Cola', 'Adobe'];
+    ? creator.collabs.map(c => (typeof c === 'string' ? c : (c.p || c.brand || c.name || ''))).filter(Boolean)
+    : [];
 
   const logistics = creator.logistics || {
     timezone: 'India (IST — UTC+5:30)',
@@ -438,20 +521,46 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                <div className="printable-section print-col-left" style={{ position: 'relative', zIndex: 2 }}>
                                   <SectionTitle icon={TrendingUp}>{t('mediakit.performanceAudit', 'Performance Audit')}</SectionTitle>
                                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '60px' }}>
-                                     <StatBox label={t('mediakit.totalReach', 'Total Reach')} value={fmt.num(stats.followers)} icon={Globe} color="#3b82f6" />
-                                     <StatBox label={t('mediakit.engagements', 'Engagements')} value={fmt.num(Math.round(stats.followers * ((stats.er || 4.8) / 100)))} icon={Zap} color="#FF9431" />
-                                     <StatBox label={t('mediakit.audienceTrust', 'Audience Trust')} value={`${stats.authenticity || 98.2}%`} icon={ShieldCheck} color="#10B981" />
-                                     <StatBox label={t('mediakit.conversion', 'Conversion Potential')} value={creator.ai_intel?.stats?.find(s => s.l.includes('ROI'))?.v || (creator.score ? (creator.score / 16.3).toFixed(1) + 'x' : '5.2x')} icon={TrendingUp} color="#8b5cf6" />
+                                     <StatBox
+                                       label={t('mediakit.totalReach', 'Total Reach')}
+                                       value={(stats.followers !== undefined && stats.followers !== null && Number(stats.followers) > 0) ? fmt.num(stats.followers) : '—'}
+                                       icon={Globe}
+                                       color="#3b82f6"
+                                     />
+                                     <StatBox
+                                       label={t('mediakit.engagements', 'Engagements')}
+                                       value={(stats.engagements !== undefined && stats.engagements !== null && Number(stats.engagements) > 0) ? fmt.num(stats.engagements) : ((creator.engagements !== undefined && creator.engagements !== null && Number(creator.engagements) > 0) ? fmt.num(creator.engagements) : '—')}
+                                       icon={Zap}
+                                       color="#FF9431"
+                                     />
+                                     <StatBox
+                                       label={t('mediakit.audienceTrust', 'Audience Trust')}
+                                       value={(stats.authenticity !== undefined && stats.authenticity !== null && Number(stats.authenticity) > 0) ? `${stats.authenticity}%` : '—'}
+                                       icon={ShieldCheck}
+                                       color="#10B981"
+                                     />
+                                     <StatBox
+                                       label={t('mediakit.conversion', 'Conversion Potential')}
+                                       value={(creator.conversion !== undefined && creator.conversion !== null && String(creator.conversion).trim() !== '') ? String(creator.conversion) : (creator.ai_intel?.stats?.find(s => s.l && s.l.includes('ROI'))?.v || '—')}
+                                       icon={TrendingUp}
+                                       color="#8b5cf6"
+                                     />
                                   </div>
 
                                   <SectionTitle icon={Star}>{t('mediakit.pastCollabs', 'Past Collaborations')}</SectionTitle>
-                                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '60px' }}>
-                                     {pastBrands.slice(0, 6).map(brand => (
-                                        <div key={brand} style={{ padding: '16px', background: 'rgba(248,250,252,0.92)', borderRadius: '16px', border: '1.5px solid #f1f5f9', textAlign: 'center', fontSize: '13px', fontWeight: 900, color: '#64748b', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
-                                           {brand}
-                                        </div>
-                                     ))}
-                                  </div>
+                                  {pastBrands.length > 0 ? (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '60px' }}>
+                                       {pastBrands.slice(0, 6).map(brand => (
+                                          <div key={brand} style={{ padding: '16px', background: 'rgba(248,250,252,0.92)', borderRadius: '16px', border: '1.5px solid #f1f5f9', textAlign: 'center', fontSize: '13px', fontWeight: 900, color: '#64748b', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
+                                             {brand}
+                                          </div>
+                                       ))}
+                                    </div>
+                                  ) : (
+                                    <div style={{ padding: '20px', background: 'rgba(248,250,252,0.92)', borderRadius: '16px', border: '1.5px solid #f1f5f9', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#64748b', marginBottom: '60px' }}>
+                                       Available for Brand Collaborations
+                                    </div>
+                                  )}
 
                                   <SectionTitle icon={Briefcase}>Signature Offerings</SectionTitle>
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '60px' }}>
@@ -501,23 +610,29 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
                                   <SectionTitle icon={Zap}>Digital Footprint</SectionTitle>
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '60px' }}>
-                                     {socialList.map(s => (
-                                        <div key={s.type} style={{ padding: '24px', background: 'rgba(248,250,252,0.92)', borderRadius: '24px', border: '1.5px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
-                                           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                              <div style={{ width: '40px', height: '40px', background: s.color, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: `0 8px 16px ${s.color}30` }}>
-                                                 {s.type[0]}
-                                              </div>
-                                              <div>
-                                                 <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{s.type}</div>
-                                                 <div style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 600 }}>{s.handle}</div>
-                                              </div>
-                                           </div>
-                                           <div style={{ textAlign: 'right' }}>
-                                              <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a' }}>{s.count}</div>
-                                              <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 900 }}>REAL-TIME SYNC</div>
-                                           </div>
-                                        </div>
-                                     ))}
+                                     {socialList.length > 0 ? (
+                                       socialList.map(s => (
+                                          <div key={s.type} style={{ padding: '24px', background: 'rgba(248,250,252,0.92)', borderRadius: '24px', border: '1.5px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>
+                                             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                                <div style={{ width: '40px', height: '40px', background: s.color, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: `0 8px 16px ${s.color}30` }}>
+                                                   {s.type[0]}
+                                                </div>
+                                                <div>
+                                                   <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{s.type}</div>
+                                                   <div style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 600 }}>{s.handle}</div>
+                                                </div>
+                                             </div>
+                                             <div style={{ textAlign: 'right' }}>
+                                                <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a' }}>{s.count}</div>
+                                                <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 900 }}>REAL-TIME SYNC</div>
+                                             </div>
+                                          </div>
+                                       ))
+                                     ) : (
+                                       <div style={{ padding: '24px', background: 'rgba(248,250,252,0.92)', borderRadius: '24px', border: '1.5px solid #f1f5f9', textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: 600 }}>
+                                          No social channels linked yet
+                                       </div>
+                                     )}
                                   </div>
 
                                   {/* Professional Production Suite & Tech Stack */}
