@@ -38,7 +38,8 @@ export default function FAQPage() {
   const { counts, filtered } = useMemo(() => {
     const map = { all: ACTIVE_FAQS.length };
     ACTIVE_FAQS.forEach(f => {
-      const catId = FAQ_CATEGORIES.find(c => c.name.toLowerCase().includes(f.cat.toLowerCase().replace('for ', '')) || c.id === f.cat.toLowerCase())?.id || 'general';
+      const categoryName = (f.cat || 'General').toLowerCase();
+      const catId = FAQ_CATEGORIES.find(c => c.name.toLowerCase().includes(categoryName.replace('for ', '')) || c.id === categoryName)?.id || 'general';
       map[catId] = (map[catId] || 0) + 1;
     });
 
@@ -47,7 +48,8 @@ export default function FAQPage() {
       if (search.trim()) return matchesSearch;
       if (activeCat === 'all') return true;
       const catObj = FAQ_CATEGORIES.find(c => c.id === activeCat);
-      return catObj && f.cat.toLowerCase().includes(catObj.name.toLowerCase().replace('for ', ''));
+      const categoryName = (f.cat || 'General').toLowerCase();
+      return catObj && categoryName.includes(catObj.name.toLowerCase().replace('for ', ''));
     });
 
     return { counts: map, filtered: list };
