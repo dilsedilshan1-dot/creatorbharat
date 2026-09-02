@@ -5,6 +5,7 @@ import {
   GalleryHeader, GalleryFilterToolbar, GalleryCard, MediaLightboxModal 
 } from '../../components/gallery/GalleryComponents';
 import SEO from '@/components/common/SEO';
+import { apiCall } from '@/utils/api';
 
 export default function GalleryPage() {
   const [search, setSearch] = useState('');
@@ -20,22 +21,25 @@ export default function GalleryPage() {
   // Scroll to top on page load and fetch gallery
   useEffect(() => {
     window.scrollTo(0, 0);
-    const fetchGallery = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api'}/gallery`);
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            setDbGallery(data);
-          }
+    let isMounted = true;
+    apiCall('/gallery')
+      .then(data => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          setDbGallery(data);
         }
-      } catch (err) {
-        console.warn('Ecosystem Gallery API offline, falling back to local dataset.', err.message);
-      } finally {
-        setLoading(false);
-      }
+      })
+      .catch(err => {
+        console.warn('Ecosystem Gallery API offline, falling back to local dataset.', err?.message || err);
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
     };
-    fetchGallery();
   }, []);
 
   const galleryItems = dbGallery.length > 0 ? dbGallery : GALLERY_ITEMS;

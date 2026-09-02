@@ -318,21 +318,27 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     apiCall('/events')
       .then(res => {
+        if (!isMounted) return;
         if (Array.isArray(res) && res.length > 0) {
           const mapped = res.map(e => {
             const minScoreMatch = e.eligibility ? e.eligibility.match(/\d+/) : null;
-            const minScoreVal = minScoreMatch ? parseInt(minScoreMatch[0]) : 0;
+            const minScoreVal = minScoreMatch ? parseInt(minScoreMatch[0], 10) : 0;
+            const eventDateObj = new Date(e.date);
+            const isValidDate = !isNaN(eventDateObj.getTime());
             return {
               id: e.id,
               title: e.title,
-              subtitle: e.description.slice(0, 100) + '...',
-              date: new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+              subtitle: (e.description || '').slice(0, 100) + '...',
+              date: isValidDate
+                ? eventDateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                : e.date || 'TBA',
               location: e.location,
               venue: e.venue || '',
-              type: e.type.toLowerCase(),
-              status: new Date(e.date) > new Date() ? 'upcoming' : 'past',
+              type: (e.type || 'flagship').toLowerCase(),
+              status: isValidDate && eventDateObj > new Date() ? 'upcoming' : 'past',
               seats: 100,
               seatsLeft: 42,
               eligibility: e.eligibility || 'Any verified creator',
@@ -347,7 +353,7 @@ export default function EventsPage() {
                 pro: ['VIP seating', 'Exclusive after-party']
               },
               cover: e.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200',
-              color: e.type === 'SUMMIT' ? '#FF9431' : e.type === 'WORKSHOP' ? '#10B981' : '#7C3AED'
+              color: (e.type || '').toUpperCase() === 'SUMMIT' ? '#FF9431' : (e.type || '').toUpperCase() === 'WORKSHOP' ? '#10B981' : '#7C3AED'
             };
           });
           setEventsList(mapped);
@@ -357,10 +363,16 @@ export default function EventsPage() {
         setLoading(false);
       })
       .catch(err => {
-        console.error('Failed to load events:', err);
-        setEventsList(EVENTS);
-        setLoading(false);
+        console.warn('Failed to load events from API, falling back to local dataset:', err?.message || err);
+        if (isMounted) {
+          setEventsList(EVENTS);
+          setLoading(false);
+        }
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

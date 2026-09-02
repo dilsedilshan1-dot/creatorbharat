@@ -38,4 +38,32 @@ describe('Health & Base API Checks', () => {
     expect(res.body).toHaveProperty('error');
     expect(res.body.error).toContain('not found');
   });
+
+  it('GET /api/pages/faq and /api/pages/faqs should resolve consistent dynamic page configs', async () => {
+    const resFaq = await request(app)
+      .get('/api/pages/faq')
+      .expect(200);
+
+    const resFaqs = await request(app)
+      .get('/api/pages/faqs')
+      .expect(200);
+
+    expect(resFaq.body).toHaveProperty('content');
+    expect(resFaqs.body).toHaveProperty('content');
+    expect(Array.isArray(resFaq.body.content)).toBe(true);
+    expect(Array.isArray(resFaqs.body.content)).toBe(true);
+    expect(resFaq.body.content.length).toBeGreaterThan(0);
+    expect(resFaq.body.content[0]).toHaveProperty('q');
+    expect(resFaq.body.content[0]).toHaveProperty('a');
+    expect(resFaqs.body.content[0]).toEqual(resFaq.body.content[0]);
+  });
+
+  it('GET /api/pages/about should continue to return about page configuration', async () => {
+    const res = await request(app)
+      .get('/api/pages/about')
+      .expect(200);
+
+    expect(res.body).toHaveProperty('content');
+    expect(res.body.content).toHaveProperty('BLUEPRINT_CARDS');
+  });
 });

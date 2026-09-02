@@ -273,9 +273,16 @@ app.get('/api/brands/:id', BrandController.getBrandById);
 app.get('/api/pages/:pageName', async (req, res) => {
   try {
     const { pageName } = req.params;
-    const config = await prisma.dynamicPageConfig.findUnique({
-      where: { pageName }
+    const lookupKey = pageName === 'faq' ? 'faqs' : pageName;
+    let config = await prisma.dynamicPageConfig.findUnique({
+      where: { pageName: lookupKey }
     });
+    if (!config && (pageName === 'faq' || pageName === 'faqs')) {
+      const alternateKey = lookupKey === 'faqs' ? 'faq' : 'faqs';
+      config = await prisma.dynamicPageConfig.findUnique({
+        where: { pageName: alternateKey }
+      });
+    }
     if (!config) {
       // Structured defaults for demo environments
       let defaultContent = {};
