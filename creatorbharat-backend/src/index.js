@@ -128,7 +128,14 @@ app.use(requestLoggerMiddleware);
 
 // Response compression, Security and CORS middleware
 app.use(compression());
-app.use(helmet());
+// F-05: Explicit HSTS hardening — maxAge 1yr, includeSubDomains, preload
+app.use(helmet({
+  hsts: {
+    maxAge: 31536000,        // 1 year in seconds
+    includeSubDomains: true, // covers admin.creatorbharat.com, api.creatorbharat.com etc.
+    preload: true            // eligible for browser HSTS preload list
+  }
+}));
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -2011,9 +2018,39 @@ Sentry.setupExpressErrorHandler(app);
 // Centralized Error Normalization Handler
 app.use(errorHandlerMiddleware);
 
+// ─── F-07: Fail-Closed Startup Configuration Validation ─────────────────────
+// Asserts all critical environment variables are present before accepting traffic.
+// A misconfigured deployment will crash immediately rather than silently serving broken requests.
+const REQUIRED_ENV_VARS = [
+  { key: 'JWT_SECRET',               minLength: 32, description: 'JWT signing secret' },
+  { key: 'DATABASE_URL',             minLength: 10, description: 'PostgreSQL connection URL' },
+  { key: 'RAZORPAY_SECRET',          minLength: 8,  description: 'Razorpay API secret' },
+  { key: 'RAZORPAY_WEBHOOK_SECRET',  minLength: 8,  description: 'Razorpay webhook verification secret' },
+];
+
+function validateRequiredConfig() {
+  const missing = [];
+  for (const { key, minLength, description } of REQUIRED_ENV_VARS) {
+    const value = process.env[key];
+    if (!value || value.length < minLength) {
+      // Log key name only — never log the value
+      missing.push(`${key} (${description})`);
+    }
+  }
+  if (missing.length > 0) {
+    // Use console.error directly — logger may not be initialized yet
+    console.error('[STARTUP] FATAL: Required environment variables are missing or too short:');
+    missing.forEach(m => console.error(`  - ${m}`));
+    console.error('[STARTUP] Server will not start. Set all required environment variables and restart.');
+    process.exit(1);
+  }
+  logger.info('[STARTUP] Configuration validation passed.', { validatedKeys: REQUIRED_ENV_VARS.map(e => e.key) });
+}
+
 // Start Server & Lifecycle Management
 const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
 if (!isTestEnv) {
+  validateRequiredConfig();
   server.listen(PORT, () => {
     logger.info(`CreatorBharat SaaS API Server running on port ${PORT}`, { port: PORT });
   });

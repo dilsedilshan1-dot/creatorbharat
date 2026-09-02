@@ -163,6 +163,6 @@ describe('Phase 2H — Admin Hardening & Moderation Security Tests', () => {
       expect(diagnostics).toHaveProperty('memory');
       expect(JSON.stringify(diagnostics)).not.toContain('password');
       expect(JSON.stringify(diagnostics)).not.toContain('postgres://');
-    });
+    }, 10000); // 10s timeout — this test makes real process calls; allow for suite warmup overhead
   });
 });

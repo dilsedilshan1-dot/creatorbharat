@@ -20,6 +20,7 @@ import EngagementSection from './components/sections/EngagementSection';
 import { AuditLogsSection } from './components/sections/AuditLogsSection';
 import { AdminLayout } from './layout/AdminLayout';
 import { AdminModals } from './components/modals/AdminModals';
+import { AdminApi } from './services/adminApi';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5173' : 'https://creatorbharat.com');
@@ -889,7 +890,8 @@ export default function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Authentication failed');
       if (data.user?.role !== 'ADMIN') throw new Error('Access denied. Administrator privileges required.');
-      localStorage.setItem('cb_admin_token', data.token);
+      // F-02: Route through AdminApi.setToken (sessionStorage by default, no cross-session persistence)
+      AdminApi.setToken(data.token, false);
       setToken(data.token);
       setAdminUser(data.user);
       toast('Welcome Back, Administrator! 🛡️', 'success');
@@ -2346,7 +2348,8 @@ export default function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Registration failed');
       
-      localStorage.setItem('cb_admin_token', data.token);
+      // F-02: Route through AdminApi.setToken (sessionStorage by default, no cross-session persistence)
+      AdminApi.setToken(data.token, false);
       setToken(data.token);
       setAdminUser(data.user);
       
