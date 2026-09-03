@@ -226,6 +226,24 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
     printWindow.style.width = '210mm';
     document.body.appendChild(printWindow);
 
+    let isCleanedUp = false;
+    let safetyTimer = null;
+
+    const cleanup = () => {
+      if (isCleanedUp) return;
+      isCleanedUp = true;
+      if (safetyTimer) {
+        clearTimeout(safetyTimer);
+        safetyTimer = null;
+      }
+      if (document.body.contains(printWindow)) {
+        printWindow.remove();
+      }
+    };
+
+    // Long safety timer (60s) so the iframe cannot leak indefinitely
+    safetyTimer = setTimeout(cleanup, 60000);
+
     const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
       .map(s => s.outerHTML)
       .join('');
@@ -278,12 +296,22 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
               overflow: visible !important;
             }
 
-            /* High-fidelity section guards */
+            /* Standards-based fallback for engines without CSS zoom support */
+            @supports not (zoom: 0.78) {
+              #media-kit-export-container {
+                max-width: 100% !important;
+                width: 100% !important;
+              }
+            }
+
+            /* High-fidelity section guards & page-break protection */
             .printable-section { 
               margin: 0 !important;
               padding: 0 !important;
               display: block !important;
               background: transparent !important;
+              break-inside: avoid !important;
+              page-break-inside: avoid !important;
             }
 
             .print-layout {
@@ -301,6 +329,14 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
             .print-col-right {
                float: right !important;
                width: 36% !important;
+            }
+
+            /* Prevent awkward mid-card splitting across pages */
+            .print-col-left > div,
+            .print-col-right > div,
+            .grid-container > div {
+               break-inside: avoid !important;
+               page-break-inside: avoid !important;
             }
 
             @page { 
@@ -346,19 +382,68 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
     
     printWindow.srcdoc = html;
 
-    // Trigger print safely from main thread after images load
-    setTimeout(() => {
-       try {
-         printWindow.contentWindow.focus();
-         printWindow.contentWindow.print();
-       } catch (e) {
-         console.error('Print failed', e);
-       }
-       setTimeout(() => {
-          if (document.body.contains(printWindow)) {
-             printWindow.remove();
+    const triggerPrint = () => {
+      try {
+        const win = printWindow.contentWindow;
+        if (!win) {
+          cleanup();
+          return;
+        }
+        if ('onafterprint' in win) {
+          win.onafterprint = () => {
+            cleanup();
+          };
+        }
+        win.focus();
+        win.print();
+      } catch (e) {
+        console.error('Print failed', e);
+        cleanup();
+      }
+    };
+
+    const prepareAndPrint = async () => {
+      try {
+        const doc = printWindow.contentDocument || printWindow.contentWindow?.document;
+        if (doc) {
+          if (doc.fonts && typeof doc.fonts.ready?.then === 'function') {
+            await Promise.race([
+              doc.fonts.ready,
+              new Promise(res => setTimeout(res, 800))
+            ]).catch(() => {});
           }
-       }, 2000);
+
+          const imgs = Array.from(doc.images || []);
+          if (imgs.length > 0) {
+            const pendingImages = imgs.map(img => {
+              if (img.complete) return Promise.resolve();
+              return new Promise(res => {
+                img.onload = res;
+                img.onerror = res;
+              });
+            });
+            await Promise.race([
+              Promise.all(pendingImages),
+              new Promise(res => setTimeout(res, 1200))
+            ]).catch(() => {});
+          }
+        }
+      } catch (_) {
+        // Continue to print defensively
+      }
+
+      setTimeout(triggerPrint, 200);
+    };
+
+    printWindow.onload = () => {
+      prepareAndPrint();
+    };
+
+    // Fallback if onload does not trigger on srcdoc in edge cases
+    setTimeout(() => {
+      if (!isCleanedUp) {
+        prepareAndPrint();
+      }
     }, 1200);
   };
 
